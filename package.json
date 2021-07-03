@@ -1,0 +1,15 @@
+{
+	"name": "nginx",
+	"version": "1.0.0",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "tsc",
+		"start": "node ."
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@types/node": "^16.0.0",
+		"typescript": "^4.3.5"
+	},
+	"license": "MIT"
+}
