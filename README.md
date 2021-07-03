@@ -1,0 +1,3 @@
+## Nginx
+
+-   Simpler Configs
