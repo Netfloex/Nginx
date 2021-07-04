@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+    nginx:
+        build: .
+        container_name: nginx_node
+        environment:
+            CERTBOT_EMAIL: EMAIL # Required
+
+            # https://github.com/JonasAlfredsson/docker-nginx-certbot#optional
+            STAGING: 1
+            RENEWAL_INTERVAL: 8d
+            DEBUG: 1
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            - ./letsencrypt:/etc/letsencrypt
+            - ./nginx_config_files:/etc/nginx/user_conf.d
+            - ./logs:/var/log/nginx
