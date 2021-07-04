@@ -4,3 +4,4 @@ letsencrypt
 logs
 docker-compose.yml
 config
+dist

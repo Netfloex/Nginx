@@ -8,13 +8,13 @@ services:
             CERTBOT_EMAIL: EMAIL # Required
 
             # https://github.com/JonasAlfredsson/docker-nginx-certbot#optional
-            STAGING: 1
+            STAGING: 0
             RENEWAL_INTERVAL: 8d
-            DEBUG: 1
+            DEBUG: 0
         ports:
             - 80:80
             - 443:443
         volumes:
             - ./letsencrypt:/etc/letsencrypt
-            - ./nginx_config_files:/etc/nginx/user_conf.d
             - ./logs:/var/log/nginx
+            - ./config:/app/config
