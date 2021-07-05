@@ -5,6 +5,7 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "node .",
+		"test": "tsc --noEmit",
 		"dev": "nodemon --exec 'tsc && yarn start' -i 'dist,nginx_config_files' -e 'ts,json'"
 	},
 	"dependencies": {
