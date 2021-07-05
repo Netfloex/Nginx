@@ -1,7 +1,12 @@
+type ProxyPass = string;
+
+type Subdomain = Omit<Server, "subdomains">;
 export type Server = {
-	server: string;
-	to: string;
+	proxy_pass?: ProxyPass;
+	subdomains?: Record<string, Subdomain | ProxyPass>;
 };
 
-type Config = Server[];
+type Config = {
+	servers?: Record<string, Server | ProxyPass>;
+};
 export default Config;
