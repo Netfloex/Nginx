@@ -25,14 +25,16 @@ const parseConfig = async (): Promise<SimpleServer[]> => {
 				servers.push({
 					server_name: domain,
 					proxy_pass: options,
-					filename: domain
+					filename: domain,
+					websocket: false
 				});
 			} else {
 				if (options.proxy_pass) {
 					servers.push({
 						server_name: domain,
 						proxy_pass: options.proxy_pass,
-						filename: domain
+						filename: domain,
+						websocket: options.websocket ?? false
 					});
 				}
 				if (options.subdomains) {
@@ -42,13 +44,15 @@ const parseConfig = async (): Promise<SimpleServer[]> => {
 								servers.push({
 									server_name: subdomain + "." + domain,
 									proxy_pass: options,
-									filename: subdomain
+									filename: subdomain,
+									websocket: false
 								});
 							} else if (options.proxy_pass) {
 								servers.push({
 									server_name: subdomain + "." + domain,
 									proxy_pass: options.proxy_pass,
-									filename: subdomain
+									filename: subdomain,
+									websocket: options.websocket ?? false
 								});
 							}
 						}

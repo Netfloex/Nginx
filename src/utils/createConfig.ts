@@ -20,6 +20,14 @@ const createConfig = (server: SimpleServer): string => {
 	// Proxy Pass
 	JsonConf.server["location /"].proxy_pass = server.proxy_pass;
 
+	if (server.websocket) {
+		JsonConf.server.proxy_set_header = [
+			"Upgrade $http_upgrade",
+			"Connection $http_connection"
+		];
+		JsonConf.server.proxy_http_version = 1.1;
+	}
+
 	const config = parser.toConf(JsonConf);
 
 	return config;
