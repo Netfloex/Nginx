@@ -1,17 +1,12 @@
-import { access, constants } from "fs-extra";
 import { join } from "path";
 import Config from "../models/config";
 import SimpleServer from "../models/SimpleServer";
+import fileExist from "./fileExist";
 
 const configPath = join(__dirname, "../../config/config.js");
 
-const checkFileExists = (file: string) =>
-	access(file, constants.F_OK)
-		.then(() => true)
-		.catch(() => false);
-
 const parseConfig = async (): Promise<SimpleServer[]> => {
-	if (!(await checkFileExists(configPath))) {
+	if (!(await fileExist(configPath))) {
 		console.error("No config files found!");
 		console.log("Please create one in: " + configPath);
 
@@ -26,7 +21,8 @@ const parseConfig = async (): Promise<SimpleServer[]> => {
 					server_name: domain,
 					proxy_pass: options,
 					filename: domain,
-					websocket: false
+					websocket: false,
+					custom_css: []
 				});
 			} else {
 				if (options.proxy_pass) {
@@ -34,7 +30,8 @@ const parseConfig = async (): Promise<SimpleServer[]> => {
 						server_name: domain,
 						proxy_pass: options.proxy_pass,
 						filename: domain,
-						websocket: options.websocket ?? false
+						websocket: options.websocket ?? false,
+						custom_css: [options.custom_css ?? []].flat()
 					});
 				}
 				if (options.subdomains) {
@@ -45,14 +42,18 @@ const parseConfig = async (): Promise<SimpleServer[]> => {
 									server_name: subdomain + "." + domain,
 									proxy_pass: options,
 									filename: subdomain,
-									websocket: false
+									websocket: false,
+									custom_css: []
 								});
 							} else if (options.proxy_pass) {
 								servers.push({
 									server_name: subdomain + "." + domain,
 									proxy_pass: options.proxy_pass,
 									filename: subdomain,
-									websocket: options.websocket ?? false
+									websocket: options.websocket ?? false,
+									custom_css: [
+										options.custom_css ?? []
+									].flat()
 								});
 							}
 						}

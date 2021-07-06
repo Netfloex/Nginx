@@ -3,6 +3,7 @@ type SimpleServer = {
 	server_name: string;
 	filename: string;
 	websocket: boolean;
+	custom_css: string[];
 };
 
 export default SimpleServer;

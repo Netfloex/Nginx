@@ -5,6 +5,7 @@ export type Server = {
 	proxy_pass?: ProxyPass;
 	websocket?: boolean;
 	subdomains?: Record<string, Subdomain | ProxyPass>;
+	custom_css?: string[] | string;
 };
 
 type Config = {

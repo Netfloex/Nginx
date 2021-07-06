@@ -8,6 +8,12 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"strict": true,
-		"target": "es5"
+		"target": "es5",
+		"lib": ["ES2019.Array"],
+		"paths": {
+			"@webantic/nginx-config-parser": [
+				"./src/models/nginx-config-parser"
+			]
+		}
 	}
 }
