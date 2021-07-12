@@ -15,6 +15,14 @@ services:
             - 80:80
             - 443:443
         volumes:
+            #  Optional
+
+            # - ./logs:/var/log/nginx
+            # - ./nginx_config_files:/etc/nginx/user_conf.d
+
+            - ./custom:/app/custom # Not needed when not using any custom files, this is used as a cache.
+
+            # Required
+
             - ./letsencrypt:/etc/letsencrypt
-            - ./logs:/var/log/nginx
             - ./config:/app/config

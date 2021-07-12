@@ -9,10 +9,18 @@ module.exports = {
 			subdomains: {
 				www: {
 					// www.example.com
-					proxy_pass: "http://www:80"
+					proxy_pass: "http://www:80" // You could also shorten this by using a string instead of an object.
 				},
 				// api.example.com
-				api: "http://api:3000" // no extra configuration
+				api: "http://api:3000", // Shortened, no extra configuration
+
+				adguard: {
+					// adguard.example.com
+					proxy_pass: "http://adguard:80",
+					// This file gets downloaded and compressed, its then appended to the <head>
+					custom_css:
+						"https://theme-park.dev/CSS/themes/adguard/organizr-dark.css"
+				}
 			}
 		},
 		"second_domain.com": "http://second:80" // defaults to proxy_pass
