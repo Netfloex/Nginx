@@ -6,10 +6,11 @@ There is one configuration file `config/config.js`, [example config](config/conf
 
 ## Features
 
--   Simpler configs
+-   Simpler Configs
 
 -   Proxy Pass
 -   Custom CSS
+-   Location Blocks
 
 ### Simpler Configs
 
@@ -58,7 +59,32 @@ The compressed CSS is then appended to the end of the `<head>` by using nginx's 
 
 ```json
 {
-	"custom_css": "url to css file"
+	"custom_css": "http://example.com/style.css"
+}
+```
+
+### Location Blocks
+
+```json
+{
+	"location": {
+		"/custom/path": {
+			"proxy_pass": "http://proxy_pass:80",
+
+			// Any other option...
+			"custom_css": "http://example.com/style.css"
+		}
+	}
+}
+```
+
+or
+
+```json
+{
+	"location": {
+		"/custom/path": "http://proxy_pass:80"
+	}
 }
 ```
 
@@ -67,3 +93,7 @@ The compressed CSS is then appended to the end of the `<head>` by using nginx's 
 See the [docker-compose.example.yml](docker-compose.example.yml)
 You will need to edit the `CERBOT_EMAIL`.
 Then you can edit `config/config.js`, the example config can be found [here](config/config.js).
+
+```
+
+```
