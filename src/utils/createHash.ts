@@ -6,4 +6,5 @@ const createHash = (from: string): string => {
 	md5.update(from, "utf8");
 	return md5.digest("hex");
 };
+
 export default createHash;

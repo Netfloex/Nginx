@@ -1,21 +1,22 @@
 import { outputFile } from "fs-extra";
 import { join } from "path";
-import SimpleServer from "../models/SimpleServer";
 import createHash from "./createHash";
 import downloadCSS from "./downloadCss";
 import env from "./env";
 import fileExist from "./fileExist";
 
-const downloadCSSToFile = async (server: SimpleServer): Promise<void> => {
+const downloadCSSToFile = async (custom_css: string[]): Promise<void> => {
 	await Promise.all(
-		server.custom_css.map(async (cssUrl) => {
+		custom_css.map(async (cssUrl) => {
 			const urlHash = createHash(cssUrl);
 			const fileName = join(env.customFilesPath, "css", urlHash + ".css");
+
 			if (await fileExist(fileName)) {
 				console.log(`${cssUrl} is already downloaded, skipping`);
 
 				return;
 			}
+			console.log(`Downloading ${cssUrl}...`);
 			await downloadCSS(cssUrl).then(async (output) => {
 				if (output.errors) {
 					console.error("CSS Parsing failed, error:");
@@ -27,11 +28,23 @@ const downloadCSSToFile = async (server: SimpleServer): Promise<void> => {
 
 					return;
 				}
-				await outputFile(fileName, output.styles).then(() => {
-					console.log(
-						`${cssUrl} ${output.hash} downloaded and compressed.`
-					);
-				});
+				console.log(`${cssUrl} downloaded.`);
+
+				await outputFile(fileName, output.styles)
+					.then(() => {
+						console.log(
+							`${cssUrl} ${output.hash} downloaded and compressed.`
+						);
+					})
+					.catch((e) => {
+						console.error(
+							`There was an error creating the file ${fileName}`
+						);
+						console.error("The error:");
+						console.error(e);
+
+						throw e;
+					});
 			});
 		})
 	);

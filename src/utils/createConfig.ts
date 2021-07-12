@@ -1,12 +1,59 @@
 import ConfigParser, { NginxConfig } from "@webantic/nginx-config-parser";
 import { join } from "path";
-import SimpleServer from "../models/SimpleServer";
+import SimpleServer, { Location } from "../models/SimpleServer";
 import baseConf from "./baseConf";
 import createHash from "./createHash";
 import downloadCSSToFile from "./downloadCSSToFile";
 import env from "./env";
 
 const parser = new ConfigParser();
+
+const createLocation = async (
+	JsonConf: NginxConfig,
+	location: Location
+): Promise<void> => {
+	const locString = `location ${location.location}`;
+
+	if (!JsonConf.server[locString]) {
+		JsonConf.server[locString] = {};
+	}
+
+	// Proxy Pass
+	JsonConf.server[locString].proxy_pass = location.proxy_pass;
+
+	// Websockets
+	if (location.websocket) {
+		const block =
+			location.location == "/"
+				? JsonConf.server
+				: JsonConf.server[locString];
+
+		block.proxy_set_header = [
+			"Upgrade $http_upgrade",
+			"Connection $http_connection"
+		];
+
+		block.proxy_http_version = 1.1;
+	}
+
+	// Custom CSS
+	if (location.custom_css.length) {
+		const fileNames = location.custom_css.map((g) => createHash(g));
+
+		JsonConf.server[locString].sub_filter = `'</head>' '${fileNames
+			.map(
+				(hash) =>
+					`<link rel="stylesheet" type="text/css" href="/custom_assets/css/${hash}.css">`
+			)
+			.join("")}</head>'`;
+
+		JsonConf.server["location /custom_assets"] = {
+			alias: env.customFilesPath
+		};
+
+		await downloadCSSToFile(location.custom_css);
+	}
+};
 
 const createConfig = async (server: SimpleServer): Promise<string> => {
 	const JsonConf: NginxConfig = await baseConf();
@@ -20,33 +67,16 @@ const createConfig = async (server: SimpleServer): Promise<string> => {
 	JsonConf.server.ssl_certificate_key = sslKeysPath + "privkey.pem";
 	JsonConf.server.ssl_trusted_certificate = sslKeysPath + "chain.pem";
 
-	// Proxy Pass
-	JsonConf.server["location /"].proxy_pass = server.proxy_pass;
+	// Mutate JsonConf
+	await createLocation(JsonConf, { ...server, location: "/" });
 
-	// Websockets
-	if (server.websocket) {
-		JsonConf.server.proxy_set_header = [
-			"Upgrade $http_upgrade",
-			"Connection $http_connection"
-		];
-		JsonConf.server.proxy_http_version = 1.1;
-	}
-
-	// Custom CSS
-	if (server.custom_css.length) {
-		const fileNames = server.custom_css.map((g) => createHash(g));
-		JsonConf.server["location /"].sub_filter = `'</head>' '${fileNames
-			.map(
-				(hash) =>
-					`<link rel="stylesheet" type="text/css" href="/custom_assets/css/${hash}.css">`
-			)
-			.join("")}</head>'`;
-
-		JsonConf.server["location /custom_assets"] = {
-			alias: env.customFilesPath
-		};
-
-		await downloadCSSToFile(server);
+	// Custom Locations
+	if (server.locations.length) {
+		await Promise.all(
+			server.locations.map(async (location) => {
+				await createLocation(JsonConf, location);
+			})
+		);
 	}
 
 	const config = parser.toConf(JsonConf);

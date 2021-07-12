@@ -1,8 +1,6 @@
 import fs from "fs-extra";
 import { join } from "path";
 import createConfig from "./utils/createConfig";
-import createHash from "./utils/createHash";
-import downloadCSS from "./utils/downloadCss";
 import env from "./utils/env";
 import fileExist from "./utils/fileExist";
 import parseConfig from "./utils/parseConfig";
@@ -13,8 +11,11 @@ const main = async () => {
 
 		await fs.emptyDir(env.nginxConfigPath);
 	} else {
-		console.log("No configurations found");
+		console.log(
+			`Did not remove old configurations, folder was not found: ${env.nginxConfigPath}`
+		);
 	}
+
 	const config = await parseConfig();
 
 	await Promise.all(

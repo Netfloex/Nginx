@@ -8,6 +8,7 @@ declare module "@webantic/nginx-config-parser" {
 		server_name?: string;
 		"location /": Location;
 		"location /custom_assets"?: Location;
+		[location: string]: Location;
 
 		proxy_set_header: string[];
 		proxy_http_version: number;
@@ -20,6 +21,7 @@ declare module "@webantic/nginx-config-parser" {
 
 	interface Location {
 		proxy_set_header?: string[];
+		proxy_http_version?: number;
 		proxy_pass?: string;
 
 		sub_filter?: string;
