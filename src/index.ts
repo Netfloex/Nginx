@@ -4,16 +4,14 @@ import createConfig from "./utils/createConfig";
 import env from "./utils/env";
 import fileExist from "./utils/fileExist";
 import parseConfig from "./utils/parseConfig";
+import log from "./utils/log";
 
 const main = async () => {
 	if (await fileExist(env.nginxConfigPath)) {
-		console.log("Removing old configurations");
-
+		log.rmOld(env.nginxConfigPath);
 		await fs.emptyDir(env.nginxConfigPath);
 	} else {
-		console.log(
-			`Did not remove old configurations, folder was not found: ${env.nginxConfigPath}`
-		);
+		log.noOld(env.nginxConfigPath);
 	}
 
 	const config = await parseConfig();
@@ -24,17 +22,16 @@ const main = async () => {
 				join(env.nginxConfigPath, `${i}-${server.filename}`) + ".conf";
 			await fs.outputFile(fileName, await createConfig(server));
 
-			console.log(new Date(), server.filename, "done");
+			log.configDone(server.server_name);
 		})
 	);
 };
 
-console.log(new Date(), "Started");
+log.started();
 main()
 	.then(() => {
-		console.log(new Date(), "Done");
+		log.finished();
 	})
 	.catch((error) => {
 		console.error(error);
-		console.log("This error was catched in index.ts");
 	});

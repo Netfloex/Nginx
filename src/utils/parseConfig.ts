@@ -1,7 +1,9 @@
 import { join } from "path";
+import { config } from "process";
 import Config, { Locations } from "../models/config";
 import SimpleServer, { Location } from "../models/SimpleServer";
 import fileExist from "./fileExist";
+import log from "./log";
 
 const configPath = join(__dirname, "../../config/config.js");
 
@@ -32,8 +34,7 @@ const parseLocations = (unparsedLocation?: Locations): Location[] => {
 
 const parseConfig = async (): Promise<SimpleServer[]> => {
 	if (!(await fileExist(configPath))) {
-		console.error("No config file found!");
-		console.log("Please create one in: " + configPath);
+		log.configNotFound(configPath);
 
 		return [];
 	} else {

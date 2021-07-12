@@ -4,6 +4,7 @@ import createHash from "./createHash";
 import downloadCSS from "./downloadCss";
 import env from "./env";
 import fileExist from "./fileExist";
+import log from "./log";
 
 const downloadCSSToFile = async (custom_css: string[]): Promise<void> => {
 	await Promise.all(
@@ -12,15 +13,14 @@ const downloadCSSToFile = async (custom_css: string[]): Promise<void> => {
 			const fileName = join(env.customFilesPath, "css", urlHash + ".css");
 
 			if (await fileExist(fileName)) {
-				console.log(`${cssUrl} is already downloaded, skipping`);
-
+				log.cachedCSS(cssUrl);
 				return;
 			}
-			console.log(`Downloading ${cssUrl}...`);
+			log.downloadCSS(cssUrl);
 			await downloadCSS(cssUrl).then(async (output) => {
 				if (output.errors) {
-					console.error("CSS Parsing failed, error:");
-					console.log(
+					log.CSSError(
+						cssUrl,
 						Array.isArray(output.errors)
 							? output.errors.join("\n")
 							: output.errors
@@ -28,23 +28,14 @@ const downloadCSSToFile = async (custom_css: string[]): Promise<void> => {
 
 					return;
 				}
-				console.log(`${cssUrl} downloaded.`);
 
-				await outputFile(fileName, output.styles)
-					.then(() => {
-						console.log(
-							`${cssUrl} ${output.hash} downloaded and compressed.`
-						);
-					})
-					.catch((e) => {
-						console.error(
-							`There was an error creating the file ${fileName}`
-						);
-						console.error("The error:");
-						console.error(e);
+				log.CSSDownloaded(cssUrl);
 
-						throw e;
-					});
+				await outputFile(fileName, output.styles).catch((e) => {
+					log.CSSWriteError(fileName, e);
+
+					throw e;
+				});
 			});
 		})
 	);
