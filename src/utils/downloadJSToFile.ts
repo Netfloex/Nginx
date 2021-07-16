@@ -1,9 +1,8 @@
 import axios from "axios";
-import { createWriteStream, ensureFile } from "fs-extra";
+import { createWriteStream, ensureFile, pathExists } from "fs-extra";
 import { join } from "path";
 import createHash from "./createHash";
 import env from "./env";
-import fileExist from "./fileExist";
 import log from "./log";
 
 const downloadJSToFile = async (custom_js: string[]): Promise<void> => {
@@ -12,7 +11,7 @@ const downloadJSToFile = async (custom_js: string[]): Promise<void> => {
 			const urlHash = createHash(jsUrl);
 			const fileName = join(env.customFilesPath, "js", urlHash + ".js");
 
-			if (await fileExist(fileName)) {
+			if (await pathExists(fileName)) {
 				log.cachedJS(jsUrl);
 				return;
 			}

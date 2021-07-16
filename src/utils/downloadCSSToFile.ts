@@ -1,9 +1,8 @@
-import { outputFile } from "fs-extra";
+import { outputFile, pathExists } from "fs-extra";
 import { join } from "path";
 import createHash from "./createHash";
 import downloadCSS from "./downloadCSS";
 import env from "./env";
-import fileExist from "./fileExist";
 import log from "./log";
 
 const downloadCSSToFile = async (custom_css: string[]): Promise<void> => {
@@ -12,7 +11,7 @@ const downloadCSSToFile = async (custom_css: string[]): Promise<void> => {
 			const urlHash = createHash(cssUrl);
 			const fileName = join(env.customFilesPath, "css", urlHash + ".css");
 
-			if (await fileExist(fileName)) {
+			if (await pathExists(fileName)) {
 				log.cachedCSS(cssUrl);
 				return;
 			}

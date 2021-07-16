@@ -1,8 +1,7 @@
+import { pathExists } from "fs-extra";
 import { join } from "path";
-import { config } from "process";
 import Config, { Locations } from "../models/config";
 import SimpleServer, { Location } from "../models/SimpleServer";
-import fileExist from "./fileExist";
 import log from "./log";
 
 const configPath = join(__dirname, "../../config/config.js");
@@ -35,7 +34,7 @@ const parseLocations = (unparsedLocation?: Locations): Location[] => {
 };
 
 const parseConfig = async (): Promise<SimpleServer[]> => {
-	if (!(await fileExist(configPath))) {
+	if (!(await pathExists(configPath))) {
 		log.configNotFound(configPath);
 
 		return [];
