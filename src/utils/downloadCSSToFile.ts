@@ -1,7 +1,7 @@
 import { outputFile } from "fs-extra";
 import { join } from "path";
 import createHash from "./createHash";
-import downloadCSS from "./downloadCss";
+import downloadCSS from "./downloadCSS";
 import env from "./env";
 import fileExist from "./fileExist";
 import log from "./log";

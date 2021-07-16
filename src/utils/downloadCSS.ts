@@ -1,5 +1,5 @@
 import CleanCSS from "clean-css";
-import createHash from "../utils/createHash";
+import createHash from "./createHash";
 
 type Output = {
 	errors?: string[];

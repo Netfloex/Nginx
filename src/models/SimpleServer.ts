@@ -11,6 +11,7 @@ type SimpleServer = {
 	filename: string;
 	websocket: boolean;
 	custom_css: string[];
+	custom_js: string[];
 
 	locations: Location[];
 };

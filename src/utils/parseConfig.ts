@@ -17,6 +17,7 @@ const parseLocations = (unparsedLocation?: Locations): Location[] => {
 			locations.push({
 				location: path,
 				custom_css: [],
+				custom_js: [],
 				websocket: false,
 				proxy_pass: options
 			});
@@ -24,6 +25,7 @@ const parseLocations = (unparsedLocation?: Locations): Location[] => {
 			locations.push({
 				location: path,
 				custom_css: [options.custom_css ?? []].flat(),
+				custom_js: [options.custom_js ?? []].flat(),
 				websocket: options.websocket ?? false,
 				proxy_pass: options.proxy_pass
 			});
@@ -49,6 +51,7 @@ const parseConfig = async (): Promise<SimpleServer[]> => {
 					filename: domain,
 					websocket: false,
 					custom_css: [],
+					custom_js: [],
 					locations: []
 				});
 			} else {
@@ -58,6 +61,7 @@ const parseConfig = async (): Promise<SimpleServer[]> => {
 					filename: domain,
 					websocket: options.websocket ?? false,
 					custom_css: [options.custom_css ?? []].flat(),
+					custom_js: [options.custom_js ?? []].flat(),
 					locations: parseLocations(options.locations)
 				});
 				if (options.subdomains) {
@@ -69,6 +73,7 @@ const parseConfig = async (): Promise<SimpleServer[]> => {
 									proxy_pass: options,
 									filename: subdomain,
 									websocket: false,
+									custom_js: [],
 									custom_css: [],
 									locations: []
 								});
@@ -81,6 +86,7 @@ const parseConfig = async (): Promise<SimpleServer[]> => {
 									custom_css: [
 										options.custom_css ?? []
 									].flat(),
+									custom_js: [options.custom_js ?? []].flat(),
 									locations: parseLocations(options.locations)
 								});
 							}

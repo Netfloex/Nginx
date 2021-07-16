@@ -58,17 +58,17 @@ class Log {
 	// CSS
 
 	public downloadCSS(url: string) {
-		this.info(chalk`{yellow Downloading CSS file...} {gray ${url}}`);
+		this.info(chalk`{yellow Downloading {bold CSS} file...} {gray ${url}}`);
 	}
 
 	public cachedCSS(url: string) {
 		this.done(
-			chalk`{blue CSS file is already downloaded, skipping:} {gray ${url}}`
+			chalk`{blue {bold CSS} file is already downloaded, skipping:} {gray ${url}}`
 		);
 	}
 
 	public CSSDownloaded(url: string) {
-		this.done(chalk`{blue Downloaded CSS file} {gray ${url}}`);
+		this.done(chalk`{blue Downloaded {bold CSS} file} {gray ${url}}`);
 	}
 
 	public CSSError(url: string, error: string) {
@@ -83,6 +83,22 @@ class Log {
 			chalk`{red There was an error writing to} {gray ${filename}}`
 		);
 		this.error(chalk`{red The error: }`, error?.message ?? error);
+	}
+
+	// JS
+
+	public downloadJS(url: string) {
+		this.info(chalk`{yellow Downloading {bold JS} file...} {gray ${url}}`);
+	}
+
+	public cachedJS(url: string) {
+		this.done(
+			chalk`{blue {bold JS} file is already downloaded, skipping:} {gray ${url}}`
+		);
+	}
+
+	public JSDownloaded(url: string) {
+		this.done(chalk`{blue Downloaded {bold JS} file} {gray ${url}}`);
 	}
 }
 

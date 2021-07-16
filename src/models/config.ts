@@ -11,6 +11,7 @@ export type Server = {
 	websocket?: boolean;
 	subdomains?: Record<string, Subdomain | ProxyPass>;
 	custom_css?: string[] | string;
+	custom_js?: string[] | string;
 	locations?: Locations;
 };
 

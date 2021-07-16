@@ -4,6 +4,7 @@ import SimpleServer, { Location } from "../models/SimpleServer";
 import baseConf from "./baseConf";
 import createHash from "./createHash";
 import downloadCSSToFile from "./downloadCSSToFile";
+import downloadJSToFile from "./downloadJSToFile";
 import env from "./env";
 
 const parser = new ConfigParser();
@@ -52,6 +53,23 @@ const createLocation = async (
 		};
 
 		await downloadCSSToFile(location.custom_css);
+	}
+
+	// Custom JS
+	if (location.custom_js.length) {
+		const fileNames = location.custom_js.map((g) => createHash(g));
+
+		JsonConf.server[locString].sub_filter = `'</body>' '${fileNames
+			.map(
+				(hash) => `<script src="/custom_assets/js/${hash}.js"></script>`
+			)
+			.join("")}</body>'`;
+
+		JsonConf.server["location /custom_assets"] = {
+			alias: env.customFilesPath
+		};
+
+		await downloadJSToFile(location.custom_js);
 	}
 };
 
