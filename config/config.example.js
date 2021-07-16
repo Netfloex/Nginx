@@ -15,13 +15,22 @@ module.exports = {
 				// Shortened example, no extra configuration
 				api: "http://api:3000", // api.example.com
 
-				// Custom css example
+				// Custom CSS example
 				adguard: {
 					// adguard.example.com
 					proxy_pass: "http://adguard:80",
 					// This file gets downloaded and compressed, its then appended to the <head>
 					custom_css:
 						"https://theme-park.dev/CSS/themes/adguard/organizr-dark.css"
+				},
+
+				// Custom JS example
+				custom: {
+					// custom.example.com
+					proxy_pass: "http://custom:80",
+					// This file gets downloaded, its then appended to the <body>
+					custom_js:
+						"https://example.com/custom-javascript-injected.js"
 				},
 
 				//  Advanced example: Enables darkmode on vaultwarden and enables a websocket on a different location

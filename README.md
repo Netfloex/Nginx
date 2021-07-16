@@ -10,6 +10,7 @@ There is one configuration file `config/config.js`, [example config](config/conf
 
 -   Proxy Pass
 -   Custom CSS
+-   Custom JS
 -   Location Blocks
 
 ### Simpler Configs
@@ -63,6 +64,19 @@ The compressed CSS is then appended to the end of the `<head>` by using nginx's 
 }
 ```
 
+### Custom JS
+
+This allows to use a custom JS file.
+It should be a url to a JS file.
+This file is downloaded, its then stored inside `/app/custom/js`.
+The compressed CSS is then appended to the end of the `<body>` by using nginx's `sub_filter`.
+
+```json
+{
+	"custom_js": "http://example.com/script.js"
+}
+```
+
 ### Location Blocks
 
 ```json
@@ -93,7 +107,3 @@ or
 See the [docker-compose.example.yml](docker-compose.example.yml)
 You will need to edit the `CERBOT_EMAIL`.
 Then you can edit `config/config.js`, the example config can be found [here](config/config.js).
-
-```
-
-```
