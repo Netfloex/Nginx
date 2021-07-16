@@ -39,6 +39,7 @@ const parseConfig = async (): Promise<SimpleServer[]> => {
 
 		return [];
 	} else {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const config: Config = require(configPath);
 		const servers: SimpleServer[] = [];
 

@@ -30,7 +30,6 @@ declare module "@webantic/nginx-config-parser" {
 		alias?: string;
 	}
 	class Parser {
-		constructor() {}
 		public toJSON: (conf: string) => NginxConfig;
 		public toConf: (json: NginxConfig) => string;
 	}

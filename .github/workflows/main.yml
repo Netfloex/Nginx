@@ -23,6 +23,8 @@ jobs:
               run: yarn install
             - name: Test Typescript
               run: yarn test
+            - name: Test ESLint
+              run: yarn lint
 
     docker:
         runs-on: ubuntu-latest

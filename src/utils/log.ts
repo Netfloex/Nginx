@@ -78,6 +78,7 @@ class Log {
 		this.error(chalk`{red The error: } ${error}`);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public CSSWriteError(filename: string, error: any) {
 		this.error(
 			chalk`{red There was an error writing to} {gray ${filename}}`
