@@ -5,7 +5,7 @@ import env from "./utils/env";
 import log from "./utils/log";
 import parseConfig from "./utils/parseConfig";
 
-const main = async () => {
+const main = async (): Promise<void> => {
 	if (await pathExists(env.nginxConfigPath)) {
 		log.rmOld(env.nginxConfigPath);
 		await fs.emptyDir(env.nginxConfigPath);
