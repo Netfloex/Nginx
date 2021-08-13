@@ -11,4 +11,5 @@ const baseConf = async (): Promise<NginxConfig> => {
 
 	return parser.toJSON(NginxConfig);
 };
+
 export default baseConf;

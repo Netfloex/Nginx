@@ -1,8 +1,10 @@
 import { pathExists } from "fs-extra";
 import { join } from "path";
-import Config, { Locations } from "../models/config";
-import SimpleServer, { Location } from "../models/SimpleServer";
-import log from "./log";
+
+import log from "@utils/log";
+
+import SimpleServer, { Location } from "@models/SimpleServer";
+import Config, { Locations } from "@models/config";
 
 const configPath = join(__dirname, "../../config/config.js");
 

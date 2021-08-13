@@ -1,9 +1,10 @@
 import axios from "axios";
 import { createWriteStream, ensureFile, pathExists } from "fs-extra";
 import { join } from "path";
-import createHash from "./createHash";
-import env from "./env";
-import log from "./log";
+
+import createHash from "@utils/createHash";
+import env from "@utils/env";
+import log from "@utils/log";
 
 const downloadJSToFile = async (custom_js: string[]): Promise<void> => {
 	await Promise.all(

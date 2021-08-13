@@ -1,9 +1,10 @@
 import { outputFile, pathExists } from "fs-extra";
 import { join } from "path";
-import createHash from "./createHash";
-import downloadCSS from "./downloadCSS";
-import env from "./env";
-import log from "./log";
+
+import createHash from "@utils/createHash";
+import downloadCSS from "@utils/downloadCSS";
+import env from "@utils/env";
+import log from "@utils/log";
 
 const downloadCSSToFile = async (custom_css: string[]): Promise<void> => {
 	await Promise.all(

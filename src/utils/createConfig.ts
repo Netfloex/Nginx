@@ -1,11 +1,13 @@
 import ConfigParser, { NginxConfig } from "@webantic/nginx-config-parser";
 import { join } from "path";
-import SimpleServer, { Location } from "../models/SimpleServer";
-import baseConf from "./baseConf";
-import createHash from "./createHash";
-import downloadCSSToFile from "./downloadCSSToFile";
-import downloadJSToFile from "./downloadJSToFile";
-import env from "./env";
+
+import baseConf from "@utils/baseConf";
+import createHash from "@utils/createHash";
+import downloadCSSToFile from "@utils/downloadCSSToFile";
+import downloadJSToFile from "@utils/downloadJSToFile";
+import env from "@utils/env";
+
+import SimpleServer, { Location } from "@models/SimpleServer";
 
 const parser = new ConfigParser();
 

@@ -1,9 +1,10 @@
 import fs, { pathExists } from "fs-extra";
 import { join } from "path";
-import createConfig from "./utils/createConfig";
-import env from "./utils/env";
-import log from "./utils/log";
-import parseConfig from "./utils/parseConfig";
+
+import createConfig from "@utils/createConfig";
+import env from "@utils/env";
+import log from "@utils/log";
+import parseConfig from "@utils/parseConfig";
 
 const main = async (): Promise<void> => {
 	if (await pathExists(env.nginxConfigPath)) {

@@ -1,11 +1,13 @@
 import CleanCSS from "clean-css";
-import createHash from "./createHash";
+
+import createHash from "@utils/createHash";
 
 type Output = {
 	errors?: string[];
 	styles: string;
 	hash: string;
 };
+
 const downloadCSS = async (url: string): Promise<Output> => {
 	const css = `@import url(${url});`;
 	return await new CleanCSS({

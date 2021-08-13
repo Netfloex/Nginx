@@ -1,19 +1,23 @@
 {
 	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			// "@webantic/nginx-config-parser": [
+			// 	"src/models/nginx-config-parser.d.ts"
+			// ],
+			"@models/*": ["src/models/*"],
+			"@utils/*": ["src/utils/*"]
+		},
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"incremental": true,
+		"lib": ["ES2019.Array"],
 		"module": "commonjs",
 		"outDir": "dist",
+		"plugins": [{ "transform": "@zerollup/ts-transform-paths" }],
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"strict": true,
-		"target": "es5",
-		"lib": ["ES2019.Array"],
-		"paths": {
-			"@webantic/nginx-config-parser": [
-				"./src/models/nginx-config-parser"
-			]
-		}
+		"target": "es5"
 	}
 }
