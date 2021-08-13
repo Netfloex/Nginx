@@ -16,25 +16,20 @@ const createLocation = async (
 	location: Location
 ): Promise<void> => {
 	const locString = `location ${location.location}`;
+	const block = JsonConf.server[locString] ?? {};
 
-	if (!JsonConf.server[locString]) {
-		JsonConf.server[locString] = {};
-	}
+	console.log(block);
 
 	// Proxy Pass
-	JsonConf.server[locString].proxy_pass = location.proxy_pass;
+	block.proxy_pass = location.proxy_pass;
 
 	// Websockets
 	if (location.websocket) {
-		const block =
-			location.location == "/"
-				? JsonConf.server
-				: JsonConf.server[locString];
-
-		block.proxy_set_header = [
+		block.proxy_set_header ??= [];
+		block.proxy_set_header.push(
 			"Upgrade $http_upgrade",
 			"Connection $http_connection"
-		];
+		);
 
 		block.proxy_http_version = 1.1;
 	}
@@ -43,7 +38,7 @@ const createLocation = async (
 	if (location.custom_css.length) {
 		const fileNames = location.custom_css.map((g) => createHash(g));
 
-		JsonConf.server[locString].sub_filter = `'</head>' '${fileNames
+		block.sub_filter = `'</head>' '${fileNames
 			.map(
 				(hash) =>
 					`<link rel="stylesheet" type="text/css" href="/custom_assets/css/${hash}.css">`
@@ -61,7 +56,7 @@ const createLocation = async (
 	if (location.custom_js.length) {
 		const fileNames = location.custom_js.map((g) => createHash(g));
 
-		JsonConf.server[locString].sub_filter = `'</body>' '${fileNames
+		block.sub_filter = `'</body>' '${fileNames
 			.map(
 				(hash) => `<script src="/custom_assets/js/${hash}.js"></script>`
 			)
@@ -73,6 +68,7 @@ const createLocation = async (
 
 		await downloadJSToFile(location.custom_js);
 	}
+	JsonConf.server[locString] = block;
 };
 
 const createConfig = async (server: SimpleServer): Promise<string> => {
