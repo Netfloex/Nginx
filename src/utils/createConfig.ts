@@ -7,7 +7,7 @@ import downloadCSSToFile from "@utils/downloadCSSToFile";
 import downloadJSToFile from "@utils/downloadJSToFile";
 import env from "@utils/env";
 
-import SimpleServer, { Location } from "@models/SimpleServer";
+import { Location, SimpleServer } from "@models/ParsedConfig";
 
 const parser = new ConfigParser();
 

@@ -39,8 +39,10 @@ const serverSchema = subdomainSchema
 
 export const configSchema = z
 	.object({
-		servers: z.optional(z.record(serverSchema))
+		servers: z.record(serverSchema),
+		cloudflare: z.boolean()
 	})
+	.partial()
 	.strict();
 
 const validateConfig = (config: Config): Config | null => {

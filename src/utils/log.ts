@@ -29,8 +29,8 @@ class Log {
 		this.info(chalk`{green Started}`);
 	}
 
-	public finished() {
-		this.done(chalk`{green Done}`);
+	public finished(started: number) {
+		this.done(chalk`{green Done in ${(Date.now() - started) / 1000}s}`);
 	}
 
 	public exited() {
@@ -41,12 +41,15 @@ class Log {
 
 	public rmOld(path: string) {
 		this.info(
-			chalk`{yellow Removing old generated configs...} {gray ${path}}`
+			chalk`{yellow Removing old generated configs...} {dim ${path}}`
 		);
 	}
 
 	public noOld(path: string) {
-		this.info(chalk`{magenta Nginx Config Path not found} {gray ${path}}`);
+		this.error(chalk`{red Nginx Config Path not found:} {dim ${path}}`);
+		this.info(
+			chalk`You can set the {dim NGINX_CONFIG_PATH} env variable to customize this location.`
+		);
 	}
 
 	// Nginx Config
@@ -58,7 +61,7 @@ class Log {
 	// User Config
 
 	public configNotFound(path: string) {
-		this.error(chalk`{red The config file was not found} {gray ${path}}`);
+		this.error(chalk`{red The config file was not found} {dim ${path}}`);
 	}
 
 	public configIssue(issue: ZodIssue) {
@@ -76,22 +79,22 @@ class Log {
 	// CSS
 
 	public downloadCSS(url: string) {
-		this.info(chalk`{yellow Downloading {bold CSS} file...} {gray ${url}}`);
+		this.info(chalk`{yellow Downloading {bold CSS} file...} {dim ${url}}`);
 	}
 
 	public cachedCSS(url: string) {
 		this.done(
-			chalk`{blue {bold CSS} file is already downloaded, skipping:} {gray ${url}}`
+			chalk`{blue {bold CSS} file is already downloaded, skipping:} {dim ${url}}`
 		);
 	}
 
 	public CSSDownloaded(url: string) {
-		this.done(chalk`{blue Downloaded {bold CSS} file} {gray ${url}}`);
+		this.done(chalk`{blue Downloaded {bold CSS} file} {dim ${url}}`);
 	}
 
 	public CSSError(url: string, error: string) {
 		this.error(
-			chalk`{red There was an error downloading/compressing the url:} {gray ${url}}`
+			chalk`{red There was an error downloading/compressing the url:} {dim ${url}}`
 		);
 		this.error(chalk`{red The error: } ${error}`);
 	}
@@ -99,7 +102,7 @@ class Log {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public CSSWriteError(filename: string, error: any) {
 		this.error(
-			chalk`{red There was an error writing to} {gray ${filename}}`
+			chalk`{red There was an error writing to} {dim ${filename}}`
 		);
 		this.error(chalk`{red The error: }`, error?.message ?? error);
 	}
@@ -107,17 +110,27 @@ class Log {
 	// JS
 
 	public downloadJS(url: string) {
-		this.info(chalk`{yellow Downloading {bold JS} file...} {gray ${url}}`);
+		this.info(chalk`{yellow Downloading {bold JS} file...} {dim ${url}}`);
 	}
 
 	public cachedJS(url: string) {
 		this.done(
-			chalk`{blue {bold JS} file is already downloaded, skipping:} {gray ${url}}`
+			chalk`{blue {bold JS} file is already downloaded, skipping:} {dim ${url}}`
 		);
 	}
 
 	public JSDownloaded(url: string) {
-		this.done(chalk`{blue Downloaded {bold JS} file} {gray ${url}}`);
+		this.done(chalk`{blue Downloaded {bold JS} file} {dim ${url}}`);
+	}
+
+	// Cloudflare
+
+	public updatingCloudflare() {
+		this.info(chalk`{yellow Updating Cloudflare ips...}`);
+	}
+
+	public cloudflareUpdated() {
+		this.done(chalk`Updated Cloudflare ips`);
 	}
 }
 

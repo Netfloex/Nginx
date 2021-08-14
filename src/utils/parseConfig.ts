@@ -1,4 +1,4 @@
-import SimpleServer, { Location } from "@models/SimpleServer";
+import ParsedConfig, { Location, SimpleServer } from "@models/ParsedConfig";
 import Config, { Locations } from "@models/config";
 
 const parseLocations = (unparsedLocation?: Locations): Location[] => {
@@ -28,7 +28,7 @@ const parseLocations = (unparsedLocation?: Locations): Location[] => {
 	return locations;
 };
 
-const parseConfig = async (config: Config): Promise<SimpleServer[]> => {
+const parseConfig = async (config: Config): Promise<ParsedConfig> => {
 	const servers: SimpleServer[] = [];
 
 	Object.entries(config.servers ?? {}).forEach(([domain, options]) => {
@@ -81,7 +81,7 @@ const parseConfig = async (config: Config): Promise<SimpleServer[]> => {
 			}
 		}
 	});
-	return servers;
+	return { ...config, servers };
 };
 
 export default parseConfig;

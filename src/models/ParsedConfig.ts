@@ -5,7 +5,7 @@ export type Location = Omit<
 	location: string;
 };
 
-type SimpleServer = {
+export type SimpleServer = {
 	proxy_pass?: string;
 	server_name: string;
 	filename: string;
@@ -16,4 +16,9 @@ type SimpleServer = {
 	locations: Location[];
 };
 
-export default SimpleServer;
+type ParsedConfig = {
+	servers: SimpleServer[];
+	cloudflare?: boolean;
+};
+
+export default ParsedConfig;

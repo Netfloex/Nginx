@@ -1,7 +1,8 @@
-import fs, { pathExists } from "fs-extra";
+import { pathExists, outputFile, emptyDir, readdir, remove } from "fs-extra";
 import { join } from "path";
 
 import createConfig from "@utils/createConfig";
+import updateCloudflareConfig from "@utils/enableCloudflare";
 import env from "@utils/env";
 import log from "@utils/log";
 import parseConfig from "@utils/parseConfig";
@@ -10,6 +11,9 @@ import validateConfig from "@utils/validateConfig";
 const configPath = join(process.cwd(), "config", "config.js");
 
 const main = async (): Promise<void> => {
+	const started = Date.now();
+	log.started();
+
 	if (!(await pathExists(configPath))) {
 		return log.configNotFound(configPath);
 	}
@@ -24,27 +28,43 @@ const main = async (): Promise<void> => {
 
 	const config = await parseConfig(validatedConfig);
 
-	if (await pathExists(env.nginxConfigPath)) {
-		log.rmOld(env.nginxConfigPath);
-		await fs.emptyDir(env.nginxConfigPath);
-	} else {
+	if (!(await pathExists(env.nginxConfigPath))) {
 		log.noOld(env.nginxConfigPath);
+		return log.exited();
 	}
 
+	log.rmOld(env.nginxConfigPath);
+
+	// All Files starting with a digit
+	const files = (await readdir(env.nginxConfigPath)).filter((g) =>
+		g.match(/^\d/)
+	);
+
+	// Delete em
 	await Promise.all(
-		config.map(async (server, i) => {
+		files.map((file) => remove(join(env.nginxConfigPath, file)))
+	);
+	const promises = [];
+
+	promises.push(
+		...config.servers.map(async (server, i) => {
 			const fileName =
 				join(env.nginxConfigPath, `${i}-${server.filename}`) + ".conf";
-			await fs.outputFile(fileName, await createConfig(server));
+			await outputFile(fileName, await createConfig(server));
 
 			log.configDone(server.server_name);
 		})
 	);
 
-	log.finished();
+	if (config.cloudflare) {
+		promises.push(updateCloudflareConfig());
+	}
+
+	await Promise.all(promises);
+
+	log.finished(started);
 };
 
-log.started();
 main().catch((error) => {
 	console.error(error);
 });
