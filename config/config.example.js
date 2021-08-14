@@ -3,6 +3,7 @@
  * @type {import('../src/models/config').default}
  **/
 module.exports = {
+	cloudflare: true, // Restore original visitor ips
 	servers: {
 		"example.com": {
 			proxy_pass: "http://base_domain:80", // example.com
