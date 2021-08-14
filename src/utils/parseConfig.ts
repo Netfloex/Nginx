@@ -1,12 +1,5 @@
-import { pathExists } from "fs-extra";
-import { join } from "path";
-
-import log from "@utils/log";
-
 import SimpleServer, { Location } from "@models/SimpleServer";
 import Config, { Locations } from "@models/config";
-
-const configPath = join(__dirname, "../../config/config.js");
 
 const parseLocations = (unparsedLocation?: Locations): Location[] => {
 	const locations: Location[] = [];
@@ -35,70 +28,60 @@ const parseLocations = (unparsedLocation?: Locations): Location[] => {
 	return locations;
 };
 
-const parseConfig = async (): Promise<SimpleServer[]> => {
-	if (!(await pathExists(configPath))) {
-		log.configNotFound(configPath);
+const parseConfig = async (config: Config): Promise<SimpleServer[]> => {
+	const servers: SimpleServer[] = [];
 
-		return [];
-	} else {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const config: Config = require(configPath);
-		const servers: SimpleServer[] = [];
-
-		Object.entries(config.servers ?? {}).forEach(([domain, options]) => {
-			if (typeof options == "string") {
-				servers.push({
-					server_name: domain,
-					proxy_pass: options,
-					filename: domain,
-					websocket: false,
-					custom_css: [],
-					custom_js: [],
-					locations: []
-				});
-			} else {
-				servers.push({
-					server_name: domain,
-					proxy_pass: options.proxy_pass,
-					filename: domain,
-					websocket: options.websocket ?? false,
-					custom_css: [options.custom_css ?? []].flat(),
-					custom_js: [options.custom_js ?? []].flat(),
-					locations: parseLocations(options.locations)
-				});
-				if (options.subdomains) {
-					Object.entries(options.subdomains).forEach(
-						([subdomain, options]) => {
-							if (typeof options == "string") {
-								servers.push({
-									server_name: subdomain + "." + domain,
-									proxy_pass: options,
-									filename: subdomain,
-									websocket: false,
-									custom_js: [],
-									custom_css: [],
-									locations: []
-								});
-							} else if (options.proxy_pass) {
-								servers.push({
-									server_name: subdomain + "." + domain,
-									proxy_pass: options.proxy_pass,
-									filename: subdomain,
-									websocket: options.websocket ?? false,
-									custom_css: [
-										options.custom_css ?? []
-									].flat(),
-									custom_js: [options.custom_js ?? []].flat(),
-									locations: parseLocations(options.locations)
-								});
-							}
+	Object.entries(config.servers ?? {}).forEach(([domain, options]) => {
+		if (typeof options == "string") {
+			servers.push({
+				server_name: domain,
+				proxy_pass: options,
+				filename: domain,
+				websocket: false,
+				custom_css: [],
+				custom_js: [],
+				locations: []
+			});
+		} else {
+			servers.push({
+				server_name: domain,
+				proxy_pass: options.proxy_pass,
+				filename: domain,
+				websocket: options.websocket ?? false,
+				custom_css: [options.custom_css ?? []].flat(),
+				custom_js: [options.custom_js ?? []].flat(),
+				locations: parseLocations(options.locations)
+			});
+			if (options.subdomains) {
+				Object.entries(options.subdomains).forEach(
+					([subdomain, options]) => {
+						if (typeof options == "string") {
+							servers.push({
+								server_name: subdomain + "." + domain,
+								proxy_pass: options,
+								filename: subdomain,
+								websocket: false,
+								custom_js: [],
+								custom_css: [],
+								locations: []
+							});
+						} else if (options.proxy_pass) {
+							servers.push({
+								server_name: subdomain + "." + domain,
+								proxy_pass: options.proxy_pass,
+								filename: subdomain,
+								websocket: options.websocket ?? false,
+								custom_css: [options.custom_css ?? []].flat(),
+								custom_js: [options.custom_js ?? []].flat(),
+								locations: parseLocations(options.locations)
+							});
 						}
-					);
-				}
+					}
+				);
 			}
-		});
-		return servers;
-	}
+		}
+	});
+	return servers;
 };
 
 export default parseConfig;

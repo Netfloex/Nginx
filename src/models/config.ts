@@ -1,21 +1,8 @@
-type ProxyPass = string;
+import { z } from "zod";
 
-type Subdomain = Omit<Server, "subdomains">;
+import { configSchema, locationsSchema } from "@utils/validateConfig";
 
-type Location = Omit<Subdomain, "location">;
+export type Locations = z.infer<typeof locationsSchema>;
+type Config = z.infer<typeof configSchema>;
 
-export type Locations = Record<string, Location | ProxyPass>;
-
-export type Server = {
-	proxy_pass?: ProxyPass;
-	websocket?: boolean;
-	subdomains?: Record<string, Subdomain | ProxyPass>;
-	custom_css?: string[] | string;
-	custom_js?: string[] | string;
-	locations?: Locations;
-};
-
-type Config = {
-	servers?: Record<string, Server | ProxyPass>;
-};
 export default Config;

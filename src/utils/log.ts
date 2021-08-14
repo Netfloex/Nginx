@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import chalk from "chalk";
+import { ZodIssue } from "zod";
 
 class Log {
 	private log;
@@ -32,6 +33,10 @@ class Log {
 		this.done(chalk`{green Done}`);
 	}
 
+	public exited() {
+		this.error(chalk`{red Exited}`);
+	}
+
 	// Old configurations
 
 	public rmOld(path: string) {
@@ -54,6 +59,18 @@ class Log {
 
 	public configNotFound(path: string) {
 		this.error(chalk`{red The config file was not found} {gray ${path}}`);
+	}
+
+	public configIssue(issue: ZodIssue) {
+		this.error(
+			chalk`{magenta Invalid Config} path: {dim ${
+				issue.path.join(".") || "config"
+			}} ${issue.message}`
+		);
+	}
+
+	public configValid() {
+		this.info(chalk`Config is valid`);
 	}
 
 	// CSS

@@ -5,16 +5,31 @@ import createConfig from "@utils/createConfig";
 import env from "@utils/env";
 import log from "@utils/log";
 import parseConfig from "@utils/parseConfig";
+import validateConfig from "@utils/validateConfig";
+
+const configPath = join(process.cwd(), "config", "config.js");
 
 const main = async (): Promise<void> => {
+	if (!(await pathExists(configPath))) {
+		return log.configNotFound(configPath);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const rawConfig = require(configPath);
+	const validatedConfig = validateConfig(rawConfig);
+
+	if (validatedConfig == null) {
+		return log.exited();
+	}
+
+	const config = await parseConfig(validatedConfig);
+
 	if (await pathExists(env.nginxConfigPath)) {
 		log.rmOld(env.nginxConfigPath);
 		await fs.emptyDir(env.nginxConfigPath);
 	} else {
 		log.noOld(env.nginxConfigPath);
 	}
-
-	const config = await parseConfig();
 
 	await Promise.all(
 		config.map(async (server, i) => {
@@ -25,13 +40,11 @@ const main = async (): Promise<void> => {
 			log.configDone(server.server_name);
 		})
 	);
+
+	log.finished();
 };
 
 log.started();
-main()
-	.then(() => {
-		log.finished();
-	})
-	.catch((error) => {
-		console.error(error);
-	});
+main().catch((error) => {
+	console.error(error);
+});

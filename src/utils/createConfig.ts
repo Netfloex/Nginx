@@ -18,8 +18,6 @@ const createLocation = async (
 	const locString = `location ${location.location}`;
 	const block = JsonConf.server[locString] ?? {};
 
-	console.log(block);
-
 	// Proxy Pass
 	block.proxy_pass = location.proxy_pass;
 
