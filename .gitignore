@@ -5,4 +5,4 @@ logs
 docker-compose.yml
 config.js
 dist
-files
+data

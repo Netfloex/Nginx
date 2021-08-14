@@ -2,11 +2,9 @@
 	"compilerOptions": {
 		"baseUrl": ".",
 		"paths": {
-			// "@webantic/nginx-config-parser": [
-			// 	"src/models/nginx-config-parser.d.ts"
-			// ],
 			"@models/*": ["src/models/*"],
-			"@utils/*": ["src/utils/*"]
+			"@utils/*": ["src/utils/*"],
+			"@lib/*": ["src/lib/*"]
 		},
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,

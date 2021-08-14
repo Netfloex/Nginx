@@ -1,12 +1,12 @@
-import { pathExists, outputFile, emptyDir, readdir, remove } from "fs-extra";
+import { pathExists, outputFile, readdir, remove } from "fs-extra";
 import { join } from "path";
 
-import createConfig from "@utils/createConfig";
+import createConfig from "@lib/createConfig";
+import parseConfig from "@lib/parseConfig";
+import validateConfig from "@lib/validateConfig";
 import updateCloudflareConfig from "@utils/enableCloudflare";
 import env from "@utils/env";
 import log from "@utils/log";
-import parseConfig from "@utils/parseConfig";
-import validateConfig from "@utils/validateConfig";
 
 const configPath = join(process.cwd(), "config", "config.js");
 

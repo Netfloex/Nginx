@@ -1,4 +1,4 @@
-version: "3"
+version: "3.3"
 
 services:
     nginx:
@@ -19,8 +19,7 @@ services:
 
             # - ./logs:/var/log/nginx
             # - ./nginx_config_files:/etc/nginx/user_conf.d
-
-            - ./custom:/app/custom # Not needed when not using any custom files, this is used as a cache.
+            - ./data:/app/data # Not needed when not using custom files or cloudflare, this is used as a cache.
 
             # Required
 
