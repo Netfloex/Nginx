@@ -16,13 +16,15 @@ declare module "@webantic/nginx-config-parser" {
 		ssl_certificate?: string;
 		ssl_certificate_key?: string;
 		ssl_trusted_certificate?: string;
-		ssl_dhparam: string;
+		ssl_dhparam?: string;
 	}
 
 	interface Location {
 		proxy_set_header?: string[];
 		proxy_http_version?: number;
+
 		proxy_pass?: string;
+		return?: string;
 
 		sub_filter?: string;
 		sub_filter_once?: string;

@@ -18,7 +18,9 @@ const locationSchema = z
 		proxy_pass: urlSchema,
 		websocket: z.boolean(),
 		custom_css: z.array(urlSchema).or(urlSchema),
-		custom_js: z.array(urlSchema).or(urlSchema)
+		custom_js: z.array(urlSchema).or(urlSchema),
+		return: z.string().or(z.number()),
+		nossl: z.boolean()
 	})
 	.partial()
 	.strict();

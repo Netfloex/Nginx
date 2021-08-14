@@ -13,7 +13,8 @@ const parseLocations = (unparsedLocation?: Locations): Location[] => {
 				custom_css: [],
 				custom_js: [],
 				websocket: false,
-				proxy_pass: options
+				proxy_pass: options,
+				nossl: false
 			});
 		} else {
 			locations.push({
@@ -21,7 +22,9 @@ const parseLocations = (unparsedLocation?: Locations): Location[] => {
 				custom_css: [options.custom_css ?? []].flat(),
 				custom_js: [options.custom_js ?? []].flat(),
 				websocket: options.websocket ?? false,
-				proxy_pass: options.proxy_pass
+				proxy_pass: options.proxy_pass,
+				return: options.return?.toString(),
+				nossl: options.nossl ?? false
 			});
 		}
 	});
@@ -40,7 +43,8 @@ const parseConfig = async (config: Config): Promise<ParsedConfig> => {
 				websocket: false,
 				custom_css: [],
 				custom_js: [],
-				locations: []
+				locations: [],
+				nossl: false
 			});
 		} else {
 			servers.push({
@@ -50,7 +54,9 @@ const parseConfig = async (config: Config): Promise<ParsedConfig> => {
 				websocket: options.websocket ?? false,
 				custom_css: [options.custom_css ?? []].flat(),
 				custom_js: [options.custom_js ?? []].flat(),
-				locations: parseLocations(options.locations)
+				locations: parseLocations(options.locations),
+				return: options.return?.toString(),
+				nossl: options.nossl ?? false
 			});
 			if (options.subdomains) {
 				Object.entries(options.subdomains).forEach(
@@ -63,7 +69,8 @@ const parseConfig = async (config: Config): Promise<ParsedConfig> => {
 								websocket: false,
 								custom_js: [],
 								custom_css: [],
-								locations: []
+								locations: [],
+								nossl: false
 							});
 						} else if (options.proxy_pass) {
 							servers.push({
@@ -73,7 +80,9 @@ const parseConfig = async (config: Config): Promise<ParsedConfig> => {
 								websocket: options.websocket ?? false,
 								custom_css: [options.custom_css ?? []].flat(),
 								custom_js: [options.custom_js ?? []].flat(),
-								locations: parseLocations(options.locations)
+								locations: parseLocations(options.locations),
+								return: options.return?.toString(),
+								nossl: options.nossl ?? false
 							});
 						}
 					}

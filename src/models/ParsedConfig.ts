@@ -12,6 +12,8 @@ export type SimpleServer = {
 	websocket: boolean;
 	custom_css: string[];
 	custom_js: string[];
+	return?: string;
+	nossl: boolean;
 
 	locations: Location[];
 };

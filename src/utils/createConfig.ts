@@ -19,7 +19,10 @@ const createLocation = async (
 	const block = JsonConf.server[locString] ?? {};
 
 	// Proxy Pass
-	block.proxy_pass = location.proxy_pass;
+	if (location.proxy_pass) block.proxy_pass = location.proxy_pass;
+
+	// Return
+	if (location.return) block.return = location.return;
 
 	// Websockets
 	if (location.websocket) {
@@ -76,10 +79,19 @@ const createConfig = async (server: SimpleServer): Promise<string> => {
 	JsonConf.server.server_name = server.server_name;
 
 	// SSL Certificate files
-	const sslKeysPath = join("/etc/letsencrypt/live", server.server_name, "/");
-	JsonConf.server.ssl_certificate = sslKeysPath + "fullchain.pem";
-	JsonConf.server.ssl_certificate_key = sslKeysPath + "privkey.pem";
-	JsonConf.server.ssl_trusted_certificate = sslKeysPath + "chain.pem";
+	if (!server.nossl) {
+		const sslKeysPath = join(
+			"/etc/letsencrypt/live",
+			server.server_name,
+			"/"
+		);
+		JsonConf.server.ssl_certificate = sslKeysPath + "fullchain.pem";
+		JsonConf.server.ssl_certificate_key = sslKeysPath + "privkey.pem";
+		JsonConf.server.ssl_trusted_certificate = sslKeysPath + "chain.pem";
+		JsonConf.server.ssl_dhparam = "/etc/letsencrypt/dhparams/dhparam.pem";
+	} else {
+		JsonConf.server.listen = ["80", "[::]:80"];
+	}
 
 	// Mutate JsonConf
 	await createLocation(JsonConf, { ...server, location: "/" });
