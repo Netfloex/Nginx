@@ -1,14 +1,14 @@
-export type Location = Omit<
-	SimpleServer,
-	"server_name" | "filename" | "locations"
-> & {
+export type Location = Omit<ValidatedServer, "locations"> & {
 	location: string;
 };
 
-export type SimpleServer = {
-	proxy_pass?: string;
+export type SimpleServer = ValidatedServer & {
 	server_name: string;
 	filename: string;
+};
+
+export type ValidatedServer = {
+	proxy_pass?: string;
 	websocket: boolean;
 	custom_css: string[];
 	custom_js: string[];

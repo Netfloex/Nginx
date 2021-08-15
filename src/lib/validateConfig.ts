@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import log from "@utils/log";
 
+import { ValidatedServer } from "@models/ParsedConfig";
 import Config from "@models/config";
 
 const urlSchema = z
@@ -13,19 +14,36 @@ const urlSchema = z
 	})
 	.transform((url) => new URL(url).href);
 
-const locationSchema = z
+const proxyPassSchema = urlSchema.transform(
+	(proxy_pass): ValidatedServer => ({
+		proxy_pass,
+		websocket: false,
+		custom_css: [],
+		custom_js: [],
+		locations: [],
+		nossl: false
+	})
+);
+
+const urlsOrUrlSchema = urlSchema
+	.array()
+	.or(urlSchema)
+	.default([])
+	.transform((data) => [data ?? []].flat());
+
+export const locationSchema = z
 	.object({
 		proxy_pass: urlSchema,
 		websocket: z.boolean(),
-		custom_css: z.array(urlSchema).or(urlSchema),
-		custom_js: z.array(urlSchema).or(urlSchema),
+		custom_css: urlsOrUrlSchema,
+		custom_js: urlsOrUrlSchema,
 		return: z.string().or(z.number()),
 		nossl: z.boolean()
 	})
 	.partial()
 	.strict();
 
-export const locationsSchema = z.record(z.union([locationSchema, urlSchema]));
+const locationsSchema = z.record(z.union([locationSchema, proxyPassSchema]));
 
 const subdomainSchema = locationSchema
 	.extend({
@@ -33,9 +51,9 @@ const subdomainSchema = locationSchema
 	})
 	.partial();
 
-const serverSchema = subdomainSchema
+export const serverSchema = subdomainSchema
 	.extend({
-		subdomains: z.record(z.union([subdomainSchema, urlSchema]))
+		subdomains: z.record(z.union([subdomainSchema, proxyPassSchema]))
 	})
 	.partial();
 
