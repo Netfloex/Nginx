@@ -5,10 +5,9 @@ import createConfig from "@lib/createConfig";
 import parseConfig from "@lib/parseConfig";
 import validateConfig from "@lib/validateConfig";
 import updateCloudflareConfig from "@utils/enableCloudflare";
-import env from "@utils/env";
+import { configPath, nginxConfigPath } from "@utils/env";
 import log from "@utils/log";
-
-const configPath = join(process.cwd(), "config", "config.js");
+import store from "@utils/useStore";
 
 const main = async (): Promise<void> => {
 	const started = Date.now();
@@ -28,28 +27,26 @@ const main = async (): Promise<void> => {
 
 	const config = await parseConfig(validatedConfig);
 
-	if (!(await pathExists(env.nginxConfigPath))) {
-		log.noOld(env.nginxConfigPath);
+	if (!(await pathExists(nginxConfigPath))) {
+		log.noOld();
 		return log.exited();
 	}
 
-	log.rmOld(env.nginxConfigPath);
+	log.rmOld();
 
 	// All Files starting with a digit
-	const files = (await readdir(env.nginxConfigPath)).filter((g) =>
+	const files = (await readdir(nginxConfigPath)).filter((g) =>
 		g.match(/^\d/)
 	);
 
 	// Delete em
-	await Promise.all(
-		files.map((file) => remove(join(env.nginxConfigPath, file)))
-	);
+	await Promise.all(files.map((file) => remove(join(nginxConfigPath, file))));
 	const promises = [];
 
 	promises.push(
 		...config.servers.map(async (server, i) => {
 			const fileName =
-				join(env.nginxConfigPath, `${i}-${server.filename}`) + ".conf";
+				join(nginxConfigPath, `${i}-${server.filename}`) + ".conf";
 			await outputFile(fileName, await createConfig(server));
 
 			log.configDone(server.server_name);
@@ -58,6 +55,7 @@ const main = async (): Promise<void> => {
 
 	if (config.cloudflare) {
 		promises.push(updateCloudflareConfig());
+		promises.push(store.init());
 	}
 
 	await Promise.all(promises);

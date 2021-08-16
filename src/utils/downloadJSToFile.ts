@@ -3,14 +3,14 @@ import { createWriteStream, ensureFile, pathExists } from "fs-extra";
 import { join } from "path";
 
 import createHash from "@utils/createHash";
-import env from "@utils/env";
+import { customFilesPath } from "@utils/env";
 import log from "@utils/log";
 
 const downloadJSToFile = async (custom_js: string[]): Promise<void> => {
 	await Promise.all(
 		custom_js.map(async (jsUrl) => {
 			const urlHash = createHash(jsUrl);
-			const fileName = join(env.customFilesPath, "js", urlHash + ".js");
+			const fileName = join(customFilesPath, "js", urlHash + ".js");
 
 			if (await pathExists(fileName)) {
 				log.cachedJS(jsUrl);

@@ -1,9 +1,10 @@
-import log from "./log";
 import axios from "axios";
-import { outputFile } from "fs-extra";
+import { outputFile, pathExists } from "fs-extra";
 import { join } from "path";
 
-import env from "@utils/env";
+import { cloudflareExpiry, nginxConfigPath } from "@utils/env";
+import log from "@utils/log";
+import store from "@utils/useStore";
 
 import { IpsResponse } from "@models/cloudflare-ips";
 
@@ -25,13 +26,37 @@ const requestCloudflareIps = async (): Promise<{
 
 const updateCloudflareConfig = async (): Promise<void> => {
 	log.updatingCloudflare();
-	const data = await requestCloudflareIps();
 
-	const realIpList =
-		data.ips.map((ip) => `set_real_ip_from ${ip};`).join("\n") +
-		"\n\nreal_ip_header CF-Connecting-IP;";
-	outputFile(join(env.nginxConfigPath, "cloudflare.conf"), realIpList);
-	log.cloudflareUpdated();
+	const cloudflareConfPath = join(nginxConfigPath, "cloudflare.conf");
+	const configExists = await pathExists(cloudflareConfPath);
+
+	if (Date.now() - (store.data.cloudflare.updated ?? 0) < cloudflareExpiry) {
+		if (configExists) {
+			return log.cloudflareCached();
+		}
+	} else if (store.data.cloudflare.updated) {
+		log.cloudflareExpired();
+	}
+	const started = Date.now();
+	const { ips, etag } = await requestCloudflareIps();
+	const took = Date.now() - started;
+
+	store.data.cloudflare.updated = Date.now();
+
+	if (configExists && store.data.cloudflare.etag == etag) {
+		log.cloudflareUnchanged(took);
+	} else {
+		store.data.cloudflare.etag = etag;
+
+		const realIpList =
+			ips.map((ip) => `set_real_ip_from ${ip};`).join("\n") +
+			"\n\nreal_ip_header CF-Connecting-IP;";
+
+		await outputFile(cloudflareConfPath, realIpList);
+		log.cloudflareUpdated(took);
+	}
+
+	store.write();
 };
 
 export default updateCloudflareConfig;

@@ -26,6 +26,11 @@ RUN apt-get update && \
 
 
 ENV NODE_ENV production
+
+ENV FORCE_COLOR 1
+ENV DATA_PATH /app/data
+ENV NGINX_CONFIG_PATH /etc/nginx/user_conf.d
+
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/nginx ./src/nginx
 COPY --from=builder /app/entrypoint.sh ./entrypoint.sh

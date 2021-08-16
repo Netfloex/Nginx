@@ -5,7 +5,7 @@ import baseConf from "@utils/baseConf";
 import createHash from "@utils/createHash";
 import downloadCSSToFile from "@utils/downloadCSSToFile";
 import downloadJSToFile from "@utils/downloadJSToFile";
-import env from "@utils/env";
+import { customFilesPath } from "@utils/env";
 
 import { Location, SimpleServer } from "@models/ParsedConfig";
 
@@ -47,7 +47,7 @@ const createLocation = async (
 			.join("")}</head>'`;
 
 		JsonConf.server["location /custom_assets"] = {
-			alias: env.customFilesPath
+			alias: customFilesPath
 		};
 
 		await downloadCSSToFile(location.custom_css);
@@ -64,7 +64,7 @@ const createLocation = async (
 			.join("")}</body>'`;
 
 		JsonConf.server["location /custom_assets"] = {
-			alias: env.customFilesPath
+			alias: customFilesPath
 		};
 
 		await downloadJSToFile(location.custom_js);

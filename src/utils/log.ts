@@ -2,6 +2,8 @@
 import chalk from "chalk";
 import { ZodIssue } from "zod";
 
+import { cloudflareExpiry, configPath, nginxConfigPath } from "@utils/env";
+
 class Log {
 	private log;
 
@@ -23,6 +25,10 @@ class Log {
 		this.log(chalk`[{red ERROR}] ${msg}`, ...args);
 	}
 
+	private warn(msg: string) {
+		this.log(chalk`[{red WARN}] ${msg}`);
+	}
+
 	// Global
 
 	public started() {
@@ -39,14 +45,16 @@ class Log {
 
 	// Old configurations
 
-	public rmOld(path: string) {
+	public rmOld() {
 		this.info(
-			chalk`{yellow Removing old generated configs...} {dim ${path}}`
+			chalk`{yellow Removing old generated configs...} {dim ${nginxConfigPath}}`
 		);
 	}
 
-	public noOld(path: string) {
-		this.error(chalk`{red Nginx Config Path not found:} {dim ${path}}`);
+	public noOld() {
+		this.error(
+			chalk`{red Nginx Config Path not found:} {dim ${nginxConfigPath}}`
+		);
 		this.info(
 			chalk`You can set the {dim NGINX_CONFIG_PATH} env variable to customize this location.`
 		);
@@ -73,23 +81,21 @@ class Log {
 	}
 
 	public configValid() {
-		this.info(chalk`Config is valid`);
+		this.info(chalk`Config is valid {dim ${configPath}}`);
 	}
 
 	// CSS
 
 	public downloadCSS(url: string) {
-		this.info(chalk`{yellow Downloading {bold CSS} file...} {dim ${url}}`);
+		this.info(chalk`{yellow Downloading CSS file...} {dim ${url}}`);
 	}
 
 	public cachedCSS(url: string) {
-		this.done(
-			chalk`{blue {bold CSS} file is already downloaded, skipping:} {dim ${url}}`
-		);
+		this.done(chalk`{blue CSS file is cached}, skipping: {dim ${url}}`);
 	}
 
 	public CSSDownloaded(url: string) {
-		this.done(chalk`{blue Downloaded {bold CSS} file} {dim ${url}}`);
+		this.done(chalk`{blue Downloaded CSS file} {dim ${url}}`);
 	}
 
 	public CSSError(url: string, error: string) {
@@ -110,27 +116,54 @@ class Log {
 	// JS
 
 	public downloadJS(url: string) {
-		this.info(chalk`{yellow Downloading {bold JS} file...} {dim ${url}}`);
+		this.info(chalk`{yellow Downloading JS file...} {dim ${url}}`);
 	}
 
 	public cachedJS(url: string) {
 		this.done(
-			chalk`{blue {bold JS} file is already downloaded, skipping:} {dim ${url}}`
+			chalk`{blue JS file is already downloaded, skipping:} {dim ${url}}`
 		);
 	}
 
 	public JSDownloaded(url: string) {
-		this.done(chalk`{blue Downloaded {bold JS} file} {dim ${url}}`);
+		this.done(chalk`{blue Downloaded JS file} {dim ${url}}`);
 	}
 
 	// Cloudflare
+
+	private cloudflareExpiryDays = (
+		cloudflareExpiry /
+		1000 /
+		60 /
+		60 /
+		24
+	).toFixed(0);
 
 	public updatingCloudflare() {
 		this.info(chalk`{yellow Updating Cloudflare ips...}`);
 	}
 
-	public cloudflareUpdated() {
-		this.done(chalk`Updated Cloudflare ips`);
+	public cloudflareCached() {
+		this.info(
+			chalk`{blue Not updating ips}, Current config has been updated less than {dim ${this.cloudflareExpiryDays}} days`
+		);
+	}
+
+	public cloudflareExpired() {
+		this.info(
+			chalk`Cloudflare cached ips expired, Cache duration: {dim ${this.cloudflareExpiryDays}} days`
+		);
+	}
+
+	public cloudflareUpdated(took: number) {
+		this.done(
+			chalk`Updated Cloudflare ips {dim Request took {yellow ${took}ms}}`
+		);
+	}
+	public cloudflareUnchanged(took: number) {
+		this.info(
+			chalk`Cloudflare ips refreshed, no changes with cache {dim Request took {yellow ${took}ms}}`
+		);
 	}
 }
 
