@@ -4,7 +4,10 @@ import { join } from "path";
 import createConfig from "@lib/createConfig";
 import parseConfig from "@lib/parseConfig";
 import validateConfig from "@lib/validateConfig";
-import updateCloudflareConfig from "@utils/enableCloudflare";
+import {
+	requestCloudflareIps,
+	updateCloudflareRealIp
+} from "@utils/cloudflare";
 import { configPath, nginxConfigPath } from "@utils/env";
 import log from "@utils/log";
 import store from "@utils/useStore";
@@ -41,7 +44,7 @@ const main = async (): Promise<void> => {
 
 	// Delete em
 	await Promise.all(files.map((file) => remove(join(nginxConfigPath, file))));
-	const promises = [];
+	const promises: Promise<void>[] = [];
 
 	promises.push(
 		...config.servers.map(async (server, i) => {
@@ -55,7 +58,9 @@ const main = async (): Promise<void> => {
 
 	if (config.cloudflare) {
 		await store.init();
-		promises.push(updateCloudflareConfig());
+		if (config.cloudflare) {
+			promises.push(requestCloudflareIps().then(updateCloudflareRealIp));
+		}
 	}
 
 	await Promise.all(promises);

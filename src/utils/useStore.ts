@@ -6,6 +6,7 @@ type Schema = {
 	cloudflare: {
 		etag?: string;
 		updated?: number;
+		ips?: string[];
 	};
 };
 

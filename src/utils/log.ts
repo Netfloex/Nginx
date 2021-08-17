@@ -160,10 +160,15 @@ class Log {
 			chalk`Updated Cloudflare ips {dim Request took {yellow ${took}ms}}`
 		);
 	}
+
 	public cloudflareUnchanged(took: number) {
 		this.info(
 			chalk`Cloudflare ips refreshed, no changes with cache {dim Request took {yellow ${took}ms}}`
 		);
+	}
+
+	public cloudflareRealIp() {
+		this.done(chalk`Cloudflare Real Ip List has been generated`);
 	}
 }
 
