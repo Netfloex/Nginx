@@ -1,8 +1,9 @@
 import ParsedConfig, {
 	SimpleServer,
+	ValidatedConfig,
 	ValidatedServer
 } from "@models/ParsedConfig";
-import Config, { Server } from "@models/config";
+import { Server } from "@models/config";
 
 const parseOptions = (options: Server | ValidatedServer): ValidatedServer => ({
 	proxy_pass: options.proxy_pass,
@@ -20,7 +21,7 @@ const parseOptions = (options: Server | ValidatedServer): ValidatedServer => ({
 	)
 });
 
-const parseConfig = async (config: Config): Promise<ParsedConfig> => {
+const parseConfig = async (config: ValidatedConfig): Promise<ParsedConfig> => {
 	const servers: SimpleServer[] = [];
 
 	Object.entries(config.servers ?? {}).forEach(([domain, options]) => {

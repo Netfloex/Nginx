@@ -14,8 +14,15 @@ export type ValidatedServer = {
 	custom_js: string[];
 	return?: string;
 	nossl: boolean;
-
 	locations: Location[];
+};
+type WithSubdomains = ValidatedServer & {
+	subdomains: Record<string, ValidatedServer>;
+};
+
+export type ValidatedConfig = {
+	servers: Record<string, WithSubdomains>;
+	cloudflare: boolean;
 };
 
 type ParsedConfig = {

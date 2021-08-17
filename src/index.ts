@@ -19,7 +19,7 @@ const main = async (): Promise<void> => {
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const rawConfig = require(configPath);
-	const validatedConfig = validateConfig(rawConfig);
+	const validatedConfig = await validateConfig(rawConfig);
 
 	if (validatedConfig == null) {
 		return log.exited();
@@ -54,8 +54,8 @@ const main = async (): Promise<void> => {
 	);
 
 	if (config.cloudflare) {
+		await store.init();
 		promises.push(updateCloudflareConfig());
-		promises.push(store.init());
 	}
 
 	await Promise.all(promises);

@@ -25,11 +25,11 @@ const requestCloudflareIps = async (): Promise<{
 };
 
 const updateCloudflareConfig = async (): Promise<void> => {
-	log.updatingCloudflare();
-
 	const cloudflareConfPath = join(nginxConfigPath, "cloudflare.conf");
 	const configExists = await pathExists(cloudflareConfPath);
+	await store.read();
 
+	log.updatingCloudflare();
 	if (Date.now() - (store.data.cloudflare.updated ?? 0) < cloudflareExpiry) {
 		if (configExists) {
 			return log.cloudflareCached();
@@ -37,6 +37,7 @@ const updateCloudflareConfig = async (): Promise<void> => {
 	} else if (store.data.cloudflare.updated) {
 		log.cloudflareExpired();
 	}
+
 	const started = Date.now();
 	const { ips, etag } = await requestCloudflareIps();
 	const took = Date.now() - started;
@@ -56,7 +57,7 @@ const updateCloudflareConfig = async (): Promise<void> => {
 		log.cloudflareUpdated(took);
 	}
 
-	store.write();
+	await store.write();
 };
 
 export default updateCloudflareConfig;
