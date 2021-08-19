@@ -1,6 +1,5 @@
-import { storePath } from "./env";
-
 import Store from "@lib/store";
+import { storePath } from "@utils/env";
 
 type Schema = {
 	cloudflare: {
