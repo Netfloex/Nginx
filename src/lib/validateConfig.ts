@@ -20,9 +20,8 @@ const urlSchema = z
 
 const proxyPassSchema = urlSchema
 	.superRefine(async (url, ctx) => {
-		if (dontCheckDns) {
-			return;
-		}
+		if (dontCheckDns) return;
+
 		const { hostname } = new URL(url);
 		const valid = await dnsLookup(hostname);
 		if (!valid) {
@@ -41,8 +40,8 @@ const proxyPassSchema = urlSchema
 			custom_css: [],
 			custom_js: [],
 			locations: [],
-			nossl: false,
-			subdomains: {}
+			subdomains: {},
+			headers: {}
 		})
 	);
 
@@ -59,7 +58,7 @@ export const locationSchema = z
 		custom_css: urlsOrUrlSchema,
 		custom_js: urlsOrUrlSchema,
 		return: z.string().or(z.number()),
-		nossl: z.boolean()
+		headers: z.record(z.string())
 	})
 	.partial()
 	.strict();
@@ -68,6 +67,7 @@ const locationsSchema = z.record(z.union([locationSchema, proxyPassSchema]));
 
 const subdomainSchema = locationSchema
 	.extend({
+		certbot_name: z.string().regex(domainRegex),
 		locations: locationsSchema
 	})
 	.partial();
@@ -86,7 +86,7 @@ const recordRegex =
 		});
 	};
 
-export const serverSchema = subdomainSchema
+export const domainSchema = subdomainSchema
 	.extend({
 		subdomains: z
 			.record(z.union([subdomainSchema, proxyPassSchema]))
@@ -97,7 +97,7 @@ export const serverSchema = subdomainSchema
 export const configSchema = z
 	.object({
 		servers: z
-			.record(z.union([serverSchema, proxyPassSchema]))
+			.record(z.union([domainSchema, proxyPassSchema]))
 			.superRefine(recordRegex(domainRegex, "domain"))
 			.default({}),
 		cloudflare: z.boolean().default(false)

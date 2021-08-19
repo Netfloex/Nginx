@@ -24,11 +24,13 @@ declare module "@webantic/nginx-config-parser" {
 		proxy_http_version?: number;
 
 		proxy_pass?: string;
+		add_header?: string[];
 		return?: string;
 
 		sub_filter?: string;
 		sub_filter_once?: string;
 
+		include?: string[];
 		alias?: string;
 	}
 	class Parser {

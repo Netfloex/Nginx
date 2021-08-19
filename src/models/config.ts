@@ -3,11 +3,11 @@ import { z } from "zod";
 import {
 	configSchema,
 	locationSchema,
-	serverSchema
+	domainSchema
 } from "@lib/validateConfig";
 
 export type Locations = Record<string, z.infer<typeof locationSchema>>;
-export type Server = z.infer<typeof serverSchema>;
+export type Server = z.infer<typeof domainSchema>;
 
 type Config = z.infer<typeof configSchema>;
 

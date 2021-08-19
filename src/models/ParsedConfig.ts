@@ -13,7 +13,8 @@ export type ValidatedServer = {
 	custom_css: string[];
 	custom_js: string[];
 	return?: string;
-	nossl: boolean;
+	certbot_name?: string;
+	headers: Record<string, string>;
 	locations: Location[];
 };
 type WithSubdomains = ValidatedServer & {

@@ -11,7 +11,8 @@ const parseOptions = (options: Server | ValidatedServer): ValidatedServer => ({
 	custom_css: options.custom_css ?? [],
 	custom_js: options.custom_js ?? [],
 	return: options.return?.toString(),
-	nossl: options.nossl ?? false,
+	certbot_name: options.certbot_name,
+	headers: options.headers ?? {},
 
 	locations: Object.entries(options.locations ?? {}).map(
 		([path, options]) => ({

@@ -5,7 +5,7 @@ import baseConf from "@utils/baseConf";
 import createHash from "@utils/createHash";
 import downloadCSSToFile from "@utils/downloadCSSToFile";
 import downloadJSToFile from "@utils/downloadJSToFile";
-import { customFilesPath } from "@utils/env";
+import { customFilesPath, nginxPath } from "@utils/env";
 
 import { Location, SimpleServer } from "@models/ParsedConfig";
 
@@ -19,7 +19,11 @@ const createLocation = async (
 	const block = JsonConf.server[locString] ?? {};
 
 	// Proxy Pass
-	if (location.proxy_pass) block.proxy_pass = location.proxy_pass;
+	if (location.proxy_pass) {
+		block.proxy_pass = location.proxy_pass;
+		block.include ??= [];
+		block.include.push(join(nginxPath, "proxy_pass.conf"));
+	}
 
 	// Return
 	if (location.return) block.return = location.return;
@@ -69,6 +73,14 @@ const createLocation = async (
 
 		await downloadJSToFile(location.custom_js);
 	}
+
+	// Headers
+	const headerEntries = Object.entries(location.headers);
+
+	if (headerEntries.length) {
+		block.add_header = headerEntries.map((header) => header.join(" "));
+	}
+
 	JsonConf.server[locString] = block;
 };
 
@@ -79,19 +91,15 @@ const createConfig = async (server: SimpleServer): Promise<string> => {
 	JsonConf.server.server_name = server.server_name;
 
 	// SSL Certificate files
-	if (!server.nossl) {
-		const sslKeysPath = join(
-			"/etc/letsencrypt/live",
-			server.server_name,
-			"/"
-		);
-		JsonConf.server.ssl_certificate = sslKeysPath + "fullchain.pem";
-		JsonConf.server.ssl_certificate_key = sslKeysPath + "privkey.pem";
-		JsonConf.server.ssl_trusted_certificate = sslKeysPath + "chain.pem";
-		JsonConf.server.ssl_dhparam = "/etc/letsencrypt/dhparams/dhparam.pem";
-	} else {
-		JsonConf.server.listen = ["80", "[::]:80"];
-	}
+	const sslKeysPath = join(
+		"/etc/letsencrypt/live",
+		server.certbot_name ?? server.server_name,
+		"/"
+	);
+	JsonConf.server.ssl_certificate = sslKeysPath + "fullchain.pem";
+	JsonConf.server.ssl_certificate_key = sslKeysPath + "privkey.pem";
+	JsonConf.server.ssl_trusted_certificate = sslKeysPath + "chain.pem";
+	JsonConf.server.ssl_dhparam = "/etc/letsencrypt/dhparams/dhparam.pem";
 
 	// Mutate JsonConf
 	await createLocation(JsonConf, { ...server, location: "/" });
