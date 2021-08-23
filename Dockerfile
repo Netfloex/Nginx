@@ -1,10 +1,12 @@
-FROM node:alpine AS deps
+ARG NODE_IMAGE=node:12-alpine
+
+FROM $NODE_IMAGE AS deps
 WORKDIR /app
 
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
-FROM node:alpine AS builder
+FROM $NODE_IMAGE AS builder
 WORKDIR /app
 
 COPY . .
@@ -21,8 +23,8 @@ RUN apt-get install -y --no-install-recommends curl
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    nodejs
+	apt-get install -y --no-install-recommends \
+	nodejs
 
 
 ENV NODE_ENV production
