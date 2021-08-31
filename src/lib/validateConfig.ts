@@ -58,7 +58,9 @@ export const locationSchema = z
 		custom_css: urlsOrUrlSchema,
 		custom_js: urlsOrUrlSchema,
 		return: z.string().or(z.number()),
-		headers: z.record(z.string())
+		headers: z.record(z.string()),
+		redirect: z.string(),
+		rewrite: z.string()
 	})
 	.partial()
 	.strict();

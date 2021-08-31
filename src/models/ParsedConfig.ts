@@ -15,6 +15,8 @@ export type ValidatedServer = {
 	return?: string;
 	certbot_name?: string;
 	headers: Record<string, string>;
+	redirect?: string;
+	rewrite?: string;
 	locations: Location[];
 };
 type WithSubdomains = ValidatedServer & {

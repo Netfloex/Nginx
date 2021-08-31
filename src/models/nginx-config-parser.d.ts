@@ -26,6 +26,7 @@ declare module "@webantic/nginx-config-parser" {
 		proxy_pass?: string;
 		add_header?: string[];
 		return?: string;
+		rewrite?: string;
 
 		sub_filter?: string;
 		sub_filter_once?: string;

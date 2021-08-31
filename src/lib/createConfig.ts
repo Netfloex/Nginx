@@ -28,7 +28,11 @@ const createLocation = async (
 	// Return
 	if (location.return) block.return = location.return;
 
-	// Websockets
+	if (location.redirect) block.return = `301 ${location.redirect}`;
+
+	if (location.rewrite) block.rewrite = location.rewrite;
+
+	// Websocket
 	if (location.websocket) {
 		block.proxy_set_header ??= [];
 		block.proxy_set_header.push(

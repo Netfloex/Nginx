@@ -13,6 +13,8 @@ const parseOptions = (options: Server | ValidatedServer): ValidatedServer => ({
 	return: options.return?.toString(),
 	certbot_name: options.certbot_name,
 	headers: options.headers ?? {},
+	redirect: options.redirect,
+	rewrite: options.rewrite,
 
 	locations: Object.entries(options.locations ?? {}).map(
 		([path, options]) => ({
