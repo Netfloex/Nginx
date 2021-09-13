@@ -21,6 +21,10 @@ The base config can be found [here](src/nginx/baseConfig.conf)
 -   Custom JS
 -   Websocket
 -   Return
+-   Redirect
+-   Rewrite
+-   Headers
+-   Basic Auth
 
 -   Location Blocks
 -   Cloudflare Real IP
@@ -51,6 +55,7 @@ module.exports = {
 
 // The above example could be shorter:
 module.exports = {
+	cloudflare: true, // When using Cloudflare
 	servers: {
 		"example.com": "http://mysite:3000",
 		"www.example.com": "http://mysite:3000"
@@ -168,19 +173,100 @@ Example:
 
 ### Return
 
-This may be useful to show a custom message or redirect.
+This may be useful to show a custom message.
 
 This is equivalent to Nginx's [return](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#return)
 
 ```js
 /* Server/Subdomain/Location: */ {
-	"return": `200 "Hello World!"`
+	"return": `200 "Hello World!"`,
+	headers: {
+		"Content-Type": "text/html",
+		"x-powered-by": "overridden"
+	};
 }
 ```
 
----
+[Code](src/lib/createConfig.ts)
+
+### Redirect
+
+Redirect to another location
+
+```js
+/* Server/Subdomain/Location: */ {
+	redirect: "/new_location";
+}
+```
 
 [Code](src/lib/createConfig.ts)
+
+### Rewrite
+
+Allows for complex redirects, the redirect only happens if the first argument matches.
+
+This is equivalent to Nginx's [rewrite](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#rewrite)
+
+Note: If possible redirect/return should be used.
+
+```js
+/* Server/Subdomain/Location: */ {
+	rewrite: "^/users/(.*)$ /users?id=$1"; // Redirects /users/test to /users?id=test
+}
+```
+
+[Code](src/lib/createConfig.ts)
+
+### Headers
+
+Allows adding headers to the response.
+
+Expects an object with key values of the headers.
+
+```js
+/* Server/Subdomain/Location: */ {
+	headers: {
+		"Content-Type": "text/html",
+		"x-powered-by": "overridden"
+	};
+}
+```
+
+[Code](src/lib/createConfig.ts)
+
+### Basic Auth
+
+Enables authorization for a page
+
+Expects an object with username and password. Can also be an array for multiple users.
+
+The password is hashed using Apache's apr1 md5 algorithm. A .htpasswd file is created and stored inside $DATA/auth
+
+```js
+/* Server/Subdomain/Location: */ {
+	// Single user
+	auth: {
+		username: "user",
+		password: "pass"
+	},
+
+	// Multiple Users
+	auth: [
+		{
+			username: "bob",
+			password: "hi"
+		},
+		{
+			username: "other",
+			password: "user"
+		}
+	]
+};
+```
+
+[Code](src/utils/createAuthFile.ts)
+
+---
 
 ### Location Blocks
 
@@ -262,8 +348,9 @@ CONFIG_PATH="/config.json" # Default: ./config/config.json | Docker: /app/config
 DATA_PATH="/data" # Default: ./data | Docker: /app/data
 
 # Further customization, by default they are inside the directory above
-CUSTOM_FILES_PATH="/custom" # Default: $DATA/custom
-STORE_PATH="/store.json" # Default: $DATA/store.json
+CUSTOM_FILES_PATH="/custom" # Default: $DATA/custom # Used by custom_css & custom_js
+AUTH_PATH="/auth" # Default: $DATA/auth # Used by auth
+STORE_PATH="/store.json" # Default: $DATA/store.json # Used by cloudflare
 ```
 
 [Code](src/utils/env.ts)

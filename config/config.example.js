@@ -1,7 +1,3 @@
-// @ts-check
-/**
- * @type {import('../src/models/config').default}
- **/
 module.exports = {
 	cloudflare: true, // Restore original visitor ips
 	servers: {
@@ -11,7 +7,7 @@ module.exports = {
 				// Basic Usage, can be shortened
 				www: {
 					// www.example.com
-					proxy_pass: "http://www:80" // You could also shorten this by using a string instead of an object.
+					proxy_pass: "http://www:80"
 				},
 				// Shortened example, no extra configuration
 				api: "http://api:3000", // api.example.com
@@ -45,6 +41,23 @@ module.exports = {
 							websocket: true
 						},
 						"/notifications/hub/negotiate": "http://bitwarden:80"
+					}
+				},
+
+				// Headers and return example
+				text: {
+					return: `200 "Hello World!"`,
+					headers: {
+						"Content-Type": "text/html"
+					}
+				},
+
+				// Auth example
+				auth: {
+					proxy_pass: "http://super_secret:80",
+					auth: {
+						username: "username",
+						password: "password"
 					}
 				}
 			}
