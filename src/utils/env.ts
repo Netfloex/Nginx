@@ -13,6 +13,7 @@ export const nginxPath =
 export const dataPath = env.DATA_PATH ?? cwd("data");
 export const customFilesPath =
 	env.CUSTOM_FILES_PATH ?? join(dataPath, "custom");
+export const authPath = env.AUTH_PATH ?? join(dataPath, "auth");
 export const storePath = env.STORE_PATH ?? join(dataPath, "store.json");
 
 export const cloudflareExpiry: number = +(

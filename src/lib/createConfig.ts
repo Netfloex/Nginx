@@ -2,6 +2,7 @@ import ConfigParser, { NginxConfig } from "@webantic/nginx-config-parser";
 import { join } from "path";
 
 import baseConf from "@utils/baseConf";
+import createAuthFile from "@utils/createAuthFile";
 import createHash from "@utils/createHash";
 import downloadCSSToFile from "@utils/downloadCSSToFile";
 import downloadJSToFile from "@utils/downloadJSToFile";
@@ -83,6 +84,16 @@ const createLocation = async (
 
 	if (headerEntries.length) {
 		block.add_header = headerEntries.map((header) => header.join(" "));
+	}
+
+	// Auth
+
+	if (location.auth) {
+		console.time("ewa");
+		const { filename, hash } = await createAuthFile(location.auth);
+		console.timeEnd("ewa");
+		block.auth_basic = hash;
+		block.auth_basic_user_file = filename;
 	}
 
 	JsonConf.server[locString] = block;

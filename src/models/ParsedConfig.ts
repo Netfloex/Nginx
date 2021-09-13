@@ -7,6 +7,11 @@ export type SimpleServer = ValidatedServer & {
 	filename: string;
 };
 
+export type Auth = {
+	username: string;
+	password: string;
+};
+
 export type ValidatedServer = {
 	proxy_pass?: string;
 	websocket: boolean;
@@ -18,6 +23,7 @@ export type ValidatedServer = {
 	redirect?: string;
 	rewrite?: string;
 	locations: Location[];
+	auth: Auth[] | false;
 };
 type WithSubdomains = ValidatedServer & {
 	subdomains: Record<string, ValidatedServer>;

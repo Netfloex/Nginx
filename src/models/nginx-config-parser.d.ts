@@ -31,6 +31,9 @@ declare module "@webantic/nginx-config-parser" {
 		sub_filter?: string;
 		sub_filter_once?: string;
 
+		auth_basic?: string;
+		auth_basic_user_file?: string;
+
 		include?: string[];
 		alias?: string;
 	}

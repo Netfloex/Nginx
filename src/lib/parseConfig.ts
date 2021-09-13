@@ -15,6 +15,7 @@ const parseOptions = (options: Server | ValidatedServer): ValidatedServer => ({
 	headers: options.headers ?? {},
 	redirect: options.redirect,
 	rewrite: options.rewrite,
+	auth: options.auth ?? false,
 
 	locations: Object.entries(options.locations ?? {}).map(
 		([path, options]) => ({

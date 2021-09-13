@@ -18,6 +18,13 @@ const urlSchema = z
 	})
 	.transform((url) => new URL(url).href);
 
+const authSchema = z
+	.object({
+		username: z.string(),
+		password: z.string()
+	})
+	.strict();
+
 const proxyPassSchema = urlSchema
 	.superRefine(async (url, ctx) => {
 		if (dontCheckDns) return;
@@ -41,7 +48,8 @@ const proxyPassSchema = urlSchema
 			custom_js: [],
 			locations: [],
 			subdomains: {},
-			headers: {}
+			headers: {},
+			auth: false
 		})
 	);
 
@@ -60,7 +68,8 @@ export const locationSchema = z
 		return: z.string().or(z.number()),
 		headers: z.record(z.string()),
 		redirect: z.string(),
-		rewrite: z.string()
+		rewrite: z.string(),
+		auth: authSchema.transform((auth) => [auth]).or(authSchema.array())
 	})
 	.partial()
 	.strict();
