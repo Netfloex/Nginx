@@ -89,9 +89,7 @@ const createLocation = async (
 	// Auth
 
 	if (location.auth) {
-		console.time("ewa");
 		const { filename, hash } = await createAuthFile(location.auth);
-		console.timeEnd("ewa");
 		block.auth_basic = hash;
 		block.auth_basic_user_file = filename;
 	}
