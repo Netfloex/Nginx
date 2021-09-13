@@ -100,6 +100,17 @@ You can also write:
 }
 ```
 
+## Reloading config
+
+The config can be reloaded by sending a SIGHUP signal to the container.
+This updates Nginx's configuration files and runs certbot.
+
+When running inside docker:
+
+```bash
+docker kill --signal=HUP nginx_config_manager
+```
+
 ## Options
 
 This is a list of options possible inside a (sub)domain or location.
