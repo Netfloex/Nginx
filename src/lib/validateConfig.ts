@@ -20,7 +20,7 @@ const urlSchema = z
 
 const authSchema = z
 	.object({
-		username: z.string(),
+		username: z.string().refine((str) => !str.includes(":")),
 		password: z.string()
 	})
 	.strict();
@@ -67,6 +67,16 @@ export const locationSchema = z
 		custom_js: urlsOrUrlSchema,
 		return: z.string().or(z.number()),
 		headers: z.record(z.string()),
+		cors: z
+			.boolean()
+			.transform((bool) => (bool ? "*" : false))
+			.or(
+				urlSchema.or(
+					z.string().refine((str) => str == "*", {
+						message: 'use "*" as a wildcard'
+					})
+				)
+			),
 		redirect: z.string(),
 		rewrite: z.string(),
 		auth: authSchema.transform((auth) => [auth]).or(authSchema.array())
@@ -123,13 +133,13 @@ const validateConfig = async (
 	if (!result.success) {
 		result.error.issues.forEach((issue) => {
 			if (issue.code == z.ZodIssueCode.invalid_union) {
-				const expected = issue.unionErrors.flatMap((error) =>
-					error.issues.map((g) =>
-						"expected" in g ? g.expected : false
-					)
+				const errors: string[] = issue.unionErrors.flatMap((error) =>
+					error.issues.map((g) => g.message)
 				);
 
-				issue.message = `Expected ${expected.join("/")}`;
+				issue.message = `${Array.from(new Set(errors)).join(
+					chalk` {gray or} `
+				)}`;
 			}
 			log.configIssue(issue);
 		});

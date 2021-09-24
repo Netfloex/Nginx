@@ -12,7 +12,14 @@ const parseOptions = (options: Server | ValidatedServer): ValidatedServer => ({
 	custom_js: options.custom_js ?? [],
 	return: options.return?.toString(),
 	certbot_name: options.certbot_name,
-	headers: options.headers ?? {},
+	headers: {
+		...options.headers,
+		...("cors" in options && options.cors
+			? {
+					"Access-Control-Allow-Origin": options.cors
+			  }
+			: null)
+	},
 	redirect: options.redirect,
 	rewrite: options.rewrite,
 	auth: options.auth ?? false,

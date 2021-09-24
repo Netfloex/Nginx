@@ -24,6 +24,7 @@ The base config can be found [here](src/nginx/baseConfig.conf)
 -   Redirect
 -   Rewrite
 -   Headers
+-   Cors
 -   Basic Auth
 
 -   Location Blocks
@@ -52,8 +53,11 @@ module.exports = {
 		}
 	}
 };
+```
 
-// The above example could be shorter:
+The above example could be shorter:
+
+```js
 module.exports = {
 	cloudflare: true, // When using Cloudflare
 	servers: {
@@ -244,6 +248,14 @@ Expects an object with key values of the headers.
 ```
 
 [Code](src/lib/createConfig.ts)
+
+### Cors
+
+Adds a `Access-Control-Allow-Origin` header with the supplied value.
+
+Expects an url, or `true`/`*` to allow any origin.
+
+[Code](src/lib/parseConfig.ts)
 
 ### Basic Auth
 
