@@ -71,11 +71,13 @@ export const locationSchema = z
 			.boolean()
 			.transform((bool) => (bool ? "*" : false))
 			.or(
-				urlSchema.or(
-					z.string().refine((str) => str == "*", {
-						message: 'use "*" as a wildcard'
-					})
-				)
+				urlSchema
+					.transform((url) => new URL(url).origin)
+					.or(
+						z.string().refine((str) => str == "*", {
+							message: 'use "*" as a wildcard'
+						})
+					)
 			),
 		redirect: z.string(),
 		rewrite: z.string(),

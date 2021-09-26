@@ -45,7 +45,15 @@ const main = async (): Promise<number> => {
 
 	// Delete em
 	await Promise.all(files.map((file) => remove(join(nginxConfigPath, file))));
+
 	const promises: Promise<void>[] = [];
+
+	if (config.cloudflare) {
+		await store.init();
+		if (config.cloudflare) {
+			promises.push(requestCloudflareIps().then(updateCloudflareRealIp));
+		}
+	}
 
 	promises.push(
 		...config.servers.map(async (server, i) => {
@@ -56,13 +64,6 @@ const main = async (): Promise<number> => {
 			log.configDone(server.server_name);
 		})
 	);
-
-	if (config.cloudflare) {
-		await store.init();
-		if (config.cloudflare) {
-			promises.push(requestCloudflareIps().then(updateCloudflareRealIp));
-		}
-	}
 
 	await Promise.all(promises);
 
