@@ -12,12 +12,13 @@ import { configPath, nginxConfigPath } from "@utils/env";
 import log from "@utils/log";
 import store from "@utils/useStore";
 
-const main = async (): Promise<void> => {
+const main = async (): Promise<number> => {
 	const started = Date.now();
 	log.started();
 
 	if (!(await pathExists(configPath))) {
-		return log.configNotFound(configPath);
+		log.configNotFound(configPath);
+		return -1;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -25,14 +26,14 @@ const main = async (): Promise<void> => {
 	const validatedConfig = await validateConfig(rawConfig);
 
 	if (validatedConfig == null) {
-		return log.exited();
+		return -1;
 	}
 
 	const config = await parseConfig(validatedConfig);
 
 	if (!(await pathExists(nginxConfigPath))) {
 		log.noOld();
-		return log.exited();
+		return -1;
 	}
 
 	log.rmOld();
@@ -66,8 +67,17 @@ const main = async (): Promise<void> => {
 	await Promise.all(promises);
 
 	log.finished(started);
+	return 0;
 };
 
-main().catch((error) => {
-	console.error(error);
-});
+main()
+	.then((code) => {
+		if (code == -1) {
+			log.exited();
+			process.exitCode = -1;
+		}
+	})
+	.catch((error) => {
+		console.error(error);
+		process.exitCode = -1;
+	});

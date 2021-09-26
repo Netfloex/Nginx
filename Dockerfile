@@ -11,7 +11,9 @@ WORKDIR /app
 
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
-RUN yarn build && yarn install --production --ignore-scripts --prefer-offline
+
+RUN yarn build
+RUN yarn install --production --ignore-scripts --prefer-offline
 
 FROM jonasal/nginx-certbot AS runner
 WORKDIR /app
@@ -22,9 +24,8 @@ RUN apt-get install -y --no-install-recommends curl
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 
-RUN apt-get update && \
-	apt-get install -y --no-install-recommends \
-	nodejs
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends nodejs
 
 
 ENV NODE_ENV production
