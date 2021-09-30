@@ -16,7 +16,7 @@ const createLocation = async (
 	JsonConf: NginxConfig,
 	location: Location
 ): Promise<void> => {
-	const locString = `location ${location.location}`;
+	const locString = `location ${location.location}` as const;
 	const block = JsonConf.server[locString] ?? {};
 
 	// Proxy Pass

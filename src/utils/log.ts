@@ -72,12 +72,19 @@ class Log {
 		this.error(chalk`{red The config file was not found} {dim ${path}}`);
 	}
 
-	public configIssue(issue: ZodIssue) {
+	public invalidConfig(multiple: boolean) {
 		this.error(
-			chalk`{magenta Invalid Config} path: {dim ${
-				issue.path.join(".") || "config"
-			}} ${issue.message}`
+			chalk`There was an issue with your config, the error${
+				multiple ? "s" : ""
+			} ${multiple ? "are" : "is"} listed below.`
 		);
+	}
+
+	public configIssue(issue: ZodIssue) {
+		const path = issue.path.join(".") || "config";
+		this.log();
+		this.error(chalk`{magenta Path}: {dim ${path}}`);
+		this.error(chalk`{magenta Error}: ${issue.message}`);
 	}
 
 	public configValid() {

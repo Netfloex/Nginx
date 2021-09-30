@@ -1,3 +1,5 @@
+import { returnKeysFromOption } from "./validateConfig";
+
 import ParsedConfig, {
 	SimpleServer,
 	ValidatedConfig,
@@ -36,12 +38,14 @@ const parseConfig = async (config: ValidatedConfig): Promise<ParsedConfig> => {
 	const servers: SimpleServer[] = [];
 
 	Object.entries(config.servers ?? {}).forEach(([domain, options]) => {
-		servers.push({
-			server_name: domain,
-			filename: domain,
+		if (returnKeysFromOption(options).length) {
+			servers.push({
+				server_name: domain,
+				filename: domain,
 
-			...parseOptions(options)
-		});
+				...parseOptions(options)
+			});
+		}
 		Object.entries(options.subdomains ?? {}).forEach(
 			([subdomain, options]) => {
 				servers.push({
