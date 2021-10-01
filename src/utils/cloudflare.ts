@@ -32,11 +32,14 @@ export const requestCloudflareIps = async (): Promise<Data> => {
 	} else if (store.data.cloudflare.updated) {
 		log.cloudflareExpired();
 	}
+
 	const started = Date.now();
-	const res = await axios.get("https://api.cloudflare.com/client/v4/ips");
+	const res = await axios.get<{ result: IpsResponse }>(
+		"https://api.cloudflare.com/client/v4/ips"
+	);
 	const took = Date.now() - started;
 
-	const result: IpsResponse = res.data.result;
+	const result = res.data.result;
 
 	const etag = result.etag;
 	const ips = result.ipv4_cidrs.concat(result.ipv6_cidrs);

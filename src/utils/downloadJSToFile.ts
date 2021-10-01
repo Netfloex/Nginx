@@ -1,6 +1,7 @@
 import axios from "axios";
 import { createWriteStream, ensureFile, pathExists } from "fs-extra";
 import { join } from "path";
+import { Stream } from "stream";
 
 import createHash from "@utils/createHash";
 import { customFilesPath } from "@utils/env";
@@ -18,14 +19,16 @@ const downloadJSToFile = async (custom_js: string[]): Promise<void> => {
 			}
 
 			log.downloadJS(jsUrl);
-			await axios(jsUrl, { responseType: "stream" }).then(async (res) => {
-				await ensureFile(fileName);
-				const stream = createWriteStream(fileName);
-				stream.on("close", () => {
-					log.JSDownloaded(jsUrl);
+			await axios
+				.get<Stream>(jsUrl, { responseType: "stream" })
+				.then(async (res) => {
+					await ensureFile(fileName);
+					const stream = createWriteStream(fileName);
+					stream.on("close", () => {
+						log.JSDownloaded(jsUrl);
+					});
+					res.data.pipe(stream);
 				});
-				res.data.pipe(stream);
-			});
 		})
 	);
 };
