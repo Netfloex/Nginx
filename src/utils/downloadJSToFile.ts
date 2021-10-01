@@ -9,7 +9,7 @@ import log from "@utils/log";
 
 const downloadJSToFile = async (custom_js: string[]): Promise<void> => {
 	await Promise.all(
-		custom_js.map(async (jsUrl) => {
+		custom_js.map(async (jsUrl): Promise<void> => {
 			const urlHash = createHash(jsUrl);
 			const fileName = join(customFilesPath, "js", urlHash + ".js");
 
@@ -19,16 +19,20 @@ const downloadJSToFile = async (custom_js: string[]): Promise<void> => {
 			}
 
 			log.downloadJS(jsUrl);
-			await axios
-				.get<Stream>(jsUrl, { responseType: "stream" })
-				.then(async (res) => {
-					await ensureFile(fileName);
-					const stream = createWriteStream(fileName);
-					stream.on("close", () => {
-						log.JSDownloaded(jsUrl);
-					});
-					res.data.pipe(stream);
-				});
+			return new Promise((resolve, reject) => {
+				axios
+					.get<Stream>(jsUrl, { responseType: "stream" })
+					.then(async (res) => {
+						await ensureFile(fileName);
+						const stream = createWriteStream(fileName);
+						stream.on("close", () => {
+							log.JSDownloaded(jsUrl);
+							resolve();
+						});
+						res.data.pipe(stream);
+					})
+					.catch(reject);
+			});
 		})
 	);
 };

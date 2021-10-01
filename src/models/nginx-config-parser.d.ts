@@ -17,7 +17,7 @@ declare module "@webantic/nginx-config-parser" {
 		ssl_dhparam?: string;
 	}
 
-	interface Location {
+	export interface NginxLocation {
 		proxy_set_header?: string[];
 		proxy_http_version?: number;
 
@@ -26,7 +26,7 @@ declare module "@webantic/nginx-config-parser" {
 		return?: string;
 		rewrite?: string;
 
-		sub_filter?: string;
+		sub_filter?: string[];
 		sub_filter_once?: string;
 
 		auth_basic?: string;

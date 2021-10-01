@@ -21,8 +21,7 @@ const urlSchema = z
 	.url()
 	.refine((url) => ["http:", "https:"].includes(new URL(url).protocol), {
 		message: "Invalid protocol"
-	})
-	.transform((url) => new URL(url).href);
+	});
 
 const authSchema = z
 	.object({
@@ -34,6 +33,7 @@ const authSchema = z
 const proxyPassSchema = urlSchema
 	.superRefine(async (url, ctx) => {
 		if (dontCheckDns) return;
+		if (typeof url != "string") return;
 
 		const { hostname } = new URL(url);
 		const valid = await dnsLookup(hostname);

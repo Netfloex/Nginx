@@ -1,4 +1,4 @@
-import ConfigParser, { NginxConfig } from "@webantic/nginx-config-parser";
+import ConfigParser, { NginxLocation } from "@webantic/nginx-config-parser";
 import { join } from "path";
 
 import baseConf from "@utils/baseConf";
@@ -12,13 +12,8 @@ import { Location, SimpleServer } from "@models/ParsedConfig";
 
 const parser = new ConfigParser();
 
-const createLocation = async (
-	JsonConf: NginxConfig,
-	location: Location
-): Promise<void> => {
-	const locString = `location ${location.location}` as const;
-	const block = JsonConf.server[locString] ?? {};
-
+const createLocation = async (location: Location): Promise<NginxLocation> => {
+	const block: NginxLocation = {};
 	// Proxy Pass
 	if (location.proxy_pass) {
 		block.proxy_pass = location.proxy_pass;
@@ -44,20 +39,21 @@ const createLocation = async (
 		block.proxy_http_version = 1.1;
 	}
 
+	// Custom Files
+	block.sub_filter = [];
+
 	// Custom CSS
 	if (location.custom_css.length) {
 		const fileNames = location.custom_css.map((g) => createHash(g));
 
-		block.sub_filter = `'</head>' '${fileNames
-			.map(
-				(hash) =>
-					`<link rel="stylesheet" type="text/css" href="/custom_assets/css/${hash}.css">`
-			)
-			.join("")}</head>'`;
-
-		JsonConf.server["location /custom_assets"] = {
-			alias: customFilesPath
-		};
+		block.sub_filter.push(
+			`'</head>' '${fileNames
+				.map(
+					(hash) =>
+						`<link rel="stylesheet" type="text/css" href="/custom_assets/css/${hash}.css">`
+				)
+				.join("")}</head>'`
+		);
 
 		await downloadCSSToFile(location.custom_css);
 	}
@@ -66,15 +62,14 @@ const createLocation = async (
 	if (location.custom_js.length) {
 		const fileNames = location.custom_js.map((g) => createHash(g));
 
-		block.sub_filter = `'</body>' '${fileNames
-			.map(
-				(hash) => `<script src="/custom_assets/js/${hash}.js"></script>`
-			)
-			.join("")}</body>'`;
-
-		JsonConf.server["location /custom_assets"] = {
-			alias: customFilesPath
-		};
+		block.sub_filter.push(
+			`'</body>' '${fileNames
+				.map(
+					(hash) =>
+						`<script src="/custom_assets/js/${hash}.js"></script>`
+				)
+				.join("")}</body>'`
+		);
 
 		await downloadJSToFile(location.custom_js);
 	}
@@ -94,14 +89,14 @@ const createLocation = async (
 		block.auth_basic_user_file = filename;
 	}
 
-	JsonConf.server[locString] = block;
+	return block;
 };
 
 const createConfig = async (server: SimpleServer): Promise<string> => {
-	const JsonConf: NginxConfig = await baseConf();
+	const { server: jsonServer } = await baseConf();
 
 	// Server Name
-	JsonConf.server.server_name = server.server_name;
+	jsonServer.server_name = server.server_name;
 
 	// SSL Certificate files
 	const sslKeysPath = join(
@@ -109,24 +104,35 @@ const createConfig = async (server: SimpleServer): Promise<string> => {
 		server.certbot_name ?? server.server_name,
 		"/"
 	);
-	JsonConf.server.ssl_certificate = sslKeysPath + "fullchain.pem";
-	JsonConf.server.ssl_certificate_key = sslKeysPath + "privkey.pem";
-	JsonConf.server.ssl_trusted_certificate = sslKeysPath + "chain.pem";
-	JsonConf.server.ssl_dhparam = "/etc/letsencrypt/dhparams/dhparam.pem";
+	jsonServer.ssl_certificate = sslKeysPath + "fullchain.pem";
+	jsonServer.ssl_certificate_key = sslKeysPath + "privkey.pem";
+	jsonServer.ssl_trusted_certificate = sslKeysPath + "chain.pem";
+	jsonServer.ssl_dhparam = "/etc/letsencrypt/dhparams/dhparam.pem";
 
-	// Mutate JsonConf
-	await createLocation(JsonConf, { ...server, location: "/" });
+	jsonServer["location /"] = await createLocation({
+		...server,
+		location: "/"
+	});
 
 	// Custom Locations
 	if (server.locations.length) {
 		await Promise.all(
 			server.locations.map(async (location) => {
-				await createLocation(JsonConf, location);
+				jsonServer[`location ${location.location}`] =
+					await createLocation(location);
 			})
 		);
 	}
 
-	const config = parser.toConf(JsonConf);
+	if (server.custom_css.length || server.custom_js.length) {
+		jsonServer["location /custom_assets"] = {
+			alias: customFilesPath
+		};
+	}
+
+	const config = parser.toConf({
+		server: jsonServer
+	});
 
 	return config;
 };
