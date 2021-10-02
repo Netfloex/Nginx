@@ -33,7 +33,6 @@ const authSchema = z
 const proxyPassSchema = urlSchema
 	.superRefine(async (url, ctx) => {
 		if (dontCheckDns) return;
-		if (typeof url != "string") return;
 
 		const { hostname } = new URL(url);
 		const valid = await dnsLookup(hostname);
