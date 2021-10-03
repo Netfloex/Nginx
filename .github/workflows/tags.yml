@@ -1,33 +1,18 @@
-name: docker-build
+name: docker-build-versioned
 
 on:
     push:
-        branches:
-            - master
+        tags:
+            - "v[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
-    typescript:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
-            - name: Setup NodeJS v12
-              uses: actions/setup-node@v2
-              with:
-                  node-version: 12
-                  cache: yarn
-
-            - name: Install Dependencies
-              run: yarn install
-            - name: Test Typescript
-              run: yarn test
-            - name: Test ESLint
-              run: yarn lint
-
     docker:
         runs-on: ubuntu-latest
-        needs: typescript
         steps:
+            - name: Get latest tag
+              id: vars
+              run: echo ::set-output name=tag::${GITHUB_REF:10}
+
             # Setup
             - name: Set up QEMU
               uses: docker/setup-qemu-action@v1
@@ -46,7 +31,7 @@ jobs:
               uses: docker/build-push-action@v2
               with:
                   push: true
-                  tags: netfloex/nginx:latest
+                  tags: netfloex/nginx:${{ steps.vars.outputs.tag }}
                   platforms: |
                       linux/amd64
                       linux/arm64
