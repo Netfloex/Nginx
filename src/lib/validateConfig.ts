@@ -10,7 +10,7 @@ import { domainRegex, subdomainRegex } from "@utils/regex";
 import { ValidatedConfig, ValidatedServer } from "@models/ParsedConfig";
 import Config from "@models/config";
 
-const returnKeys = ["proxy_pass", "return", "redirect", "rewrite"];
+const returnKeys = ["proxy_pass", "return", "redirect", "rewrite", "html"];
 
 export const returnKeysFromOption = (
 	options: Record<string, unknown>
@@ -112,7 +112,8 @@ export const locationSchema = z
 			),
 		redirect: z.string(),
 		rewrite: z.string(),
-		auth: authSchema.transform((auth) => [auth]).or(authSchema.array())
+		auth: authSchema.transform((auth) => [auth]).or(authSchema.array()),
+		html: z.string()
 	})
 	.partial()
 	.strict();

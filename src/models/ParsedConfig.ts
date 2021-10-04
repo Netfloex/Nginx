@@ -24,6 +24,7 @@ export type ValidatedServer = {
 	rewrite?: string;
 	locations: Location[];
 	auth: Auth[] | false;
+	html?: string;
 };
 type WithSubdomains = ValidatedServer & {
 	subdomains: Record<string, ValidatedServer>;

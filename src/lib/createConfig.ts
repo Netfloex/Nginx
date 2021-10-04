@@ -28,8 +28,13 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 
 	if (location.rewrite) block.rewrite = location.rewrite;
 
-	// Websocket
+	if (location.html) {
+		block.return = `200 "${location.html}"`;
+		location.headers["Content-Type"] = "text/html";
+	}
+
 	if (location.websocket) {
+		// Websocket
 		block.proxy_set_header ??= [];
 		block.proxy_set_header.push(
 			"Upgrade $http_upgrade",

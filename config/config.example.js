@@ -44,12 +44,9 @@ module.exports = {
 					}
 				},
 
-				// Headers and return example
+				// Simple message
 				text: {
-					return: `200 "Hello World!"`,
-					headers: {
-						"Content-Type": "text/html"
-					}
+					html: "Hello World!"
 				},
 
 				// Auth example

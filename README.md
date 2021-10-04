@@ -21,6 +21,7 @@ The base config can be found [here](src/nginx/baseConfig.conf)
 -   Custom JS
 -   Websocket
 -   Return
+-   HTML
 -   Redirect
 -   Rewrite
 -   Headers
@@ -188,17 +189,30 @@ Example:
 
 ### Return
 
-This may be useful to show a custom message.
+This may be useful to show a custom message with a custom status code.
 
 This is equivalent to Nginx's [return](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#return)
 
 ```js
 /* Server/Subdomain/Location: */ {
-	"return": `200 "Hello World!"`,
+	"return": `404 "Not found"`,
 	headers: {
 		"Content-Type": "text/html",
 		"x-powered-by": "overridden"
 	};
+}
+```
+
+[Code](src/lib/createConfig.ts)
+
+### HTML
+
+For displaying simple HTML.
+This is equivalent to `"return": `200 "Message"``
+
+```js
+/* Server/Subdomain/Location: */ {
+	"html": "<h1>Hello World</h1>"
 }
 ```
 
