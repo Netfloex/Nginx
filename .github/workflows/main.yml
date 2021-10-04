@@ -20,6 +20,8 @@ jobs:
             - name: Install Dependencies
               run: yarn install
             - name: Test Typescript
+              run: yarn typescript
+            - name: Run tests
               run: yarn test
             - name: Test ESLint
               run: yarn lint
