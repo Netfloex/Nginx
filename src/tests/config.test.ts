@@ -8,12 +8,14 @@ chalk.level = 0;
 describe("Validate Config", () => {
 	log.log = jest.fn().mockName("log.log");
 	const mocked = log.log as jest.MockedFunction<typeof log.log>;
+
 	test("It checks for an invalid config", async () => {
 		expect(
 			await validateConfig({
 				// @ts-expect-error boolean
 				cloudflare: "false",
 				servers: {
+					dns_error: "http://not-existing",
 					"example.com": {
 						proxy_pass: "invalid url",
 						auth: {
@@ -32,11 +34,11 @@ describe("Validate Config", () => {
 						headers: [],
 						// @ts-expect-error string
 						html: [],
-						// @ts-expect-error object
 						locations: {
 							empty: {},
 							invalid: "invalid url",
 							extra: {
+								// @ts-expect-error missing password
 								auth: {
 									username: ""
 								}
@@ -75,5 +77,60 @@ describe("Validate Config", () => {
 		).toBe(null);
 
 		expect(mocked.mock.calls.flat()).toMatchSnapshot();
+	});
+
+	test("It accepts a valid config", async () => {
+		const value = await validateConfig({
+			servers: {
+				"example.com": {
+					auth: {
+						password: "password",
+						username: "username"
+					},
+					certbot_name: "string",
+					cors: "*",
+					custom_css: "http://validurlstring",
+					custom_js: ["http://validurlarray"],
+					headers: {
+						"Content-Type": "text/html"
+					},
+					html: "html string",
+					locations: {
+						direct: "http://example.com",
+						indirect: {
+							proxy_pass: "http://example.com"
+						}
+					},
+					subdomains: {
+						www: "http://example.com",
+
+						// return options
+						redirects: {
+							redirect: "/"
+						},
+						returns: {
+							return: "200 ok"
+						},
+						rewrites: {
+							rewrite: "^ https://example.com"
+						},
+
+						no_return_allowed: {
+							locations: {
+								"/en": {
+									html: "Return not needed in subdomain"
+								}
+							}
+						}
+					},
+					websocket: true
+				}
+			}
+		});
+		if (value == null) {
+			console.log(mocked.mock.calls.flat());
+		}
+		expect(value).not.toBe(null);
+		expect(value).toMatchSnapshot();
 	});
 });

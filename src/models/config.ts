@@ -8,7 +8,4 @@ import {
 
 export type Locations = Record<string, z.infer<typeof locationSchema>>;
 export type Server = z.infer<typeof domainSchema>;
-
-type Config = z.infer<typeof configSchema>;
-
-export default Config;
+export type InputConfig = z.input<typeof configSchema>;

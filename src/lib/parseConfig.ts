@@ -8,12 +8,8 @@ import ParsedConfig, {
 import { Server } from "@models/config";
 
 const parseOptions = (options: Server | ValidatedServer): ValidatedServer => ({
-	proxy_pass: options.proxy_pass,
-	websocket: options.websocket ?? false,
-	custom_css: options.custom_css ?? [],
-	custom_js: options.custom_js ?? [],
+	...options,
 	return: options.return?.toString(),
-	certbot_name: options.certbot_name,
 	headers: {
 		...options.headers,
 		...("cors" in options && options.cors
@@ -22,15 +18,12 @@ const parseOptions = (options: Server | ValidatedServer): ValidatedServer => ({
 			  }
 			: null)
 	},
-	redirect: options.redirect,
-	rewrite: options.rewrite,
 	auth: options.auth ?? false,
-	html: options.html,
 
 	locations: Object.entries(options.locations ?? {}).map(
-		([path, options]) => ({
+		([path, location]) => ({
 			location: path,
-			...parseOptions(options)
+			...parseOptions(location)
 		})
 	)
 });

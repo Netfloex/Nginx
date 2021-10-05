@@ -14,15 +14,15 @@ export type Auth = {
 
 export type ValidatedServer = {
 	proxy_pass?: string;
-	websocket: boolean;
-	custom_css: string[];
-	custom_js: string[];
+	websocket?: boolean;
+	custom_css?: string[];
+	custom_js?: string[];
 	return?: string;
 	certbot_name?: string;
-	headers: Record<string, string>;
+	headers?: Record<string, string>;
 	redirect?: string;
 	rewrite?: string;
-	locations: Location[];
+	locations?: Location[];
 	auth: Auth[] | false;
 	html?: string;
 };

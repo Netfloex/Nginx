@@ -30,6 +30,7 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 
 	if (location.html) {
 		block.return = `200 "${location.html}"`;
+		location.headers ??= {};
 		location.headers["Content-Type"] = "text/html";
 	}
 
@@ -48,7 +49,7 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 	block.sub_filter = [];
 
 	// Custom CSS
-	if (location.custom_css.length) {
+	if (location.custom_css?.length) {
 		const fileNames = location.custom_css.map((g) => createHash(g));
 
 		block.sub_filter.push(
@@ -64,7 +65,7 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 	}
 
 	// Custom JS
-	if (location.custom_js.length) {
+	if (location.custom_js?.length) {
 		const fileNames = location.custom_js.map((g) => createHash(g));
 
 		block.sub_filter.push(
@@ -80,7 +81,7 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 	}
 
 	// Headers
-	const headerEntries = Object.entries(location.headers);
+	const headerEntries = Object.entries(location.headers ?? {});
 
 	if (headerEntries.length) {
 		block.add_header = headerEntries.map((header) => header.join(" "));
@@ -120,7 +121,7 @@ const createConfig = async (server: SimpleServer): Promise<string> => {
 	});
 
 	// Custom Locations
-	if (server.locations.length) {
+	if (server.locations?.length) {
 		await Promise.all(
 			server.locations.map(async (location) => {
 				jsonServer[`location ${location.location}`] =
@@ -129,7 +130,7 @@ const createConfig = async (server: SimpleServer): Promise<string> => {
 		);
 	}
 
-	if (server.custom_css.length || server.custom_js.length) {
+	if (server.custom_css?.length || server.custom_js?.length) {
 		jsonServer["location /custom_assets"] = {
 			alias: customFilesPath
 		};

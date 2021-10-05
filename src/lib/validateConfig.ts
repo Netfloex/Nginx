@@ -5,10 +5,9 @@ import { z } from "zod";
 import dnsLookup from "@utils/dnsLookup";
 import { dontCheckDns } from "@utils/env";
 import log from "@utils/log";
-import { domainRegex, subdomainRegex } from "@utils/regex";
 
-import { ValidatedConfig, ValidatedServer } from "@models/ParsedConfig";
-import Config from "@models/config";
+import { ValidatedConfig } from "@models/ParsedConfig";
+import { InputConfig } from "@models/config";
 
 const returnKeys = ["proxy_pass", "return", "redirect", "rewrite", "html"];
 
@@ -50,25 +49,13 @@ const proxyPassSchema = urlSchema
 			});
 		}
 	})
-	.transform(
-		(
-			proxy_pass
-		): ValidatedServer & { subdomains: Record<string, never> } => ({
-			proxy_pass,
-			websocket: false,
-			custom_css: [],
-			custom_js: [],
-			locations: [],
-			subdomains: {},
-			headers: {},
-			auth: false
-		})
-	);
+	.transform((proxy_pass) => ({
+		proxy_pass
+	}));
 
 const urlsOrUrlSchema = urlSchema
 	.array()
 	.or(urlSchema)
-	.default([])
 	.transform((data) => [data].flat());
 
 const oneReturnRefinement = (
@@ -131,35 +118,34 @@ const locationsSchema = z.record(
 
 const subdomainSchema = locationSchema
 	.extend({
-		certbot_name: z.string().regex(domainRegex),
+		certbot_name: z.string(),
 		locations: locationsSchema
 	})
 	.partial();
 
-const recordRegex =
-	(regex: RegExp, type: string) =>
-	(record: Record<string, unknown>, ctx: z.RefinementCtx): void => {
-		Object.keys(record).forEach((key) => {
-			if (!regex.test(key)) {
-				ctx.addIssue({
-					code: z.ZodIssueCode.invalid_string,
-					message: chalk`Not a valid ${type}: {dim ${key}}`,
-					validation: "regex"
-				});
-			}
-		});
-	};
+// const recordRegex =
+// 	(regex: RegExp, type: string) =>
+// 	(record: Record<string, unknown>, ctx: z.RefinementCtx): void => {
+// 		Object.keys(record).forEach((key) => {
+// 			if (!regex.test(key)) {
+// 				ctx.addIssue({
+// 					code: z.ZodIssueCode.invalid_string,
+// 					message: chalk`Not a valid ${type}: {dim ${key}}`,
+// 					validation: "regex"
+// 				});
+// 			}
+// 		});
+// 	};
 
 export const domainSchema = subdomainSchema
 	.extend({
-		subdomains: z
-			.record(
-				z.union([
-					subdomainSchema.superRefine(oneReturnRefinement),
-					proxyPassSchema
-				])
-			)
-			.superRefine(recordRegex(subdomainRegex, "subdomain"))
+		subdomains: z.record(
+			z.union([
+				subdomainSchema.superRefine(oneReturnRefinement),
+				proxyPassSchema
+			])
+		)
+		// .superRefine(recordRegex(subdomainRegex, "subdomain"))
 	})
 	.partial();
 
@@ -172,7 +158,7 @@ export const configSchema = z
 					proxyPassSchema
 				])
 			)
-			.superRefine(recordRegex(domainRegex, "domain"))
+			// .superRefine(recordRegex(domainRegex, "domain"))
 			.default({}),
 		cloudflare: z.boolean().default(false)
 	})
@@ -180,7 +166,7 @@ export const configSchema = z
 	.strict();
 
 const validateConfig = async (
-	config: Config
+	config: InputConfig
 ): Promise<ValidatedConfig | null> => {
 	const result = await configSchema.spa(config);
 

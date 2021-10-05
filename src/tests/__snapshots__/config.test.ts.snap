@@ -1,5 +1,63 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Validate Config It accepts a valid config 1`] = `
+{
+  "cloudflare": false,
+  "servers": {
+    "example.com": {
+      "auth": [
+        {
+          "password": "password",
+          "username": "username",
+        },
+      ],
+      "certbot_name": "string",
+      "cors": "*",
+      "custom_css": [
+        "http://validurlstring",
+      ],
+      "custom_js": [
+        "http://validurlarray",
+      ],
+      "headers": {
+        "Content-Type": "text/html",
+      },
+      "html": "html string",
+      "locations": {
+        "direct": {
+          "proxy_pass": "http://example.com",
+        },
+        "indirect": {
+          "proxy_pass": "http://example.com",
+        },
+      },
+      "subdomains": {
+        "no_return_allowed": {
+          "locations": {
+            "/en": {
+              "html": "Return not needed in subdomain",
+            },
+          },
+        },
+        "redirects": {
+          "redirect": "/",
+        },
+        "returns": {
+          "return": "200 ok",
+        },
+        "rewrites": {
+          "rewrite": "^ https://example.com",
+        },
+        "www": {
+          "proxy_pass": "http://example.com",
+        },
+      },
+      "websocket": true,
+    },
+  },
+}
+`;
+
 exports[`Validate Config It checks for an invalid config 1`] = `
 [
   "[ERROR] There was an issue with your config, the errors are listed below.",
@@ -31,25 +89,27 @@ exports[`Validate Config It checks for an invalid config 1`] = `
   "[ERROR] Error: Should be at least 1 characters",
   "[ERROR] Path: servers.example.com.auth",
   "[ERROR] Error: Unrecognized key(s) in object: 'unknown'",
+  "[ERROR] Path: servers.example.com.locations.empty",
+  "[ERROR] Error: Please specify at least one \\"return\\" type: proxy_pass, return, redirect, rewrite, html",
   "[ERROR] Path: servers.example.com.locations.invalid",
   "[ERROR] Error: Invalid url",
   "[ERROR] Path: servers.example.com.cors",
   "[ERROR] Error: Invalid url or use \\"*\\" as a wildcard",
-  "[ERROR] Path: servers.example.com.locations.empty",
-  "[ERROR] Error: Please specify at least one \\"return\\" type: proxy_pass, return, redirect, rewrite, html",
   "[ERROR] Path: servers.example.com.locations.extra.auth.username",
   "[ERROR] Error: Username should not be empty",
   "[ERROR] Path: servers.example.com.locations.extra.auth.password",
   "[ERROR] Error: Required",
+  "[ERROR] Path: servers.dns_error",
+  "[ERROR] Error: DNS lookup failed for: not-existing",
 ]
 `;
 
 exports[`Validate Config It tests for invalid number of return types 1`] = `
 [
   "[ERROR] There was an issue with your config, the errors are listed below.",
-  "[ERROR] Path: servers.example.com",
-  "[ERROR] Error: Too many \\"return\\" types, found: proxy_pass, redirect, rewrite, html, return, please use only one of them.",
   "[ERROR] Path: servers.no returns",
   "[ERROR] Error: Please specify at least one \\"return\\" type: proxy_pass, return, redirect, rewrite, html",
+  "[ERROR] Path: servers.example.com",
+  "[ERROR] Error: Too many \\"return\\" types, found: proxy_pass, redirect, rewrite, html, return, please use only one of them.",
 ]
 `;
