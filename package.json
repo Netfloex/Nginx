@@ -7,7 +7,7 @@
 		"start": "node .",
 		"typescript": "tsc --noEmit",
 		"test": "jest",
-		"lint": "eslint . --ext ts --ext tsx",
+		"lint": "eslint .",
 		"dev": "tsnd --respawn -T --rs --cls -r tsconfig-paths/register src",
 		"prepare": "ts-patch install -s && husky install"
 	},
@@ -36,6 +36,7 @@
 		"husky": "^7.0.2",
 		"jest": "^27.2.4",
 		"prettier": "^2.4.1",
+		"ts-jest": "^27.0.5",
 		"ts-node-dev": "^1.1.8",
 		"ts-patch": "^1.4.4",
 		"tsconfig-paths": "^3.11.0",

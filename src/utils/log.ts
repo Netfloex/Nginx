@@ -5,7 +5,7 @@ import { ZodIssue } from "zod";
 import { cloudflareExpiry, configPath, nginxConfigPath } from "@utils/env";
 
 class Log {
-	private log;
+	public log;
 
 	constructor() {
 		this.log = console.log;

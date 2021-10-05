@@ -25,8 +25,15 @@ const urlSchema = z
 
 const authSchema = z
 	.object({
-		username: z.string().refine((str) => !str.includes(":")),
-		password: z.string()
+		username: z
+			.string()
+			.refine((str) => !str.includes(":"), {
+				message: `Username can't contain ":"`
+			})
+			.refine((str) => str.length, {
+				message: "Username should not be empty"
+			}),
+		password: z.string().min(1)
 	})
 	.strict();
 
@@ -119,7 +126,7 @@ export const locationSchema = z
 	.strict();
 
 const locationsSchema = z.record(
-	z.union([locationSchema.superRefine(oneReturnRefinement), proxyPassSchema])
+	proxyPassSchema.or(locationSchema.superRefine(oneReturnRefinement))
 );
 
 const subdomainSchema = locationSchema
