@@ -26,6 +26,8 @@ jobs:
 
             - name: Build
               run: yarn build
+            - name: Create Nginx Config folder
+              run: mkdir nginx_config_files
             - name: Run
               run: yarn start
               env:
