@@ -4,7 +4,8 @@
 		"paths": {
 			"@models/*": ["src/models/*"],
 			"@utils/*": ["src/utils/*"],
-			"@lib/*": ["src/lib/*"]
+			"@lib/*": ["src/lib/*"],
+			"@configs/*": ["src/tests/configs/*"]
 		},
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,

@@ -1,0 +1,12 @@
+{
+	"servers": {
+		"example.com": {
+			"proxy_pass": "http://example",
+			"html": "too many return types",
+			"redirect": "https://example.com/redirect",
+			"rewrite": "^ https://example.com/rewrite",
+			"return": "500 too many"
+		},
+		"no returns": {}
+	}
+}

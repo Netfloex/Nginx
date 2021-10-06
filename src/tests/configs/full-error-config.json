@@ -1,0 +1,34 @@
+{
+	"cloudflare": "false",
+	"servers": {
+		"dns_error": "http://not-existing",
+		"example.com": {
+			"proxy_pass": "invalid url",
+			"auth": {
+				"unknown": "",
+				"username": ":",
+				"password": ""
+			},
+			"certbot_name": [],
+			"cors": "/",
+			"custom_css": {},
+			"custom_js": ["invalid url"],
+			"headers": [],
+			"html": [],
+			"locations": {
+				"empty": {},
+				"invalid": "invalid url",
+				"extra": {
+					"auth": {
+						"username": ""
+					}
+				}
+			},
+			"redirect": [],
+			"return": [],
+			"rewrite": [],
+			"subdomains": {}
+		}
+	},
+	"unknown": ""
+}

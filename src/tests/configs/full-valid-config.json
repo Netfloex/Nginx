@@ -1,0 +1,46 @@
+{
+	"servers": {
+		"example.com": {
+			"auth": {
+				"password": "password",
+				"username": "username"
+			},
+			"certbot_name": "string",
+			"cors": "*",
+			"custom_css": "http://validurlstring",
+			"custom_js": ["http://validurlarray"],
+			"headers": {
+				"Content-Type": "text/html"
+			},
+			"html": "html string",
+			"locations": {
+				"direct": "http://example.com",
+				"indirect": {
+					"proxy_pass": "http://example.com"
+				}
+			},
+			"subdomains": {
+				"www": "http://example.com",
+
+				"redirects": {
+					"redirect": "/"
+				},
+				"returns": {
+					"return": "200 ok"
+				},
+				"rewrites": {
+					"rewrite": "^ https://example.com"
+				},
+
+				"no_return_allowed": {
+					"locations": {
+						"/en": {
+							"html": "Return not needed in subdomain"
+						}
+					}
+				}
+			},
+			"websocket": true
+		}
+	}
+}

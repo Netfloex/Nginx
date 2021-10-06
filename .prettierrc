@@ -6,6 +6,6 @@
 	"tabWidth": 4,
 	"printWidth": 80,
 	"arrowParens": "always",
-	"importOrder": ["(@lib/.*)|(@utils/.*)", "@models/.*"],
+	"importOrder": ["(@lib/.*)|(@utils/.*)", "@models/.*", "@configs/.*"],
 	"importOrderSeparation": true
 }
