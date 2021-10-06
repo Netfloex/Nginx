@@ -6,7 +6,11 @@ import createAuthFile from "@utils/createAuthFile";
 import createHash from "@utils/createHash";
 import downloadCSSToFile from "@utils/downloadCSSToFile";
 import downloadJSToFile from "@utils/downloadJSToFile";
-import { customFilesPath, nginxPath } from "@utils/env";
+import {
+	customFilesPath,
+	dontDownloadCustomFiles,
+	nginxPath
+} from "@utils/env";
 
 import { Location, SimpleServer } from "@models/ParsedConfig";
 
@@ -61,7 +65,8 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 				.join("")}</head>'`
 		);
 
-		await downloadCSSToFile(location.custom_css);
+		if (!dontDownloadCustomFiles)
+			await downloadCSSToFile(location.custom_css);
 	}
 
 	// Custom JS
@@ -77,7 +82,8 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 				.join("")}</body>'`
 		);
 
-		await downloadJSToFile(location.custom_js);
+		if (!dontDownloadCustomFiles)
+			await downloadJSToFile(location.custom_js);
 	}
 
 	// Headers

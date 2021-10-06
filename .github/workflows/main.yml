@@ -19,12 +19,19 @@ jobs:
 
             - name: Install Dependencies
               run: yarn install
-            - name: Test Typescript
-              run: yarn typescript
             - name: Run tests
               run: yarn test
             - name: Test ESLint
               run: yarn lint
+
+            - name: Build
+              run: yarn build
+            - name: Run
+              run: yarn start
+              env:
+                  DONT_DOWNLOAD_FILES: true
+                  DONT_CHECK_HOSTS: true
+                  CONFIG_PATH: src/tests/configs/full-valid-config.json
 
     docker:
         runs-on: ubuntu-latest
