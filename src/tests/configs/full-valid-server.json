@@ -1,0 +1,26 @@
+{
+	"server_name": "example.com",
+	"auth": [
+		{
+			"username": "user",
+			"password": "pass"
+		},
+		{
+			"username": "foo",
+			"password": "bar"
+		}
+	],
+	"certbot_name": "certbot",
+	"custom_css": ["https://custom_css", "https://second"],
+	"custom_js": ["https://custom_js", "https://second"],
+	"headers": {
+		"Content-Type": "text/html",
+		"Second": "Value"
+	},
+	"html": "html",
+	"proxy_pass": "http://example",
+	"redirect": "/redirect",
+	"return": "200 return directive",
+	"rewrite": "^ https://rewrite",
+	"websocket": true
+}

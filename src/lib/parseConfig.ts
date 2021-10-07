@@ -18,7 +18,6 @@ const parseOptions = (options: Server | ValidatedServer): ValidatedServer => ({
 			  }
 			: null)
 	},
-	auth: options.auth ?? false,
 
 	locations: Object.entries(options.locations ?? {}).map(
 		([path, location]) => ({

@@ -12,9 +12,12 @@ import {
 	nginxPath
 } from "@utils/env";
 
-import { Location, SimpleServer } from "@models/ParsedConfig";
+import { Location, SimpleServer, ValidatedServer } from "@models/ParsedConfig";
 
 const parser = new ConfigParser();
+
+const usesCustom = (options: Location | ValidatedServer): boolean =>
+	!!(options.custom_css?.length || options.custom_js?.length);
 
 const createLocation = async (location: Location): Promise<NginxLocation> => {
 	const block: NginxLocation = {};
@@ -49,41 +52,43 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 		block.proxy_http_version = 1.1;
 	}
 
-	// Custom Files
-	block.sub_filter = [];
+	if (usesCustom(location)) {
+		// Custom Files
+		block.sub_filter = [];
 
-	// Custom CSS
-	if (location.custom_css?.length) {
-		const fileNames = location.custom_css.map((g) => createHash(g));
+		// Custom CSS
+		if (location.custom_css?.length) {
+			const fileNames = location.custom_css.map((g) => createHash(g));
 
-		block.sub_filter.push(
-			`'</head>' '${fileNames
-				.map(
-					(hash) =>
-						`<link rel="stylesheet" type="text/css" href="/custom_assets/css/${hash}.css">`
-				)
-				.join("")}</head>'`
-		);
+			block.sub_filter.push(
+				`'</head>' '${fileNames
+					.map(
+						(hash) =>
+							`<link rel="stylesheet" type="text/css" href="/custom_assets/css/${hash}.css">`
+					)
+					.join("")}</head>'`
+			);
 
-		if (!dontDownloadCustomFiles)
-			await downloadCSSToFile(location.custom_css);
-	}
+			if (!dontDownloadCustomFiles)
+				await downloadCSSToFile(location.custom_css);
+		}
 
-	// Custom JS
-	if (location.custom_js?.length) {
-		const fileNames = location.custom_js.map((g) => createHash(g));
+		// Custom JS
+		if (location.custom_js?.length) {
+			const fileNames = location.custom_js.map((g) => createHash(g));
 
-		block.sub_filter.push(
-			`'</body>' '${fileNames
-				.map(
-					(hash) =>
-						`<script src="/custom_assets/js/${hash}.js"></script>`
-				)
-				.join("")}</body>'`
-		);
+			block.sub_filter.push(
+				`'</body>' '${fileNames
+					.map(
+						(hash) =>
+							`<script src="/custom_assets/js/${hash}.js"></script>`
+					)
+					.join("")}</body>'`
+			);
 
-		if (!dontDownloadCustomFiles)
-			await downloadJSToFile(location.custom_js);
+			if (!dontDownloadCustomFiles)
+				await downloadJSToFile(location.custom_js);
+		}
 	}
 
 	// Headers
@@ -104,7 +109,9 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 	return block;
 };
 
-const createConfig = async (server: SimpleServer): Promise<string> => {
+const createConfig = async (
+	server: Omit<SimpleServer, "filename">
+): Promise<string> => {
 	const { server: jsonServer } = await baseConf();
 
 	// Server Name
@@ -126,6 +133,10 @@ const createConfig = async (server: SimpleServer): Promise<string> => {
 		location: "/"
 	});
 
+	if (Object.entries(jsonServer["location /"]).length == 0) {
+		delete jsonServer["location /"];
+	}
+
 	// Custom Locations
 	if (server.locations?.length) {
 		await Promise.all(
@@ -136,7 +147,7 @@ const createConfig = async (server: SimpleServer): Promise<string> => {
 		);
 	}
 
-	if (server.custom_css?.length || server.custom_js?.length) {
+	if (usesCustom(server)) {
 		jsonServer["location /custom_assets"] = {
 			alias: customFilesPath
 		};

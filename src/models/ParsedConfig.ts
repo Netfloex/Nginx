@@ -23,7 +23,7 @@ export type ValidatedServer = {
 	redirect?: string;
 	rewrite?: string;
 	locations?: Location[];
-	auth: Auth[] | false;
+	auth?: Auth[];
 	html?: string;
 };
 type WithSubdomains = ValidatedServer & {
