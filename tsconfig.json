@@ -13,7 +13,6 @@
 		"lib": ["ES2019.Array"],
 		"module": "commonjs",
 		"outDir": "dist",
-		"plugins": [{ "transform": "@zerollup/ts-transform-paths" }],
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"strict": true,
