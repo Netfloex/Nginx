@@ -2,7 +2,7 @@
 import chalk from "chalk";
 import { ZodIssue } from "zod";
 
-import { cloudflareExpiry, configPath, nginxConfigPath } from "@utils/env";
+import settings from "@utils/settings";
 
 class Log {
 	public log;
@@ -47,13 +47,13 @@ class Log {
 
 	public rmOld() {
 		this.info(
-			chalk`{yellow Removing old generated configs...} {dim ${nginxConfigPath}}`
+			chalk`{yellow Removing old generated configs...} {dim ${settings.nginxConfigPath}}`
 		);
 	}
 
 	public noOld() {
 		this.error(
-			chalk`{red Nginx Config Path not found:} {dim ${nginxConfigPath}}`
+			chalk`{red Nginx Config Path not found:} {dim ${settings.nginxConfigPath}}`
 		);
 		this.info(
 			chalk`You can set the {dim NGINX_CONFIG_PATH} env variable to customize this location.`
@@ -88,7 +88,7 @@ class Log {
 	}
 
 	public configValid() {
-		this.info(chalk`Config is valid {dim ${configPath}}`);
+		this.info(chalk`Config is valid {dim ${settings.configPath}}`);
 	}
 
 	// CSS
@@ -139,7 +139,7 @@ class Log {
 	// Cloudflare
 
 	private cloudflareExpiryDays = (
-		cloudflareExpiry /
+		settings.cloudflareExpiry /
 		1000 /
 		60 /
 		60 /

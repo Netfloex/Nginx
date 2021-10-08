@@ -8,21 +8,23 @@ import {
 	requestCloudflareIps,
 	updateCloudflareRealIp
 } from "@utils/cloudflare";
-import { configPath, nginxConfigPath } from "@utils/env";
 import log from "@utils/log";
+import settings from "@utils/settings";
 import store from "@utils/useStore";
+
+("@utils/settings");
 
 const main = async (): Promise<number> => {
 	const started = Date.now();
 	log.started();
 
-	if (!(await pathExists(configPath))) {
-		log.configNotFound(configPath);
+	if (!(await pathExists(settings.configPath))) {
+		log.configNotFound(settings.configPath);
 		return -1;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const rawConfig = require(configPath);
+	const rawConfig = require(settings.configPath);
 	const validatedConfig = await validateConfig(rawConfig);
 
 	if (validatedConfig == null) {
@@ -31,7 +33,7 @@ const main = async (): Promise<number> => {
 
 	const config = await parseConfig(validatedConfig);
 
-	if (!(await pathExists(nginxConfigPath))) {
+	if (!(await pathExists(settings.nginxConfigPath))) {
 		log.noOld();
 		return -1;
 	}
@@ -39,12 +41,14 @@ const main = async (): Promise<number> => {
 	log.rmOld();
 
 	// All Files starting with a digit
-	const files = (await readdir(nginxConfigPath)).filter((g) =>
+	const files = (await readdir(settings.nginxConfigPath)).filter((g) =>
 		g.match(/^\d/)
 	);
 
 	// Delete em
-	await Promise.all(files.map((file) => remove(join(nginxConfigPath, file))));
+	await Promise.all(
+		files.map((file) => remove(join(settings.nginxConfigPath, file)))
+	);
 
 	const promises: Promise<void>[] = [];
 
@@ -58,7 +62,8 @@ const main = async (): Promise<number> => {
 	promises.push(
 		...config.servers.map(async (server, i) => {
 			const fileName =
-				join(nginxConfigPath, `${i}-${server.filename}`) + ".conf";
+				join(settings.nginxConfigPath, `${i}-${server.filename}`) +
+				".conf";
 			await outputFile(fileName, await createConfig(server));
 
 			log.configDone(server.server_name);

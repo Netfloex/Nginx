@@ -3,14 +3,18 @@ import { join } from "path";
 
 import createHash from "@utils/createHash";
 import downloadCSS from "@utils/downloadCSS";
-import { customFilesPath } from "@utils/env";
 import log from "@utils/log";
+import settings from "@utils/settings";
 
 const downloadCSSToFile = async (custom_css: string[]): Promise<void> => {
 	await Promise.all(
 		custom_css.map(async (cssUrl) => {
 			const urlHash = createHash(cssUrl);
-			const fileName = join(customFilesPath, "css", urlHash + ".css");
+			const fileName = join(
+				settings.customFilesPath,
+				"css",
+				urlHash + ".css"
+			);
 
 			if (await pathExists(fileName)) {
 				log.cachedCSS(cssUrl);

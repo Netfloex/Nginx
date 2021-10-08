@@ -1,5 +1,5 @@
 import createConfig from "@lib/createConfig";
-import { dontDownloadCustomFiles } from "@utils/env";
+import settings from "@utils/settings";
 
 import fullValidServer from "@configs/full-valid-server.json";
 
@@ -13,9 +13,7 @@ describe("Create config", () => {
 	});
 
 	test("Full Server", () => {
-		// @ts-expect-error import
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		dontDownloadCustomFiles = true;
+		settings.dontDownloadCustomFiles = true;
 		return expect(createConfig(fullValidServer)).resolves.toMatchSnapshot();
 	});
 });

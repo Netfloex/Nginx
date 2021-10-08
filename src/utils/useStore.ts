@@ -1,5 +1,5 @@
 import Store from "@lib/store";
-import { storePath } from "@utils/env";
+import settings from "@utils/settings";
 
 type Schema = {
 	cloudflare: {
@@ -9,6 +9,6 @@ type Schema = {
 	};
 };
 
-const store = new Store<Schema>(storePath, { cloudflare: {} });
+const store = new Store<Schema>(settings.storePath, { cloudflare: {} });
 
 export default store;

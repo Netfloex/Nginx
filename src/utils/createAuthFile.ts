@@ -3,7 +3,7 @@ import { outputFile, pathExists } from "fs-extra";
 import { join } from "path";
 
 import createHash from "@utils/createHash";
-import { authPath } from "@utils/env";
+import settings from "@utils/settings";
 
 import { Auth } from "@models/ParsedConfig";
 
@@ -14,7 +14,7 @@ const createAuthFile = async (
 	users: Auth[]
 ): Promise<{ filename: string; hash: string }> => {
 	const hash = createHash(JSON.stringify(users));
-	const filename = join(authPath, hash);
+	const filename = join(settings.authPath, hash);
 
 	if (!(await pathExists(filename))) {
 		const content = users.map(htpasswd).join("\n");

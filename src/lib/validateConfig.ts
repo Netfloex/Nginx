@@ -3,8 +3,8 @@ import { URL } from "url";
 import { z } from "zod";
 
 import dnsLookup from "@utils/dnsLookup";
-import { dontCheckDns } from "@utils/env";
 import log from "@utils/log";
+import settings from "@utils/settings";
 
 import { ValidatedConfig } from "@models/ParsedConfig";
 import { InputConfig } from "@models/config";
@@ -38,7 +38,7 @@ const authSchema = z
 
 const proxyPassSchema = urlSchema
 	.superRefine(async (url, ctx) => {
-		if (dontCheckDns) return;
+		if (settings.dontCheckDns) return;
 
 		const { hostname } = new URL(url);
 		const valid = await dnsLookup(hostname);

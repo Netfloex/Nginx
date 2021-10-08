@@ -4,14 +4,18 @@ import { join } from "path";
 import { Stream } from "stream";
 
 import createHash from "@utils/createHash";
-import { customFilesPath } from "@utils/env";
 import log from "@utils/log";
+import settings from "@utils/settings";
 
 const downloadJSToFile = async (custom_js: string[]): Promise<void> => {
 	await Promise.all(
 		custom_js.map(async (jsUrl): Promise<void> => {
 			const urlHash = createHash(jsUrl);
-			const fileName = join(customFilesPath, "js", urlHash + ".js");
+			const fileName = join(
+				settings.customFilesPath,
+				"js",
+				urlHash + ".js"
+			);
 
 			if (await pathExists(fileName)) {
 				log.cachedJS(jsUrl);

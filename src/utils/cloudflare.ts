@@ -2,8 +2,8 @@ import axios from "axios";
 import { outputFile, pathExists } from "fs-extra";
 import { join } from "path";
 
-import { cloudflareExpiry, nginxConfigPath } from "@utils/env";
 import log from "@utils/log";
+import settings from "@utils/settings";
 import store from "@utils/useStore";
 
 import { IpsResponse } from "@models/cloudflare-ips";
@@ -24,7 +24,10 @@ export const requestCloudflareIps = async (): Promise<Data> => {
 
 	log.updatingCloudflare();
 
-	if (Date.now() - (store.data.cloudflare.updated ?? 0) < cloudflareExpiry) {
+	if (
+		Date.now() - (store.data.cloudflare.updated ?? 0) <
+		settings.cloudflareExpiry
+	) {
 		if (store.data.cloudflare.ips) {
 			log.cloudflareCached();
 			return { type: Type.Cached, ips: store.data.cloudflare.ips };
@@ -64,7 +67,10 @@ export const updateCloudflareRealIp = async ({
 	ips,
 	type
 }: Data): Promise<void> => {
-	const cloudflareConfPath = join(nginxConfigPath, "cloudflare.conf");
+	const cloudflareConfPath = join(
+		settings.nginxConfigPath,
+		"cloudflare.conf"
+	);
 	const configExists = await pathExists(cloudflareConfPath);
 
 	if (!configExists || type == Type.Updated) {

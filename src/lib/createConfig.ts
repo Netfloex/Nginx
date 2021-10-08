@@ -6,11 +6,7 @@ import createAuthFile from "@utils/createAuthFile";
 import createHash from "@utils/createHash";
 import downloadCSSToFile from "@utils/downloadCSSToFile";
 import downloadJSToFile from "@utils/downloadJSToFile";
-import {
-	customFilesPath,
-	dontDownloadCustomFiles,
-	nginxPath
-} from "@utils/env";
+import settings from "@utils/settings";
 
 import { Location, SimpleServer, ValidatedServer } from "@models/ParsedConfig";
 
@@ -25,7 +21,7 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 	if (location.proxy_pass) {
 		block.proxy_pass = location.proxy_pass;
 		block.include ??= [];
-		block.include.push(join(nginxPath, "proxy_pass.conf"));
+		block.include.push(join(settings.nginxPath, "proxy_pass.conf"));
 	}
 
 	// Return
@@ -69,7 +65,7 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 					.join("")}</head>'`
 			);
 
-			if (!dontDownloadCustomFiles)
+			if (!settings.dontDownloadCustomFiles)
 				await downloadCSSToFile(location.custom_css);
 		}
 
@@ -86,7 +82,7 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 					.join("")}</body>'`
 			);
 
-			if (!dontDownloadCustomFiles)
+			if (!settings.dontDownloadCustomFiles)
 				await downloadJSToFile(location.custom_js);
 		}
 	}
@@ -149,7 +145,7 @@ const createConfig = async (
 
 	if (usesCustom(server)) {
 		jsonServer["location /custom_assets"] = {
-			alias: customFilesPath
+			alias: settings.customFilesPath
 		};
 	}
 
