@@ -3,17 +3,25 @@ import settings from "@utils/settings";
 
 import fullValidServer from "@configs/full-valid-server.json";
 
+const replaceCurrentDir = (config: string): string => {
+	return config.replace(new RegExp(process.cwd(), "g"), "/current");
+};
+
 describe("Create config", () => {
-	test("Base Config", () => {
-		return expect(
-			createConfig({
-				server_name: "example.com"
-			})
-		).resolves.toMatchSnapshot();
+	test("Base Config", async () => {
+		expect(
+			replaceCurrentDir(
+				await createConfig({
+					server_name: "example.com"
+				})
+			)
+		).toMatchSnapshot();
 	});
 
-	test("Full Server", () => {
+	test("Full Server", async () => {
 		settings.dontDownloadCustomFiles = true;
-		return expect(createConfig(fullValidServer)).resolves.toMatchSnapshot();
+		expect(
+			replaceCurrentDir(await createConfig(fullValidServer))
+		).toMatchSnapshot();
 	});
 });
