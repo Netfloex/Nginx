@@ -17,25 +17,31 @@ const main = async (): Promise<number> => {
 	const started = Date.now();
 	log.started();
 
-	const configs = await readdir(settings.configPath);
+	let configFileName = settings.configFile;
 
-	const configPaths = configs.filter((config) =>
-		config.match(/^config\.(yml|yaml|jsonc?|js)$/)
-	);
+	if (!settings.configFile) {
+		const configs = await readdir(settings.configPath);
 
-	if (!configPaths.length) {
-		log.configNotFound(settings.configPath);
-		return -1;
-	} else if (configPaths.length > 1) {
-		log.multipleConfigs(configPaths);
+		const configPaths = configs.filter((config) =>
+			config.match(/^config\.(yml|yaml|jsonc?|js)$/)
+		);
+
+		if (!configPaths.length) {
+			log.configNotFound(settings.configPath);
+			return -1;
+		} else if (configPaths.length > 1) {
+			log.multipleConfigs(configPaths);
+		}
+
+		configFileName = join(settings.configPath, configPaths[0]);
 	}
 
 	const results = rcFile("config", {
-		configFileName: join(settings.configPath, configPaths[0])
+		configFileName
 	});
 
 	if (!results) {
-		log.configError(configPaths[0]);
+		log.configError(configFileName!);
 		return -1;
 	}
 

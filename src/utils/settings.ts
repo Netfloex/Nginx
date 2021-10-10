@@ -8,6 +8,7 @@ const dataPath = r(env.DATA_PATH, "data");
 
 const settings = {
 	configPath: r(env.CONFIG_PATH, "config"),
+	configFile: env.CONFIG_FILE ? resolve(env.CONFIG_FILE) : undefined,
 	nginxConfigPath: r(env.NGINX_CONFIG_PATH, "nginx_config_files"),
 	nginxPath: r(env.NGINX_BASE_CONFIGS_PATH, "src/nginx"),
 
