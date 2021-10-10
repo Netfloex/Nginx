@@ -3,6 +3,7 @@ nginx_config_files
 letsencrypt
 logs
 docker-compose.yml
-config.js
+config/*
+!config/config.example*
 dist
 data

@@ -2,12 +2,12 @@ module.exports = {
 	cloudflare: true, // Restore original visitor ips
 	servers: {
 		"example.com": {
-			proxy_pass: "http://base_domain:80", // example.com
+			proxy_pass: "http://base_domain", // example.com
 			subdomains: {
 				// Basic Usage, can be shortened
 				www: {
 					// www.example.com
-					proxy_pass: "http://www:80"
+					proxy_pass: "http://www"
 				},
 				// Shortened example, no extra configuration
 				api: "http://api:3000", // api.example.com
@@ -24,7 +24,7 @@ module.exports = {
 				// Custom JS example
 				custom: {
 					// custom.example.com
-					proxy_pass: "http://custom:80",
+					proxy_pass: "http://custom",
 					// This file gets downloaded, its then appended to the <body>
 					custom_js:
 						"https://example.com/custom-javascript-injected.js"
@@ -32,7 +32,7 @@ module.exports = {
 
 				//  Advanced example: Enables darkmode on vaultwarden and enables a websocket on a different location
 				bitwarden: {
-					proxy_pass: "http://bitwarden:80",
+					proxy_pass: "http://bitwarden",
 					custom_css:
 						"https://theme-park.dev/CSS/themes/bitwarden/organizr-dark.css",
 					locations: {
@@ -40,7 +40,7 @@ module.exports = {
 							proxy_pass: "http://bitwarden:3012",
 							websocket: true
 						},
-						"/notifications/hub/negotiate": "http://bitwarden:80"
+						"/notifications/hub/negotiate": "http://bitwarden"
 					}
 				},
 
@@ -51,7 +51,7 @@ module.exports = {
 
 				// Auth example
 				auth: {
-					proxy_pass: "http://super_secret:80",
+					proxy_pass: "http://super_secret",
 					auth: {
 						username: "username",
 						password: "password"
@@ -59,6 +59,6 @@ module.exports = {
 				}
 			}
 		},
-		"second_domain.com": "http://second:80" // defaults to proxy_pass
+		"second_domain.com": "http://second" // defaults to proxy_pass
 	}
 };

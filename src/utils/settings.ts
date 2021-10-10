@@ -7,7 +7,7 @@ const r = (env: string | undefined, or: string): string => resolve(env ?? or);
 const dataPath = r(env.DATA_PATH, "data");
 
 const settings = {
-	configPath: r(env.CONFIG_PATH, "config/config.js"),
+	configPath: r(env.CONFIG_PATH, "config"),
 	nginxConfigPath: r(env.NGINX_CONFIG_PATH, "nginx_config_files"),
 	nginxPath: r(env.NGINX_BASE_CONFIGS_PATH, "src/nginx"),
 

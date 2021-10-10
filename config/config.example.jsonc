@@ -1,0 +1,12 @@
+// Tip, when using json with VSCode use the jsonc extension to allow comments
+
+{
+	"servers": {
+		"example.com": {
+			"proxy_pass": "http://base",
+			"subdomains": {
+				"www": "http://base"
+			}
+		}
+	}
+}

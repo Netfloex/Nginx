@@ -6,10 +6,45 @@ The container uses [JonasAlfredsson/docker-nginx-certbot](https://github.com/Jon
 This means SSL certificates are automatically managed and [more](https://github.com/JonasAlfredsson/docker-nginx-certbot#noteworthy-features).
 
 This container simplifies the process of writing multiple Nginx config files.
-There is only one configuration file at `config/config.js`, [example config](config/config.example.js).
+There is only one configuration file needed.
 Nginx Config Manager expands this one file in to multiple Nginx config files.
 
-The base config can be found [here](src/nginx/baseConfig.conf)
+
+## Installation
+
+Docker Compose:
+
+```yaml
+version: "3.3"
+
+services:
+    nginx:
+        image: netfloex/nginx:v1.0.1
+        container_name: nginx
+        environment:
+            CERTBOT_EMAIL: EMAIL # Required
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            #  Optional
+
+            # - ./logs:/var/log/nginx
+            # - ./nginx_config_files:/etc/nginx/user_conf.d
+            - ./data:/app/data # Needed when using custom files or cloudflare, this is used as a cache.
+
+            # Required
+
+            - ./letsencrypt:/etc/letsencrypt
+            - ./config:/app/config
+
+
+```
+
+You can create a config file using json5, js or yaml.
+The file should be placed in the config folder as `config.(yml|yaml|json|jsonc|js)`
+
+[Example javascript config](config/config.example.js)
 
 ## Features
 

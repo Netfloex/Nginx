@@ -72,11 +72,23 @@ class Log {
 		this.error(chalk`{red The config file was not found} {dim ${path}}`);
 	}
 
+	public multipleConfigs(configs: string[]) {
+		this.warn(
+			chalk`Multiple config files were found, using {yellow ${configs[0]}}`
+		);
+	}
+
 	public invalidConfig(multiple: boolean) {
 		this.error(
 			chalk`There was an issue with your config, the error${
 				multiple ? "s" : ""
 			} ${multiple ? "are" : "is"} listed below.`
+		);
+	}
+
+	public configError(config: string) {
+		this.error(
+			chalk`There was an error parsing the config, please check {dim ${config}}`
 		);
 	}
 

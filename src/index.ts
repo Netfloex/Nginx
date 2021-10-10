@@ -1,5 +1,6 @@
 import { pathExists, outputFile, readdir, remove } from "fs-extra";
 import { join } from "path";
+import { rcFile } from "rc-config-loader";
 
 import createConfig from "@lib/createConfig";
 import parseConfig from "@lib/parseConfig";
@@ -12,20 +13,33 @@ import log from "@utils/log";
 import settings from "@utils/settings";
 import store from "@utils/useStore";
 
-("@utils/settings");
-
 const main = async (): Promise<number> => {
 	const started = Date.now();
 	log.started();
 
-	if (!(await pathExists(settings.configPath))) {
+	const configs = await readdir(settings.configPath);
+
+	const configPaths = configs.filter((config) =>
+		config.match(/^config\.(yml|yaml|jsonc?|js)$/)
+	);
+
+	if (!configPaths.length) {
 		log.configNotFound(settings.configPath);
+		return -1;
+	} else if (configPaths.length > 1) {
+		log.multipleConfigs(configPaths);
+	}
+
+	const results = rcFile("config", {
+		configFileName: join(settings.configPath, configPaths[0])
+	});
+
+	if (!results) {
+		log.configError(configPaths[0]);
 		return -1;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const rawConfig = require(settings.configPath);
-	const validatedConfig = await validateConfig(rawConfig);
+	const validatedConfig = await validateConfig(results.config);
 
 	if (validatedConfig == null) {
 		return -1;
@@ -39,16 +53,15 @@ const main = async (): Promise<number> => {
 	}
 
 	log.rmOld();
-
-	// All Files starting with a digit
-	const files = (await readdir(settings.nginxConfigPath)).filter((g) =>
-		g.match(/^\d/)
-	);
-
-	// Delete em
-	await Promise.all(
-		files.map((file) => remove(join(settings.nginxConfigPath, file)))
-	);
+	await readdir(settings.nginxConfigPath).then(async (files) => {
+		const oldConfigFiles = files.filter((g) => g.match(/^\d/));
+		// Delete em
+		await Promise.all(
+			oldConfigFiles.map((file) =>
+				remove(join(settings.nginxConfigPath, file))
+			)
+		);
+	});
 
 	const promises: Promise<void>[] = [];
 

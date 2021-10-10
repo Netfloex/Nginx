@@ -1,0 +1,15 @@
+{cloudflare: true
+servers:
+    example.com:
+        proxy_pass: "http://base_domain"
+        subdomains:
+            www: "http://base_domain"
+            protected:
+                proxy_pass: "http://secure"
+                auth:
+                    username: admin
+                    password: admin
+# Creates proxy pass configs:
+# example.com           >   http://base_domain
+# www.example.com       >   http://base_domain
+# protected.example.com >   http://secure # with http basic auth
