@@ -15,6 +15,7 @@ export default defineConfig({
 		"fs-extra",
 		"path",
 		"axios",
+		"rc-config-loader",
 		"chalk",
 		"url",
 		"zod",
