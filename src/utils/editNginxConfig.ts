@@ -1,7 +1,8 @@
 import Parser from "@webantic/nginx-config-parser";
-import { readFile, writeFile } from "fs-extra";
+import { pathExists, readFile, writeFile } from "fs-extra";
 import { join } from "path";
 
+import log from "@utils/log";
 import settings from "@utils/settings";
 
 import { NginxConf } from "@models/nginx.conf";
@@ -12,15 +13,22 @@ export const editNginxConfig = async (
 	editConfig: EditConfigFunction
 ): Promise<void> => {
 	const nginxPath = join(settings.nginxPath, "nginx.conf");
-	const nginxConfig = await readFile(nginxPath, "utf8");
 
-	const concatSplitStrings = nginxConfig.replace(/" '\n\s+'/g, " ");
-
+	let oldConfig: NginxConf;
 	const parser = new Parser();
 
-	const parsed = parser.toJSON<NginxConf>(concatSplitStrings);
+	if (await pathExists(nginxPath)) {
+		const nginxConfig = await readFile(nginxPath, "utf8");
 
-	const edited = editConfig(parsed);
+		const concatSplitStrings = nginxConfig.replace(/" '\n\s+'/g, " ");
+
+		oldConfig = parser.toJSON<NginxConf>(concatSplitStrings);
+	} else {
+		oldConfig = {};
+		log.nginxConfNotFound(nginxPath);
+	}
+
+	const edited = editConfig(oldConfig);
 
 	const config = parser.toConf<NginxConf>(edited);
 

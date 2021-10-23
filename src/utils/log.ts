@@ -60,6 +60,9 @@ class Log {
 		);
 	}
 
+	public nginxConfNotFound(nginxPath: string) {
+		this.warn(chalk`nginx.conf does not exist: {dim ${nginxPath}}`);
+	}
 	// Nginx Config
 
 	public configDone(config: string) {
