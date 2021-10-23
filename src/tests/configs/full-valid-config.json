@@ -1,4 +1,7 @@
 {
+	"nginx": {
+		"log": "$time_local $remote_addr"
+	},
 	"servers": {
 		"example.com": {
 			"auth": {

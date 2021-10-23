@@ -8,10 +8,10 @@ const baseConf = async (): Promise<NginxConfig> => {
 	const parser = new ConfigParser();
 
 	const NginxConfig = (
-		await readFile(join(settings.nginxPath, "baseConfig.conf"))
+		await readFile(join(settings.nginxIncludePath, "baseConfig.conf"))
 	).toString();
 
-	return parser.toJSON(NginxConfig);
+	return parser.toJSON<NginxConfig>(NginxConfig);
 };
 
 export default baseConf;

@@ -1,5 +1,5 @@
 node_modules
-nginx_config_files
+nginx
 letsencrypt
 logs
 docker-compose.yml

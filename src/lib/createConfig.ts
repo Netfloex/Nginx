@@ -21,7 +21,7 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 	if (location.proxy_pass) {
 		block.proxy_pass = location.proxy_pass;
 		block.include ??= [];
-		block.include.push(join(settings.nginxPath, "proxy_pass.conf"));
+		block.include.push(join(settings.nginxIncludePath, "proxy_pass.conf"));
 	}
 
 	// Return

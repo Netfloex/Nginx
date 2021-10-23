@@ -32,6 +32,7 @@ ENV NODE_ENV production
 
 ENV FORCE_COLOR 1
 ENV DATA_PATH /app/data
+ENV NGINX_PATH /etc/nginx
 ENV NGINX_CONFIG_PATH /etc/nginx/user_conf.d
 
 COPY --from=builder /app/dist ./dist

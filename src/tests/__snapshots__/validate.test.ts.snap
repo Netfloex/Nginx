@@ -3,6 +3,9 @@
 exports[`Validate Config It accepts a valid config 1`] = `
 {
   "cloudflare": false,
+  "nginx": {
+    "log": "$time_local $remote_addr",
+  },
   "servers": {
     "example.com": {
       "auth": [

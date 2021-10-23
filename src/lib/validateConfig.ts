@@ -149,6 +149,14 @@ export const domainSchema = subdomainSchema
 	})
 	.partial();
 
+const nginxSchema = z
+	.object({
+		log: z.string()
+	})
+	.partial()
+	.strict()
+	.default({});
+
 export const configSchema = z
 	.object({
 		servers: z
@@ -160,7 +168,8 @@ export const configSchema = z
 			)
 			// .superRefine(recordRegex(domainRegex, "domain"))
 			.default({}),
-		cloudflare: z.boolean().default(false)
+		cloudflare: z.boolean().default(false),
+		nginx: nginxSchema
 	})
 	.partial()
 	.strict();
@@ -187,8 +196,6 @@ const validateConfig = async (
 
 		return null;
 	} else {
-		log.configValid();
-
 		return result.data as ValidatedConfig;
 	}
 };

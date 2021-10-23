@@ -30,14 +30,20 @@ type WithSubdomains = ValidatedServer & {
 	subdomains: Record<string, ValidatedServer>;
 };
 
+type NginxConfig = {
+	log?: string;
+};
+
 export type ValidatedConfig = {
 	servers: Record<string, WithSubdomains>;
 	cloudflare: boolean;
+	nginx: NginxConfig;
 };
 
 type ParsedConfig = {
 	servers: SimpleServer[];
-	cloudflare?: boolean;
+	cloudflare: boolean;
+	nginx: NginxConfig;
 };
 
 export default ParsedConfig;

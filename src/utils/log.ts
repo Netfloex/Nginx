@@ -56,7 +56,7 @@ class Log {
 			chalk`{red Nginx Config Path not found:} {dim ${settings.nginxConfigPath}}`
 		);
 		this.info(
-			chalk`You can set the {dim NGINX_CONFIG_PATH} env variable to customize this location.`
+			chalk`You can set {dim NGINX_CONFIG_PATH} env variable to customize this location.`
 		);
 	}
 
@@ -99,8 +99,8 @@ class Log {
 		this.error(chalk`{magenta Error}: ${issue.message}`);
 	}
 
-	public configValid() {
-		this.info(chalk`Config is valid {dim ${settings.configPath}}`);
+	public configValid(file: string) {
+		this.info(chalk`Config is valid {dim ${file}}`);
 	}
 
 	// CSS

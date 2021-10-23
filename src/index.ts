@@ -9,6 +9,7 @@ import {
 	requestCloudflareIps,
 	updateCloudflareRealIp
 } from "@utils/cloudflare";
+import { editNginxConfig } from "@utils/editNginxConfig";
 import log from "@utils/log";
 import settings from "@utils/settings";
 import store from "@utils/useStore";
@@ -50,6 +51,7 @@ const main = async (): Promise<number> => {
 	if (validatedConfig == null) {
 		return -1;
 	}
+	log.configValid(configFileName!);
 
 	const config = await parseConfig(validatedConfig);
 
@@ -78,6 +80,17 @@ const main = async (): Promise<number> => {
 		}
 	}
 
+	if (config.nginx.log) {
+		promises.push(
+			(async (): Promise<void> => {
+				await editNginxConfig((nginxConf) => {
+					nginxConf.http ??= {};
+					nginxConf.http.log_format = `main ${config.nginx.log}`;
+					return nginxConf;
+				});
+			})()
+		);
+	}
 	promises.push(
 		...config.servers.map(async (server, i) => {
 			const fileName =
