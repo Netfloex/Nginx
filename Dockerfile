@@ -15,17 +15,11 @@ COPY --from=deps /app/node_modules ./node_modules
 RUN yarn build
 RUN yarn install --production --ignore-scripts --prefer-offline
 
-FROM jonasal/nginx-certbot AS runner
+FROM jonasal/nginx-certbot:2.4.1-alpine AS runner
 WORKDIR /app
 
 
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends curl
-
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
-
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends nodejs
+RUN apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/v3.8/main/ nodejs=12.22.6-r0
 
 
 ENV NODE_ENV production

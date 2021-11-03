@@ -21,6 +21,11 @@ const main = async (): Promise<number> => {
 	let configFileName = settings.configFile;
 
 	if (!settings.configFile) {
+		if (!(await pathExists(settings.configPath))) {
+			log.configFolderNotFound(settings.configPath);
+			return -1;
+		}
+
 		const configs = await readdir(settings.configPath);
 
 		const configPaths = configs.filter((config) =>

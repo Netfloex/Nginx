@@ -75,6 +75,12 @@ class Log {
 		this.error(chalk`{red The config file was not found} {dim ${path}}`);
 	}
 
+	public configFolderNotFound(path: string) {
+		this.error(
+			chalk`{red The config {bold folder} was not found} {dim ${path}}`
+		);
+	}
+
 	public multipleConfigs(configs: string[]) {
 		this.warn(
 			chalk`Multiple config files were found, using {yellow ${configs[0]}}`
