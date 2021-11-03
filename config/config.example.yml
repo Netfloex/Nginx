@@ -1,4 +1,10 @@
-{cloudflare: true
+# Trust Cloudflare ip's as a proxy
+cloudflare: true
+
+# Customize the access log format
+nginx:
+    log: $time_local $remote_addr
+
 servers:
     example.com:
         proxy_pass: "http://base_domain"

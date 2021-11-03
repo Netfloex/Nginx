@@ -43,25 +43,25 @@ The file should be placed in the config folder as `config.(yml|yaml|json|jsonc|j
 
 [Example javascript config](config/config.example.js)
 
-## Features
+## Server Options
 
--   Simpler Configs
--   Auto SSL
+-   [Proxy Pass](#proxy-pass)
+-   [Custom CSS](#custom-css)
+-   [Custom JS](#custom-js)
+-   [Websocket](#websocket)
+-   [Return](#return)
+-   [HTML](#html)
+-   [Redirect](#redirect)
+-   [Rewrite](#rewrite)
+-   [Headers](#headers)
+-   [Cors](#cors)
+-   [Basic Auth](#basic-auth)
+-   [Location Blocks](#location-blocks)
 
--   Proxy Pass
--   Custom CSS
--   Custom JS
--   Websocket
--   Return
--   HTML
--   Redirect
--   Rewrite
--   Headers
--   Cors
--   Basic Auth
+## Global Options
 
--   Location Blocks
--   Cloudflare Real IP
+-   [Cloudflare Real IP](#cloudflare-real-ip)
+-   [Accesslog Format](#accesslog-format)
 
 ## Getting Started
 
@@ -381,6 +381,22 @@ module.exports = {
 ```
 
 [Code](src/utils/enableCloudflare.ts)
+
+### Access Log Format
+
+This allows customizing the access log format.
+For variables see [here](https://nginx.org/en/docs/varindex.html)
+
+```js
+// config.js
+module.exports = {
+	nginx: {
+		log: "$time_local $remote_addr"
+	}
+};
+```
+
+[Code](src/utils/editNginxConfig.ts)
 
 ## Environment Options
 
