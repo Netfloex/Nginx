@@ -9,7 +9,6 @@ This container simplifies the process of writing multiple Nginx config files.
 There is only one configuration file needed.
 Nginx Config Manager expands this one file in to multiple Nginx config files.
 
-
 ## Installation
 
 Docker Compose:
@@ -19,7 +18,7 @@ version: "3.3"
 
 services:
     nginx:
-        image: netfloex/nginx:v1.0.2
+        image: netfloex/nginx:v1.0.3
         container_name: nginx
         environment:
             CERTBOT_EMAIL: EMAIL # Required
@@ -37,8 +36,6 @@ services:
 
             - ./letsencrypt:/etc/letsencrypt
             - ./config:/app/config
-
-
 ```
 
 You can create a config file using json5, js or yaml.
