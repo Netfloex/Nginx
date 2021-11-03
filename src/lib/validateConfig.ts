@@ -1,6 +1,8 @@
 import chalk from "chalk";
+import { pathExists } from "fs-extra";
+import { resolve } from "path";
 import { URL } from "url";
-import { z } from "zod";
+import { z, ZodIssueCode } from "zod";
 
 import dnsLookup from "@utils/dnsLookup";
 import log from "@utils/log";
@@ -9,7 +11,14 @@ import settings from "@utils/settings";
 import { ValidatedConfig } from "@models/ParsedConfig";
 import { InputConfig } from "@models/config";
 
-const returnKeys = ["proxy_pass", "return", "redirect", "rewrite", "html"];
+const returnKeys = [
+	"proxy_pass",
+	"return",
+	"redirect",
+	"rewrite",
+	"html",
+	"static"
+];
 
 export const returnKeysFromOption = (
 	options: Record<string, unknown>
@@ -107,7 +116,18 @@ export const locationSchema = z
 		redirect: z.string(),
 		rewrite: z.string(),
 		auth: authSchema.transform((auth) => [auth]).or(authSchema.array()),
-		html: z.string()
+		html: z.string(),
+		static: z
+			.string()
+			.transform((str) => resolve(str))
+			.superRefine(async (path, ctx) => {
+				if (!(await pathExists(path))) {
+					ctx.addIssue({
+						code: ZodIssueCode.custom,
+						message: chalk`Static path does not exist: {dim ${path}}`
+					});
+				}
+			})
 	})
 	.partial()
 	.strict();

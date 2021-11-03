@@ -37,6 +37,8 @@ const createLocation = async (location: Location): Promise<NginxLocation> => {
 		location.headers["Content-Type"] = "text/html";
 	}
 
+	if (location.static) block.root = location.static;
+
 	if (location.websocket) {
 		// Websocket
 		block.proxy_set_header ??= [];

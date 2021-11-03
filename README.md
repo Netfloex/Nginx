@@ -42,6 +42,8 @@ You can create a config file using json5, js or yaml.
 The file should be placed in the config folder as `config.(yml|yaml|json|jsonc|js)`
 
 [Example javascript config](config/config.example.js)
+[Example json config](config/config.example.jsonc)
+[Example yaml config](config/config.example.yml)
 
 ## Server Options
 
@@ -49,19 +51,22 @@ The file should be placed in the config folder as `config.(yml|yaml|json|jsonc|j
 -   [Custom CSS](#custom-css)
 -   [Custom JS](#custom-js)
 -   [Websocket](#websocket)
+-   [Headers](#headers)
+-   [Cors](#cors)
+
 -   [Return](#return)
 -   [HTML](#html)
 -   [Redirect](#redirect)
 -   [Rewrite](#rewrite)
--   [Headers](#headers)
--   [Cors](#cors)
+-   [Static Files](#static)
+
 -   [Basic Auth](#basic-auth)
 -   [Location Blocks](#location-blocks)
 
 ## Global Options
 
 -   [Cloudflare Real IP](#cloudflare-real-ip)
--   [Accesslog Format](#accesslog-format)
+-   [Access Log Format](#accesslog-format)
 
 ## Getting Started
 
@@ -219,6 +224,31 @@ Example:
 
 [Code](src/lib/createConfig.ts)
 
+### Headers
+
+Allows adding headers to the response.
+
+Expects an object with key values of the headers.
+
+```js
+/* Server/Subdomain/Location: */ {
+	headers: {
+		"Content-Type": "text/html",
+		"x-powered-by": "overridden"
+	};
+}
+```
+
+[Code](src/lib/createConfig.ts)
+
+### Cors
+
+Adds a `Access-Control-Allow-Origin` header with the supplied value.
+
+Expects an url, or `true`/`*` to allow any origin.
+
+[Code](src/lib/parseConfig.ts)
+
 ### Return
 
 This may be useful to show a custom message with a custom status code.
@@ -278,30 +308,23 @@ Note: If possible redirect/return should be used.
 
 [Code](src/lib/createConfig.ts)
 
-### Headers
+### Static Files
 
-Allows adding headers to the response.
-
-Expects an object with key values of the headers.
+Allows hosting static files, same as [root](https://nginx.org/en/docs/http/ngx_http_core_module.html#root)
+When not using an absolute path it's relative to `/app`
 
 ```js
 /* Server/Subdomain/Location: */ {
-	headers: {
-		"Content-Type": "text/html",
-		"x-powered-by": "overridden"
-	};
+	static: "site"; // Resolves to /app/site
 }
 ```
 
-[Code](src/lib/createConfig.ts)
+Docker Compose
 
-### Cors
-
-Adds a `Access-Control-Allow-Origin` header with the supplied value.
-
-Expects an url, or `true`/`*` to allow any origin.
-
-[Code](src/lib/parseConfig.ts)
+```yaml
+volumes:
+    - ./site:/app/site
+```
 
 ### Basic Auth
 

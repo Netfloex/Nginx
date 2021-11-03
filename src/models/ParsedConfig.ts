@@ -25,6 +25,7 @@ export type ValidatedServer = {
 	locations?: Location[];
 	auth?: Auth[];
 	html?: string;
+	static?: string;
 };
 type WithSubdomains = ValidatedServer & {
 	subdomains: Record<string, ValidatedServer>;
