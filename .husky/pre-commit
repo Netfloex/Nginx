@@ -2,5 +2,5 @@
 . "$(dirname "$0")/_/husky.sh"
 
 yarn typescript
-yarn test -o
+yarn test
 yarn lint

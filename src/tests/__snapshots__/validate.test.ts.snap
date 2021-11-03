@@ -93,7 +93,7 @@ exports[`Validate Config It checks for an invalid config 1`] = `
   "[ERROR] Path: servers.example.com.auth",
   "[ERROR] Error: Unrecognized key(s) in object: 'unknown'",
   "[ERROR] Path: servers.example.com.locations.empty",
-  "[ERROR] Error: Please specify at least one \\"return\\" type: proxy_pass, return, redirect, rewrite, html",
+  "[ERROR] Error: Please specify at least one \\"return\\" type: proxy_pass, return, redirect, rewrite, html, static",
   "[ERROR] Path: servers.example.com.locations.invalid",
   "[ERROR] Error: Invalid url",
   "[ERROR] Path: servers.example.com.cors",
@@ -111,7 +111,7 @@ exports[`Validate Config It tests for invalid number of return types 1`] = `
 [
   "[ERROR] There was an issue with your config, the errors are listed below.",
   "[ERROR] Path: servers.no returns",
-  "[ERROR] Error: Please specify at least one \\"return\\" type: proxy_pass, return, redirect, rewrite, html",
+  "[ERROR] Error: Please specify at least one \\"return\\" type: proxy_pass, return, redirect, rewrite, html, static",
   "[ERROR] Path: servers.example.com",
   "[ERROR] Error: Too many \\"return\\" types, found: proxy_pass, redirect, rewrite, html, return, please use only one of them.",
 ]
