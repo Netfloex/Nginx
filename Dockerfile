@@ -16,6 +16,10 @@ RUN yarn build
 RUN yarn install --production --ignore-scripts --prefer-offline
 
 FROM jonasal/nginx-certbot:2.4.1-alpine AS runner
+
+# Remove builtin configs from parent container 
+RUN rm /etc/nginx/conf.d/*
+
 WORKDIR /app
 
 
@@ -29,6 +33,7 @@ ENV DATA_PATH /app/data
 ENV NGINX_PATH /etc/nginx
 ENV NGINX_CONFIG_PATH /etc/nginx/user_conf.d
 
+COPY --from=builder /app/src/nginx/builtin /etc/nginx/conf.d
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/nginx ./src/nginx
 COPY --from=builder /app/entrypoint.sh ./entrypoint.sh

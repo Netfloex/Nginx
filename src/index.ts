@@ -1,4 +1,4 @@
-import { pathExists, outputFile, readdir, remove } from "fs-extra";
+import { outputFile, pathExists, readdir, remove } from "fs-extra";
 import { join } from "path";
 import { rcFile } from "rc-config-loader";
 
@@ -96,6 +96,7 @@ const main = async (): Promise<number> => {
 			})()
 		);
 	}
+
 	promises.push(
 		...config.servers.map(async (server, i) => {
 			const fileName =
