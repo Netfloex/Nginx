@@ -1,6 +1,5 @@
 import { outputFile, pathExists, readdir, remove } from "fs-extra";
 import { join } from "path";
-import { rcFile } from "rc-config-loader";
 
 import createConfig from "@lib/createConfig";
 import parseConfig from "@lib/parseConfig";
@@ -11,6 +10,7 @@ import {
 } from "@utils/cloudflare";
 import { editNginxConfig } from "@utils/editNginxConfig";
 import log from "@utils/log";
+import parseUserConfig from "@utils/parseUserConfig";
 import settings from "@utils/settings";
 import store from "@utils/useStore";
 
@@ -18,9 +18,9 @@ const main = async (): Promise<number> => {
 	const started = Date.now();
 	log.started();
 
-	let configFileName = settings.configFile;
+	let configFilePath = settings.configFile;
 
-	if (!settings.configFile) {
+	if (!configFilePath) {
 		if (!(await pathExists(settings.configPath))) {
 			log.configFolderNotFound(settings.configPath);
 			return -1;
@@ -29,7 +29,7 @@ const main = async (): Promise<number> => {
 		const configs = await readdir(settings.configPath);
 
 		const configPaths = configs.filter((config) =>
-			config.match(/^config\.(yml|yaml|jsonc?|js)$/)
+			config.match(/^config\.(ya?ml|json[c5]?|js)$/)
 		);
 
 		if (!configPaths.length) {
@@ -39,24 +39,28 @@ const main = async (): Promise<number> => {
 			log.multipleConfigs(configPaths);
 		}
 
-		configFileName = join(settings.configPath, configPaths[0]);
+		configFilePath = join(settings.configPath, configPaths[0]);
 	}
 
-	const results = rcFile("config", {
-		configFileName
-	});
+	const results = await parseUserConfig(configFilePath);
 
 	if (!results) {
-		log.configError(configFileName!);
+		log.configError(configFilePath!);
 		return -1;
 	}
 
-	const validatedConfig = await validateConfig(results.config);
+	if (Object.keys(results).length == 0) {
+		log.configEmpty();
+		return -1;
+	}
+
+	const validatedConfig = await validateConfig(results);
 
 	if (validatedConfig == null) {
 		return -1;
 	}
-	log.configValid(configFileName!);
+
+	log.configValid(configFilePath!);
 
 	const config = await parseConfig(validatedConfig);
 
@@ -124,6 +128,8 @@ main()
 		}
 	})
 	.catch((error) => {
+		log.exception();
 		console.error(error);
+		log.exited();
 		process.exitCode = -1;
 	});

@@ -39,7 +39,7 @@ services:
 ```
 
 You can create a config file using json5, js or yaml.
-The file should be placed in the config folder as `config.(yml|yaml|json|jsonc|js)`
+The file should be placed in the config folder as `config.(yml|yaml|json|jsonc|json5|js)`
 
 [Example javascript config](config/config.example.js)
 [Example json config](config/config.example.jsonc)

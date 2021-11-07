@@ -195,7 +195,7 @@ export const configSchema = z
 	.strict();
 
 const validateConfig = async (
-	config: InputConfig
+	config: InputConfig | unknown
 ): Promise<ValidatedConfig | null> => {
 	const result = await configSchema.spa(config);
 

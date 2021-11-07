@@ -1,4 +1,4 @@
-// Tip, when using json with VSCode use the jsonc extension to allow comments
+// Tip, when using json with VSCode use the jsonc or json5 extension to allow comments
 
 {
 	"servers": {

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import chalk from "chalk";
+import { YAMLException } from "js-yaml";
 import { ZodIssue } from "zod";
 
 import settings from "@utils/settings";
@@ -41,6 +42,10 @@ class Log {
 
 	public exited() {
 		this.error(chalk`{red Exited}`);
+	}
+
+	public exception() {
+		this.error("An error occurred:");
 	}
 
 	// Old configurations
@@ -99,6 +104,28 @@ class Log {
 		this.error(
 			chalk`There was an error parsing the config, please check {dim ${config}}`
 		);
+	}
+
+	public configYamlError(error: YAMLException) {
+		this.error(
+			chalk`Yaml Error: {dim ${error.reason}}:\n${error.mark.snippet}`
+		);
+	}
+
+	public configJSONError(error: Error) {
+		this.error(chalk`JSON Error: {dim ${error.message}}`);
+	}
+
+	public configJSError(error: Error) {
+		this.error(
+			chalk`JS Error: {dim ${error.message}}\n${
+				error.stack?.split("\n")[1]
+			}`
+		);
+	}
+
+	public configEmpty() {
+		this.error(chalk`The config is empty`);
 	}
 
 	public configIssue(issue: ZodIssue) {

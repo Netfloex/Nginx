@@ -15,7 +15,6 @@ describe("Validate Config", () => {
 	const mockedLog = mocked(log.log);
 
 	test("It checks for an invalid config", async () => {
-		// @ts-expect-error expect errors
 		expect(await validateConfig(fullErrorConfig)).toBe(null);
 
 		expect(mockedLog.mock.calls.flat()).toMatchSnapshot();
