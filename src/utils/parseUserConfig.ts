@@ -29,9 +29,30 @@ const parseUserConfig = async (
 			return false;
 		}
 	}
+
 	if (ext.match(/^\.json[c5]?$/)) {
 		try {
-			return parse(content);
+			return parse(content, (key, value) => {
+				if (typeof value == "string") {
+					const matches = value.match(/%env:([\w-]+)%/g);
+
+					if (matches) {
+						matches.forEach((match) => {
+							const env = match.match(/%env:([\w-]+)%/)![1];
+
+							if (process.env[env]) {
+								value = value.replace(
+									`%env:${env}%`,
+									process.env[env]
+								);
+							} else {
+								log.configENVNotFound(match, env);
+							}
+						});
+					}
+				}
+				return value;
+			});
 		} catch (error) {
 			log.configJSONError(error as Error);
 			return false;

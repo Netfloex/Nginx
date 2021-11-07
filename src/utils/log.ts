@@ -139,6 +139,12 @@ class Log {
 		this.info(chalk`Config is valid {dim ${file}}`);
 	}
 
+	public configENVNotFound(envKey: string, env: string) {
+		this.warn(
+			chalk`Config contained {dim ${envKey}}, however {dim process.env.${env}} was not defined.`
+		);
+	}
+
 	// CSS
 
 	public downloadCSS(url: string) {
