@@ -6,6 +6,7 @@ const r = (env: string | undefined, or: string): string => resolve(env ?? or);
 
 const dataPath = r(env.DATA_PATH, "data");
 const nginxPath = r(env.NGINX_PATH, "nginx");
+const nginxConfigPath = r(env.NGINX_CONFIG_PATH, join(nginxPath, "conf.d"));
 
 const settings = {
 	configPath: r(env.CONFIG_PATH, "config"),
@@ -13,7 +14,12 @@ const settings = {
 	nginxIncludePath: r(env.NGINX_BASE_CONFIGS_PATH, "src/nginx"),
 
 	nginxPath,
-	nginxConfigPath: r(env.NGINX_CONFIG_PATH, join(nginxPath, "conf.d")),
+
+	nginxConfigPath,
+	cloudflareConfPath: r(
+		env.CLOUDFLARE_CONFIG_PATH,
+		join(nginxConfigPath, "cloudflare.conf")
+	),
 
 	dataPath,
 	customFilesPath: r(env.CUSTOM_FILES_PATH, join(dataPath, "custom")),

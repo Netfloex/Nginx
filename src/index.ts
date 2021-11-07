@@ -83,6 +83,8 @@ const main = async (): Promise<number> => {
 		if (config.cloudflare) {
 			promises.push(requestCloudflareIps().then(updateCloudflareRealIp));
 		}
+	} else {
+		remove(settings.cloudflareConfPath);
 	}
 
 	if (config.nginx.log) {

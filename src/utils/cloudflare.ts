@@ -67,18 +67,14 @@ export const updateCloudflareRealIp = async ({
 	ips,
 	type
 }: Data): Promise<void> => {
-	const cloudflareConfPath = join(
-		settings.nginxConfigPath,
-		"cloudflare.conf"
-	);
-	const configExists = await pathExists(cloudflareConfPath);
+	const configExists = await pathExists(settings.cloudflareConfPath);
 
 	if (!configExists || type == Type.Updated) {
 		const realIpList =
 			ips.map((ip) => `set_real_ip_from ${ip};`).join("\n") +
 			"\n\nreal_ip_header CF-Connecting-IP;";
 
-		await outputFile(cloudflareConfPath, realIpList);
+		await outputFile(settings.cloudflareConfPath, realIpList);
 		log.cloudflareRealIp();
 	}
 };
