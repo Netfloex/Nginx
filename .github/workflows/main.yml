@@ -21,6 +21,8 @@ jobs:
               run: yarn build
             - name: Create Nginx Config folder
               run: mkdir nginx/conf.d -p
+            - name: Remove non production dependencies
+              run: yarn install --production
             - name: Run
               run: yarn start
               env:

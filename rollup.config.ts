@@ -1,4 +1,5 @@
 import commonjs from "@rollup/plugin-commonjs";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { defineConfig } from "rollup";
 import { terser } from "rollup-plugin-terser";
 import typescript from "rollup-plugin-typescript2";
@@ -11,20 +12,7 @@ export default defineConfig({
 		generatedCode: "es5",
 		plugins: [terser()]
 	},
-	external: [
-		"fs-extra",
-		"path",
-		"axios",
-		"rc-config-loader",
-		"chalk",
-		"url",
-		"zod",
-		"crypto",
-		"dns",
-		"fs",
-		"glob",
-		"clean-css"
-	],
+	external: ["glob", "json5"],
 	plugins: [
 		typescript({
 			exclude: ["src/tests"],
@@ -34,6 +22,7 @@ export default defineConfig({
 				}
 			}
 		}),
-		commonjs()
+		commonjs(),
+		nodeResolve()
 	]
 });
