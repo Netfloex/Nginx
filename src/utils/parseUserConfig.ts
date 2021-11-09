@@ -59,7 +59,7 @@ const parseUserConfig = async (
 		}
 	}
 
-	throw new Error("Unsupported Extension: " + ext);
+	throw new Error(`Unsupported Extension: ${ext}`);
 };
 
 export default parseUserConfig;

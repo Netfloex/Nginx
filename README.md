@@ -153,6 +153,32 @@ When running inside docker:
 docker kill --signal=HUP nginx_config_manager
 ```
 
+## Variable Substitution
+
+You can use environment variables in your config by using `%env:VARIABLE%`, where `VARIABLE` is your variable.
+
+> Note: currently this is only possible when using JSON \
+> Tip: If your using js, you can also use `process.env`
+
+```conf
+# environment variables
+USERNAME=John
+PASSWORD=Doe
+```
+
+```jsonc
+// config.json
+/* Server/Subdomain/Location: */ {
+	// Single user
+	"auth": {
+		"username": "%env:USERNAME%", // "John"
+		"password": "%env:PASSWORD%" // "Doe"
+	}
+}
+```
+
+[Code](src/utils/parseUserConfig.ts)
+
 ## Options
 
 This is a list of options possible inside a (sub)domain or location.
@@ -333,6 +359,8 @@ Enables authorization for a page
 Expects an object with username and password. Can also be an array for multiple users.
 
 The password is hashed using Apache's apr1 md5 algorithm. A .htpasswd file is created and stored inside $DATA/auth
+
+> Tip: If you don't want your password visible inside the config use [Variable Substitution](#variable-substitution)
 
 ```js
 /* Server/Subdomain/Location: */ {
