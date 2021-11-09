@@ -43,4 +43,7 @@ COPY --from=builder /app/entrypoint.sh ./entrypoint.sh
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
+HEALTHCHECK --interval=5s --timeout=5s --retries=3 \
+	CMD wget -nv -t1 --spider 'http://localhost/healthcheck' || exit 1
+
 CMD [ "/app/entrypoint.sh" ]
