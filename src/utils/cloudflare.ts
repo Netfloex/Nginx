@@ -1,6 +1,5 @@
 import axios from "axios";
 import { outputFile, pathExists } from "fs-extra";
-import { join } from "path";
 
 import log from "@utils/log";
 import settings from "@utils/settings";
