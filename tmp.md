@@ -1,3 +1,9 @@
+<a href="https://github.com/Netfloex/Nginx" >
+<img src="https://img.shields.io/github/workflow/status/Netfloex/Nginx/docker-build?label=Github&logo=Github" alt="">
+<img src="https://img.shields.io/github/commit-activity/m/Netfloex/Nginx?label=Commits&logo=github" alt="">
+</a>
+
+
 ## Nginx Config Manager
 
 This docker container makes it a lot easier to manage Nginx configs.
@@ -41,45 +47,45 @@ services:
 You can create a config file using json5, js or yaml.
 The file should be placed in the config folder as `config.(yml|yaml|json|jsonc|json5|js)`
 
-<a href="config/config.example.js">
+<a href="https://github.com/Netfloex/Nginx/blob/master/config/config.example.js">
 <img src="https://img.shields.io/badge/Example-javascript-yellow" alt="javascript">
 </a>
-<a href="config/config.example.jsonc">
+<a href="https://github.com/Netfloex/Nginx/blob/master/config/config.example.jsonc">
 <img src="https://img.shields.io/badge/Example-JSON-green" alt="json">
 </a>
-<a href="config/config.example.yml">
+<a href="https://github.com/Netfloex/Nginx/blob/master/config/config.example.yml">
 <img src="https://img.shields.io/badge/Example-YAML-red" alt="yaml">
 </a>
 
 ## Server Options
 
--   [Proxy Pass](#proxy-pass)
--   [Custom CSS](#custom-css)
--   [Custom JS](#custom-js)
--   [Websocket](#websocket)
--   [Headers](#headers)
--   [Cors](#cors)
+-   [Proxy Pass](https://github.com/Netfloex/Nginx#proxy-pass)
+-   [Custom CSS](https://github.com/Netfloex/Nginx#custom-css)
+-   [Custom JS](https://github.com/Netfloex/Nginx#custom-js)
+-   [Websocket](https://github.com/Netfloex/Nginx#websocket)
+-   [Headers](https://github.com/Netfloex/Nginx#headers)
+-   [Cors](https://github.com/Netfloex/Nginx#cors)
 
--   [Return](#return)
--   [HTML](#html)
--   [Redirect](#redirect)
--   [Rewrite](#rewrite)
--   [Static Files](#static)
+-   [Return](https://github.com/Netfloex/Nginx#return)
+-   [HTML](https://github.com/Netfloex/Nginx#html)
+-   [Redirect](https://github.com/Netfloex/Nginx#redirect)
+-   [Rewrite](https://github.com/Netfloex/Nginx#rewrite)
+-   [Static Files](https://github.com/Netfloex/Nginx#static)
 
--   [Basic Auth](#basic-auth)
--   [Location Blocks](#location-blocks)
+-   [Basic Auth](https://github.com/Netfloex/Nginx#basic-auth)
+-   [Location Blocks](https://github.com/Netfloex/Nginx#location-blocks)
 
 ## Global Options
 
--   [Cloudflare Real IP](#cloudflare-real-ip)
--   [Access Log Format](#accesslog-format)
+-   [Cloudflare Real IP](https://github.com/Netfloex/Nginx#cloudflare-real-ip)
+-   [Access Log Format](https://github.com/Netfloex/Nginx#accesslog-format)
 
 ## Getting Started
 
-For an example docker-compose.yml see: [docker-compose.example.yml](docker-compose.example.yml).
+For an example docker-compose.yml see: [docker-compose.example.yml](https://github.com/Netfloex/Nginx/blob/master/docker-compose.example.yml).
 The only required change is `CERTBOT_EMAIL`.
 
-[Click Here](#environment-options) for a list of Environment Options.
+[Click Here](https://github.com/Netfloex/Nginx#environment-options) for a list of Environment Options.
 
 To create and edit your servers open the file `config/config.js`.
 
@@ -111,14 +117,14 @@ module.exports = {
 };
 ```
 
-This example fetches [the latest ips from Cloudflare](#cloudflare-real-ip), enables SSL with Certbot, and creates two config files:
+This example fetches [the latest ips from Cloudflare](https://github.com/Netfloex/Nginx#cloudflare-real-ip), enables SSL with Certbot, and creates two config files:
 
 ```
     example.com  >  http://mysite:3000
 www.example.com  >  http://mysite:3000
 ```
 
-A more complete example can be found [here](config/config.example.js).
+A more complete example can be found [here](https://github.com/Netfloex/Nginx/blob/master/config/config.example.js).
 
 ### Good to Know
 
@@ -183,7 +189,7 @@ PASSWORD=Doe
 }
 ```
 
-[Code](src/utils/parseUserConfig.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/utils/parseUserConfig.ts)
 
 ## Options
 
@@ -194,7 +200,7 @@ This is a list of options possible inside a (sub)domain or location.
 Proxies the request to another location.
 
 When the container starts a DNS Lookup is performed to test if the hostname is valid.
-To disable this see [Environment Options](#environment-options)
+To disable this see [Environment Options](https://github.com/Netfloex/Nginx#environment-options)
 
 ```js
 /* Server/Subdomain/Location: */ {
@@ -202,14 +208,14 @@ To disable this see [Environment Options](#environment-options)
 }
 ```
 
-[Code](src/lib/createConfig.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/lib/createConfig.ts)
 
 ### Custom CSS
 
 This adds a custom CSS file to an application.
 It should be a url to a CSS file.
 
-This file is downloaded and compressed, its then stored inside `/app/custom/css` [Configurable](#paths).
+This file is downloaded and compressed, its then stored inside `/app/custom/css` [Configurable](https://github.com/Netfloex/Nginx#paths).
 The compressed CSS is then appended to the end of the `<head>` by using Nginx's `sub_filter`.
 
 ```js
@@ -218,14 +224,14 @@ The compressed CSS is then appended to the end of the `<head>` by using Nginx's 
 }
 ```
 
-[Code](src/utils/downloadCSS.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/utils/downloadCSS.ts)
 
 ### Custom JS
 
 This allows to use a custom JS file.
 It should be a url to a JS file.
 
-This file is downloaded, its then stored inside `/app/custom/js` [Configurable](#paths).
+This file is downloaded, its then stored inside `/app/custom/js` [Configurable](https://github.com/Netfloex/Nginx#paths).
 This file is appended to the end of the `<body>` by using Nginx's `sub_filter`.
 
 ```js
@@ -234,7 +240,7 @@ This file is appended to the end of the `<body>` by using Nginx's `sub_filter`.
 }
 ```
 
-[Code](src/utils/downloadJSToFile.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/utils/downloadJSToFile.ts)
 
 ### Websocket
 
@@ -254,7 +260,7 @@ Example:
 }
 ```
 
-[Code](src/lib/createConfig.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/lib/createConfig.ts)
 
 ### Headers
 
@@ -271,7 +277,7 @@ Expects an object with key values of the headers.
 }
 ```
 
-[Code](src/lib/createConfig.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/lib/createConfig.ts)
 
 ### Cors
 
@@ -279,7 +285,7 @@ Adds a `Access-Control-Allow-Origin` header with the supplied value.
 
 Expects an url, or `true`/`*` to allow any origin.
 
-[Code](src/lib/parseConfig.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/lib/parseConfig.ts)
 
 ### Return
 
@@ -297,7 +303,7 @@ This is equivalent to Nginx's [return](https://nginx.org/en/docs/http/ngx_http_r
 }
 ```
 
-[Code](src/lib/createConfig.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/lib/createConfig.ts)
 
 ### HTML
 
@@ -310,7 +316,7 @@ This is equivalent to `"return": `200 "Message"``
 }
 ```
 
-[Code](src/lib/createConfig.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/lib/createConfig.ts)
 
 ### Redirect
 
@@ -322,7 +328,7 @@ Redirect to another location
 }
 ```
 
-[Code](src/lib/createConfig.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/lib/createConfig.ts)
 
 ### Rewrite
 
@@ -338,7 +344,7 @@ Note: If possible redirect/return should be used.
 }
 ```
 
-[Code](src/lib/createConfig.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/lib/createConfig.ts)
 
 ### Static Files
 
@@ -366,7 +372,7 @@ Expects an object with username and password. Can also be an array for multiple 
 
 The password is hashed using Apache's apr1 md5 algorithm. A .htpasswd file is created and stored inside $DATA/auth
 
-> Tip: If you don't want your password visible inside the config use [Variable Substitution](#variable-substitution)
+> Tip: If you don't want your password visible inside the config use [Variable Substitution](https://github.com/Netfloex/Nginx#variable-substitution)
 
 ```js
 /* Server/Subdomain/Location: */ {
@@ -390,7 +396,7 @@ The password is hashed using Apache's apr1 md5 algorithm. A .htpasswd file is cr
 };
 ```
 
-[Code](src/utils/createAuthFile.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/utils/createAuthFile.ts)
 
 ---
 
@@ -419,13 +425,13 @@ or simplified:
 }
 ```
 
-[Code](src/lib/createConfig.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/lib/createConfig.ts)
 
 ### Cloudflare Real IP
 
 Retrieves [Cloudflare's ips](https://api.cloudflare.com/client/v4/ips) and creates a Nginx config to trust their `CF-Connecting-IP` header as a source for a visitors real ip.
 
-By default this data is cached for 7 days. [Edit](#cloudflare-cache-duration)
+By default this data is cached for 7 days. [Edit](https://github.com/Netfloex/Nginx#cloudflare-cache-duration)
 
 Currently this only updates when the container starts.
 
@@ -437,7 +443,7 @@ module.exports = {
 };
 ```
 
-[Code](src/utils/enableCloudflare.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/utils/enableCloudflare.ts)
 
 ### Access Log Format
 
@@ -453,7 +459,7 @@ module.exports = {
 };
 ```
 
-[Code](src/utils/editNginxConfig.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/utils/editNginxConfig.ts)
 
 ## Environment Options
 
@@ -472,7 +478,7 @@ DONT_CHECK_HOSTS="true" # Default: false
 
 #### Cloudflare Cache Duration
 
-The [Cloudflare Option](#cloudflare-real-ip) caches the ips.
+The [Cloudflare Option](https://github.com/Netfloex/Nginx#cloudflare-real-ip) caches the ips.
 By default for 7 days.
 To customize this duration set the following variable in milliseconds:
 
@@ -495,4 +501,4 @@ AUTH_PATH="/auth" # Default: $DATA/auth # Used by auth
 STORE_PATH="/store.json" # Default: $DATA/store.json # Used by cloudflare
 ```
 
-[Code](src/utils/env.ts)
+[Code](https://github.com/Netfloex/Nginx/blob/master/src/utils/env.ts)
