@@ -2,12 +2,11 @@ import { returnKeysFromOption } from "./validateConfig";
 
 import ParsedConfig, {
 	SimpleServer,
-	ValidatedConfig,
 	ValidatedServer
 } from "@models/ParsedConfig";
-import { Server } from "@models/config";
+import { OutputConfig, Server } from "@models/config";
 
-const parseOptions = (options: Server | ValidatedServer): ValidatedServer => ({
+const parseOptions = (options: Server): ValidatedServer => ({
 	...options,
 	return: options.return?.toString(),
 	headers: {
@@ -21,13 +20,13 @@ const parseOptions = (options: Server | ValidatedServer): ValidatedServer => ({
 
 	locations: Object.entries(options.locations ?? {}).map(
 		([path, location]) => ({
-			location: path,
-			...parseOptions(location)
+			...parseOptions(location),
+			location: path
 		})
 	)
 });
 
-const parseConfig = async (config: ValidatedConfig): Promise<ParsedConfig> => {
+const parseConfig = async (config: OutputConfig): Promise<ParsedConfig> => {
 	const servers: SimpleServer[] = [];
 
 	Object.entries(config.servers ?? {}).forEach(([domain, options]) => {
@@ -39,16 +38,18 @@ const parseConfig = async (config: ValidatedConfig): Promise<ParsedConfig> => {
 				...parseOptions(options)
 			});
 		}
-		Object.entries(options.subdomains ?? {}).forEach(
-			([subdomain, options]) => {
-				servers.push({
-					server_name: subdomain + "." + domain,
-					filename: subdomain,
-					...parseOptions(options)
-				});
-			}
-		);
+		if ("subdomains" in options)
+			Object.entries(options.subdomains ?? {}).forEach(
+				([subdomain, options]) => {
+					servers.push({
+						server_name: `${subdomain}.${domain}`,
+						filename: subdomain,
+						...parseOptions(options)
+					});
+				}
+			);
 	});
+
 	return { ...config, servers };
 };
 

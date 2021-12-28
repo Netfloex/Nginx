@@ -91,12 +91,12 @@ const main = async (): Promise<number> => {
 		remove(settings.cloudflareConfPath);
 	}
 
-	if (config.nginx.log) {
+	if (config?.nginx?.log) {
 		promises.push(
 			(async (): Promise<void> => {
 				await editNginxConfig((nginxConf) => {
 					nginxConf.http ??= {};
-					nginxConf.http.log_format = `main ${config.nginx.log}`;
+					nginxConf.http.log_format = `main ${config!.nginx!.log}`;
 					return nginxConf;
 				});
 			})()

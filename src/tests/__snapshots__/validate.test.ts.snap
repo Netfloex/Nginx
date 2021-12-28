@@ -2,7 +2,6 @@
 
 exports[`Validate Config It accepts a valid config 1`] = `
 {
-  "cloudflare": false,
   "nginx": {
     "log": "$time_local $remote_addr",
   },
@@ -39,6 +38,9 @@ exports[`Validate Config It accepts a valid config 1`] = `
           "locations": {
             "/en": {
               "html": "Return not needed in subdomain",
+            },
+            "/withCors": {
+              "cors": "https://return-not-needed-in-location",
             },
           },
         },
@@ -92,8 +94,6 @@ exports[`Validate Config It checks for an invalid config 1`] = `
   "[ERROR] Error: Should be at least 1 characters",
   "[ERROR] Path: servers.example.com.auth",
   "[ERROR] Error: Unrecognized key(s) in object: 'unknown'",
-  "[ERROR] Path: servers.example.com.locations.empty",
-  "[ERROR] Error: Please specify at least one \\"return\\" type: proxy_pass, return, redirect, rewrite, html, static",
   "[ERROR] Path: servers.example.com.locations.invalid",
   "[ERROR] Error: Invalid url",
   "[ERROR] Path: servers.example.com.cors",

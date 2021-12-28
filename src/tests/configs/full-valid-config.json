@@ -39,6 +39,9 @@
 					"locations": {
 						"/en": {
 							"html": "Return not needed in subdomain"
+						},
+						"/withCors": {
+							"cors": "https://return-not-needed-in-location"
 						}
 					}
 				}

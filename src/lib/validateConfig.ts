@@ -8,8 +8,7 @@ import dnsLookup from "@utils/dnsLookup";
 import log from "@utils/log";
 import settings from "@utils/settings";
 
-import { ValidatedConfig } from "@models/ParsedConfig";
-import { InputConfig } from "@models/config";
+import { InputConfig, OutputConfig } from "@models/config";
 
 const returnKeys = [
 	"proxy_pass",
@@ -67,31 +66,30 @@ const urlsOrUrlSchema = urlSchema
 	.or(urlSchema)
 	.transform((data) => [data].flat());
 
-const oneReturnRefinement = (
-	options: Record<string, unknown>,
-	{ addIssue }: z.RefinementCtx
-): void => {
-	const keys = returnKeysFromOption(options);
+const oneReturnRefinement =
+	(allowNone = false) =>
+	(options: Record<string, unknown>, { addIssue }: z.RefinementCtx): void => {
+		const keys = returnKeysFromOption(options);
 
-	if (keys.length == 0) {
-		if (!("subdomains" in options) && !("locations" in options)) {
-			return addIssue({
-				message: chalk`Please specify at least one "return" type: {dim ${returnKeys.join(
+		if (!allowNone && keys.length == 0) {
+			if (!("subdomains" in options) && !("locations" in options)) {
+				return addIssue({
+					message: chalk`Please specify at least one "return" type: {dim ${returnKeys.join(
+						", "
+					)}}`,
+					code: "custom"
+				});
+			}
+		}
+		if (keys.length > 1) {
+			addIssue({
+				message: chalk`Too many "return" types, found: {yellow ${keys.join(
 					", "
-				)}}`,
+				)}}, please use only one of them.`,
 				code: "custom"
 			});
 		}
-	}
-	if (keys.length > 1) {
-		addIssue({
-			message: chalk`Too many "return" types, found: {yellow ${keys.join(
-				", "
-			)}}, please use only one of them.`,
-			code: "custom"
-		});
-	}
-};
+	};
 
 export const locationSchema = z
 	.object({
@@ -133,7 +131,7 @@ export const locationSchema = z
 	.strict();
 
 const locationsSchema = z.record(
-	proxyPassSchema.or(locationSchema.superRefine(oneReturnRefinement))
+	proxyPassSchema.or(locationSchema.superRefine(oneReturnRefinement(true)))
 );
 
 const subdomainSchema = locationSchema
@@ -161,7 +159,7 @@ export const domainSchema = subdomainSchema
 	.extend({
 		subdomains: z.record(
 			z.union([
-				subdomainSchema.superRefine(oneReturnRefinement),
+				subdomainSchema.superRefine(oneReturnRefinement()),
 				proxyPassSchema
 			])
 		)
@@ -174,21 +172,19 @@ const nginxSchema = z
 		log: z.string()
 	})
 	.partial()
-	.strict()
-	.default({});
+	.strict();
 
 export const configSchema = z
 	.object({
-		servers: z
-			.record(
-				z.union([
-					domainSchema.superRefine(oneReturnRefinement),
-					proxyPassSchema
-				])
-			)
-			// .superRefine(recordRegex(domainRegex, "domain"))
-			.default({}),
-		cloudflare: z.boolean().default(false),
+		servers: z.record(
+			z.union([
+				domainSchema.superRefine(oneReturnRefinement()),
+				proxyPassSchema
+			])
+		),
+		// .superRefine(recordRegex(domainRegex, "domain"))
+
+		cloudflare: z.boolean(),
 		nginx: nginxSchema
 	})
 	.partial()
@@ -196,28 +192,28 @@ export const configSchema = z
 
 const validateConfig = async (
 	config: InputConfig | unknown
-): Promise<ValidatedConfig | null> => {
+): Promise<OutputConfig | null> => {
 	const result = await configSchema.spa(config);
 
-	if (!result.success) {
-		log.invalidConfig(result.error.issues.length > 1);
-		result.error.issues.forEach((issue) => {
-			if (issue.code == z.ZodIssueCode.invalid_union) {
-				const errors: string[] = issue.unionErrors.flatMap((error) =>
-					error.issues.map((g) => g.message)
-				);
-
-				issue.message = `${Array.from(new Set(errors)).join(
-					chalk` {gray or} `
-				)}`;
-			}
-			log.configIssue(issue);
-		});
-
-		return null;
-	} else {
-		return result.data as ValidatedConfig;
+	if (result.success) {
+		return result.data;
 	}
+
+	log.invalidConfig(result.error.issues.length > 1);
+	result.error.issues.forEach((issue) => {
+		if (issue.code == z.ZodIssueCode.invalid_union) {
+			const errors: string[] = issue.unionErrors.flatMap((error) =>
+				error.issues.map((g) => g.message)
+			);
+
+			issue.message = `${Array.from(new Set(errors)).join(
+				chalk` {gray or} `
+			)}`;
+		}
+		log.configIssue(issue);
+	});
+
+	return null;
 };
 
 export default validateConfig;
