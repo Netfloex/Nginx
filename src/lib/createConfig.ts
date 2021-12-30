@@ -16,19 +16,13 @@ const parser = new ConfigParser();
 const usesCustom = (options: Server): boolean =>
 	!!(options.custom_css?.length || options.custom_js?.length);
 
-const createLocation = async (
-	location: Locations[0] | Server
-): Promise<NginxLocation> => {
+const createLocation = async (location: Server): Promise<NginxLocation> => {
 	const block: NginxLocation = {};
 	// Proxy Pass
 	if (location.proxy_pass) {
 		block.proxy_pass = location.proxy_pass;
 		block.include ??= [];
 		block.include.push(join(settings.nginxIncludePath, "proxy_pass.conf"));
-	}
-
-	if (!("return" in location)) {
-		return block;
 	}
 
 	// Return
@@ -123,20 +117,21 @@ const createConfig = async (
 	jsonServer.server_name = server.server_name;
 
 	// SSL Certificate files
-	const sslKeysPath = join(
-		"/etc/letsencrypt/live",
-		server.certbot_name ?? server.server_name,
-		"/"
-	);
-	jsonServer.ssl_certificate = sslKeysPath + "fullchain.pem";
-	jsonServer.ssl_certificate_key = sslKeysPath + "privkey.pem";
-	jsonServer.ssl_trusted_certificate = sslKeysPath + "chain.pem";
-	jsonServer.ssl_dhparam = "/etc/letsencrypt/dhparams/dhparam.pem";
+	if (!server.disable_cert) {
+		const sslKeysPath = join(
+			"/etc/letsencrypt/live",
+			server.certbot_name ?? server.server_name
+		);
+		jsonServer.ssl_certificate = join(sslKeysPath, "fullchain.pem");
+		jsonServer.ssl_certificate_key = join(sslKeysPath, "privkey.pem");
+		jsonServer.ssl_trusted_certificate = join(sslKeysPath, "chain.pem");
+		jsonServer.ssl_dhparam = "/etc/letsencrypt/dhparams/dhparam.pem";
+	}
 
 	jsonServer["location /"] = await createLocation({
 		...server,
 		location: "/"
-	});
+	} as Locations[0]);
 
 	if (Object.entries(jsonServer["location /"]).length == 0) {
 		delete jsonServer["location /"];

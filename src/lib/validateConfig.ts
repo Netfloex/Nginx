@@ -168,6 +168,7 @@ export const locationsSchema = z
 const subdomainSchema = locationSchema
 	.extend({
 		certbot_name: z.string(),
+		disable_cert: z.boolean(),
 		locations: locationsSchema
 	})
 	.partial();
