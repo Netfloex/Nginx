@@ -1,14 +1,6 @@
 import { Server } from "@models/config";
 
-export type Location = Omit<Server, "locations"> & {
-	location: string;
-};
-
-export type ValidatedServer = Omit<Server, "locations"> & {
-	locations?: Location[];
-};
-
-export type SimpleServer = ValidatedServer & {
+export type SimpleServer = Server & {
 	server_name: string;
 	filename: string;
 };

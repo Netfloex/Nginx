@@ -14,7 +14,6 @@ exports[`Validate Config It accepts a valid config 1`] = `
         },
       ],
       "certbot_name": "string",
-      "cors": "*",
       "custom_css": [
         "http://validurlstring",
       ],
@@ -22,27 +21,34 @@ exports[`Validate Config It accepts a valid config 1`] = `
         "http://validurlarray",
       ],
       "headers": {
+        "Access-Control-Allow-Origin": "*",
         "Content-Type": "text/html",
       },
       "html": "html string",
-      "locations": {
-        "direct": {
+      "locations": [
+        {
+          "location": "indirect",
           "proxy_pass": "http://example.com",
         },
-        "indirect": {
+        {
+          "location": "direct",
           "proxy_pass": "http://example.com",
         },
-      },
+      ],
       "subdomains": {
         "no_return_allowed": {
-          "locations": {
-            "/en": {
+          "locations": [
+            {
               "html": "Return not needed in subdomain",
+              "location": "/en",
             },
-            "/withCors": {
-              "cors": "https://return-not-needed-in-location",
+            {
+              "headers": {
+                "Access-Control-Allow-Origin": "https://return-not-needed-in-location",
+              },
+              "location": "/withCors",
             },
-          },
+          ],
         },
         "redirects": {
           "redirect": "/",

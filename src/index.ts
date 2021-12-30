@@ -2,7 +2,7 @@ import { outputFile, pathExists, readdir, remove } from "fs-extra";
 import { join } from "path";
 
 import createConfig from "@lib/createConfig";
-import parseConfig from "@lib/parseConfig";
+import parseServers from "@lib/parseServers";
 import validateConfig from "@lib/validateConfig";
 import {
 	requestCloudflareIps,
@@ -35,7 +35,9 @@ const main = async (): Promise<number> => {
 		if (!configPaths.length) {
 			log.configNotFound(settings.configPath);
 			return -1;
-		} else if (configPaths.length > 1) {
+		}
+
+		if (configPaths.length > 1) {
 			log.multipleConfigs(configPaths);
 		}
 
@@ -62,7 +64,10 @@ const main = async (): Promise<number> => {
 
 	log.configValid(configFilePath!);
 
-	const config = await parseConfig(validatedConfig);
+	const config = {
+		...validatedConfig,
+		servers: await parseServers(validatedConfig.servers)
+	};
 
 	if (!(await pathExists(settings.nginxConfigPath))) {
 		log.noOld();

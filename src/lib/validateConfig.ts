@@ -98,7 +98,7 @@ export const locationSchema = z
 		custom_css: urlsOrUrlSchema,
 		custom_js: urlsOrUrlSchema,
 		return: z.string().or(z.number()),
-		headers: z.record(z.string()),
+		headers: z.record(z.union([z.string(), z.number(), z.boolean()])),
 		cors: z
 			.boolean()
 			.transform((bool) => (bool ? "*" : false))
@@ -130,9 +130,40 @@ export const locationSchema = z
 	.partial()
 	.strict();
 
-const locationsSchema = z.record(
-	proxyPassSchema.or(locationSchema.superRefine(oneReturnRefinement(true)))
-);
+const headersTransform = (
+	options: z.infer<typeof locationSchema>
+): z.infer<typeof locationSchema> => {
+	const headers = {
+		...options.headers,
+		...("cors" in options &&
+			options.cors && {
+				"Access-Control-Allow-Origin": options.cors
+			})
+	};
+
+	delete options.cors;
+
+	return {
+		...options,
+		...(Object.keys(headers).length && { headers })
+	};
+};
+
+export const locationsSchema = z
+	.record(
+		proxyPassSchema.or(
+			locationSchema
+				.superRefine(oneReturnRefinement(true))
+				.transform(headersTransform)
+		)
+	)
+
+	.transform((locations) =>
+		Object.entries(locations ?? {}).map(([path, location]) => ({
+			...location,
+			location: path
+		}))
+	);
 
 const subdomainSchema = locationSchema
 	.extend({
@@ -159,7 +190,9 @@ export const domainSchema = subdomainSchema
 	.extend({
 		subdomains: z.record(
 			z.union([
-				subdomainSchema.superRefine(oneReturnRefinement()),
+				subdomainSchema
+					.superRefine(oneReturnRefinement())
+					.transform(headersTransform),
 				proxyPassSchema
 			])
 		)
@@ -178,7 +211,9 @@ export const configSchema = z
 	.object({
 		servers: z.record(
 			z.union([
-				domainSchema.superRefine(oneReturnRefinement()),
+				domainSchema
+					.superRefine(oneReturnRefinement())
+					.transform(headersTransform),
 				proxyPassSchema
 			])
 		),

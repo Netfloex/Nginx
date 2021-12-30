@@ -8,20 +8,27 @@ import downloadCSSToFile from "@utils/downloadCSSToFile";
 import downloadJSToFile from "@utils/downloadJSToFile";
 import settings from "@utils/settings";
 
-import { Location, SimpleServer, ValidatedServer } from "@models/ParsedConfig";
+import { SimpleServer } from "@models/ParsedConfig";
+import { Locations, Server } from "@models/config";
 
 const parser = new ConfigParser();
 
-const usesCustom = (options: Location | ValidatedServer): boolean =>
+const usesCustom = (options: Server): boolean =>
 	!!(options.custom_css?.length || options.custom_js?.length);
 
-const createLocation = async (location: Location): Promise<NginxLocation> => {
+const createLocation = async (
+	location: Locations[0] | Server
+): Promise<NginxLocation> => {
 	const block: NginxLocation = {};
 	// Proxy Pass
 	if (location.proxy_pass) {
 		block.proxy_pass = location.proxy_pass;
 		block.include ??= [];
 		block.include.push(join(settings.nginxIncludePath, "proxy_pass.conf"));
+	}
+
+	if (!("return" in location)) {
+		return block;
 	}
 
 	// Return
