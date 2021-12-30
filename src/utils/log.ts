@@ -9,7 +9,8 @@ class Log {
 	public log;
 
 	constructor() {
-		this.log = console.log;
+		this.log = (...msgs: string[]) =>
+			console.log(chalk`[{blue NCM}] ${msgs.join(" ")}`);
 	}
 
 	// Helpers
@@ -48,6 +49,12 @@ class Log {
 		this.error("An error occurred:");
 	}
 
+	public noCertbotEmail() {
+		this.error(
+			chalk`{red You must set the {reset {bold {dim CERBOT_EMAIL}}} environment variable, certbot can't launch without it.}`
+		);
+	}
+
 	// Old configurations
 
 	public rmOld() {
@@ -77,7 +84,7 @@ class Log {
 	// User Config
 
 	public configNotFound(path: string) {
-		this.error(chalk`{red The config file was not found} {dim ${path}}`);
+		this.error(chalk`{red There is no config file in: } {dim ${path}}`);
 	}
 
 	public configFolderNotFound(path: string) {

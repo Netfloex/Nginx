@@ -16,6 +16,8 @@ import store from "@utils/useStore";
 
 const main = async (): Promise<number> => {
 	const started = Date.now();
+	let stopping = false;
+	let results;
 	log.started();
 
 	let configFilePath = settings.configFile;
@@ -23,36 +25,45 @@ const main = async (): Promise<number> => {
 	if (!configFilePath) {
 		if (!(await pathExists(settings.configPath))) {
 			log.configFolderNotFound(settings.configPath);
-			return -1;
+			stopping = true;
+		} else {
+			const configs = await readdir(settings.configPath);
+
+			const configPaths = configs.filter((config) =>
+				config.match(/^config\.(ya?ml|json[c5]?|js)$/)
+			);
+
+			if (!configPaths.length) {
+				log.configNotFound(settings.configPath);
+				stopping = true;
+			} else {
+				if (configPaths.length > 1) {
+					log.multipleConfigs(configPaths);
+				}
+
+				configFilePath = join(settings.configPath, configPaths[0]);
+
+				results = await parseUserConfig(configFilePath);
+
+				if (!results) {
+					log.configError(configFilePath!);
+					stopping = true;
+				}
+
+				if (Object.keys(results).length == 0) {
+					log.configEmpty();
+					stopping = true;
+				}
+			}
 		}
-
-		const configs = await readdir(settings.configPath);
-
-		const configPaths = configs.filter((config) =>
-			config.match(/^config\.(ya?ml|json[c5]?|js)$/)
-		);
-
-		if (!configPaths.length) {
-			log.configNotFound(settings.configPath);
-			return -1;
-		}
-
-		if (configPaths.length > 1) {
-			log.multipleConfigs(configPaths);
-		}
-
-		configFilePath = join(settings.configPath, configPaths[0]);
 	}
 
-	const results = await parseUserConfig(configFilePath);
-
-	if (!results) {
-		log.configError(configFilePath!);
-		return -1;
+	if (!settings.certbotMail) {
+		log.noCertbotEmail();
+		stopping = true;
 	}
 
-	if (Object.keys(results).length == 0) {
-		log.configEmpty();
+	if (stopping) {
 		return -1;
 	}
 

@@ -30,7 +30,9 @@ const settings = {
 		(env.CLOUDFLARE_CACHE_DURATION ?? 1000 * 60 * 60 * 24 * 7) // 7 Days
 	),
 	dontCheckDns: !!env.DONT_CHECK_HOSTS ?? false,
-	dontDownloadCustomFiles: !!env.DONT_DOWNLOAD_FILES ?? false
+	dontDownloadCustomFiles: !!env.DONT_DOWNLOAD_FILES ?? false,
+
+	certbotMail: env.CERTBOT_EMAIL
 };
 
 export default settings;
