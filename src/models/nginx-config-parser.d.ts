@@ -36,6 +36,7 @@ declare module "@webantic/nginx-config-parser" {
 
 		include?: string[];
 		alias?: string;
+		[T: string]: string[] | string | number | boolean;
 	}
 	class Parser {
 		public toJSON: <Config>(conf: string) => Config;

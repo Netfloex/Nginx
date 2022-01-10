@@ -37,6 +37,7 @@ exports[`Create config Full Server 1`] = `
         add_header              Second Value;
         auth_basic              2d77215cd91113df4d3442ee904fd740;
         auth_basic_user_file    /current/data/auth/2d77215cd91113df4d3442ee904fd740;
+        custom                  option;
     }
 
     location /custom_assets {

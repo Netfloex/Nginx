@@ -16,8 +16,13 @@ const returnKeys = [
 	"redirect",
 	"rewrite",
 	"html",
-	"static"
+	"static",
+	"raw"
 ];
+
+const optionalReturnKeys = ["raw"];
+
+export const jsUnion = z.union([z.string(), z.number(), z.boolean()]);
 
 export const returnKeysFromOption = (
 	options: Record<string, unknown>
@@ -81,7 +86,10 @@ const oneReturnRefinement =
 				});
 			}
 		}
-		if (keys.length > 1) {
+
+		if (
+			keys.filter((key) => !optionalReturnKeys.includes(key)).length > 1
+		) {
 			addIssue({
 				message: chalk`Too many "return" types, found: {yellow ${keys.join(
 					", "
@@ -98,7 +106,7 @@ export const locationSchema = z
 		custom_css: urlsOrUrlSchema,
 		custom_js: urlsOrUrlSchema,
 		return: z.string().or(z.number()),
-		headers: z.record(z.union([z.string(), z.number(), z.boolean()])),
+		headers: z.record(jsUnion),
 		cors: z
 			.boolean()
 			.transform((bool) => (bool ? "*" : false))
@@ -125,7 +133,8 @@ export const locationSchema = z
 						message: chalk`Static path does not exist: {dim ${path}}`
 					});
 				}
-			})
+			}),
+		raw: z.record(jsUnion)
 	})
 	.partial()
 	.strict();

@@ -22,6 +22,9 @@
 					"proxy_pass": "http://example.com"
 				}
 			},
+			"raw": {
+				"custom": "option"
+			},
 			"subdomains": {
 				"www": "http://example.com",
 

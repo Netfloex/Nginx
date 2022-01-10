@@ -27,7 +27,15 @@
 			"redirect": [],
 			"return": [],
 			"rewrite": [],
-			"subdomains": {}
+			"subdomains": {
+				"too_many": {
+					"raw": {
+						"three": "return keys"
+					},
+					"redirect": "/",
+					"html": "The raw option is an optional return key."
+				}
+			}
 		}
 	},
 	"unknown": ""
