@@ -17,12 +17,16 @@ import store from "@utils/useStore";
 const main = async (): Promise<number> => {
 	const started = Date.now();
 	let stopping = false;
-	let results;
 	log.started();
 
 	let configFilePath = settings.configFile;
 
-	if (!configFilePath) {
+	if (configFilePath) {
+		if (!(await pathExists(configFilePath))) {
+			log.configNotFound(configFilePath);
+			stopping = true;
+		}
+	} else {
 		if (!(await pathExists(settings.configPath))) {
 			log.configFolderNotFound(settings.configPath);
 			stopping = true;
@@ -42,19 +46,22 @@ const main = async (): Promise<number> => {
 				}
 
 				configFilePath = join(settings.configPath, configPaths[0]);
-
-				results = await parseUserConfig(configFilePath);
-
-				if (!results) {
-					log.configError(configFilePath!);
-					stopping = true;
-				}
-
-				if (Object.keys(results).length == 0) {
-					log.configEmpty();
-					stopping = true;
-				}
 			}
+		}
+	}
+
+	let results;
+	if (!stopping) {
+		results = await parseUserConfig(configFilePath!);
+
+		if (!results) {
+			log.configError(configFilePath!);
+			stopping = true;
+		}
+
+		if (Object.keys(results).length == 0) {
+			log.configEmpty();
+			stopping = true;
 		}
 	}
 
