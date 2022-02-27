@@ -28,6 +28,7 @@ jobs:
               env:
                   DONT_DOWNLOAD_FILES: true
                   DONT_CHECK_HOSTS: true
+                  CERTBOT_EMAIL: required
                   CONFIG_FILE: src/tests/configs/full-valid-config.json
 
     docker:
