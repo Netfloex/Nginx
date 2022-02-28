@@ -45,19 +45,22 @@ const urlSchema = z
 		})
 	);
 
+const usernameAuthSchema = z.string().refine((str) => !str.includes(":"), {
+	message: `Username can't contain ":"`
+});
+
 const authSchema = z
-	.object({
-		username: z
-			.string()
-			.refine((str) => !str.includes(":"), {
-				message: `Username can't contain ":"`
+	.string()
+	.min(1)
+	.transform((password) => ({ username: undefined, password }))
+	.or(
+		z
+			.object({
+				username: z.null().or(usernameAuthSchema),
+				password: z.string().min(1)
 			})
-			.refine((str) => str.length, {
-				message: "Username should not be empty"
-			}),
-		password: z.string().min(1)
-	})
-	.strict();
+			.strict()
+	);
 
 const proxyPassSchema = urlSchema
 	.refine(
@@ -243,7 +246,8 @@ export const configSchema = z
 		// .superRefine(recordRegex(domainRegex, "domain"))
 
 		cloudflare: z.boolean(),
-		nginx: nginxSchema
+		nginx: nginxSchema,
+		username: usernameAuthSchema
 	})
 	.partial()
 	.strict();

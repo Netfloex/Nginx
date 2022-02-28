@@ -41,6 +41,14 @@ exports[`Validate Config It accepts a valid config 1`] = `
         ],
       },
       "subdomains": {
+        "defaultUsername": {
+          "auth": [
+            {
+              "password": "password",
+            },
+          ],
+          "html": "Username uses default",
+        },
         "includes": {
           "include": [
             "/current/src/nginx/proxy_pass.conf",
@@ -76,6 +84,7 @@ exports[`Validate Config It accepts a valid config 1`] = `
       "websocket": true,
     },
   },
+  "username": "username",
 }
 `;
 
@@ -84,6 +93,8 @@ exports[`Validate Config It checks for an invalid config 1`] = `
   "[ERROR] There was an issue with your config, the errors are listed below.",
   "[ERROR] Path: cloudflare",
   "[ERROR] Error: Expected boolean, received string",
+  "[ERROR] Path: username",
+  "[ERROR] Error: Username can't contain \\":\\"",
   "[ERROR] Path: config",
   "[ERROR] Error: Unrecognized key(s) in object: 'unknown'",
   "[ERROR] Path: servers.example.com.proxy_pass",
@@ -104,22 +115,20 @@ exports[`Validate Config It checks for an invalid config 1`] = `
   "[ERROR] Error: Invalid url",
   "[ERROR] Path: servers.example.com.return",
   "[ERROR] Error: Expected string, received array or Expected number, received array",
-  "[ERROR] Path: servers.example.com.auth.username",
-  "[ERROR] Error: Username can't contain \\":\\"",
-  "[ERROR] Path: servers.example.com.auth.password",
-  "[ERROR] Error: Should be at least 1 characters",
-  "[ERROR] Path: servers.example.com.auth",
-  "[ERROR] Error: Unrecognized key(s) in object: 'unknown'",
   "[ERROR] Path: servers.example.com.locations.invalid",
   "[ERROR] Error: Invalid url",
   "[ERROR] Path: servers.example.com.cors",
   "[ERROR] Error: Invalid url or use \\"*\\" as a wildcard",
-  "[ERROR] Path: servers.example.com.locations.extra.auth.username",
-  "[ERROR] Error: Username should not be empty",
-  "[ERROR] Path: servers.example.com.locations.extra.auth.password",
-  "[ERROR] Error: Required",
+  "[ERROR] Path: servers.example.com.auth.password",
+  "[ERROR] Error: Should be at least 1 characters",
+  "[ERROR] Path: servers.example.com.auth",
+  "[ERROR] Error: Unrecognized key(s) in object: 'unknown'",
+  "[ERROR] Path: servers.example.com.auth.username",
+  "[ERROR] Error: Username can't contain \\":\\"",
   "[ERROR] Path: servers.example.com.subdomains.too_many",
   "[ERROR] Error: Too many \\"return\\" types, found: redirect, html, raw, please use only one of them.",
+  "[ERROR] Path: servers.example.com.locations.extra.auth",
+  "[ERROR] Error: Expected string, received object or Required",
   "[ERROR] Path: servers.dns_error",
   "[ERROR] Error: DNS lookup failed for: not-existing",
 ]

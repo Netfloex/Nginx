@@ -1,4 +1,5 @@
 {
+	"username": "username",
 	"nginx": {
 		"log": "$time_local $remote_addr"
 	},
@@ -39,6 +40,10 @@
 				},
 				"includes": {
 					"include": "src/nginx/proxy_pass.conf"
+				},
+				"defaultUsername": {
+					"auth": "password",
+					"html": "Username uses default"
 				},
 
 				"no_return_allowed": {

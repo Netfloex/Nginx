@@ -16,7 +16,10 @@ const parser = new ConfigParser();
 const usesCustom = (options: Server): boolean =>
 	!!(options.custom_css?.length || options.custom_js?.length);
 
-const createLocation = async (location: Server): Promise<NginxLocation> => {
+const createLocation = async (
+	location: Server,
+	defaultUsername: string
+): Promise<NginxLocation> => {
 	const block: NginxLocation = {};
 	// Proxy Pass
 	if (location.proxy_pass) {
@@ -100,7 +103,12 @@ const createLocation = async (location: Server): Promise<NginxLocation> => {
 	// Auth
 
 	if (location.auth) {
-		const { filename, hash } = await createAuthFile(location.auth);
+		const { filename, hash } = await createAuthFile(
+			location.auth.map((auth) => ({
+				...auth,
+				username: auth.username ?? defaultUsername
+			}))
+		);
 		block.auth_basic = hash;
 		block.auth_basic_user_file = filename;
 	}
@@ -125,7 +133,8 @@ const createLocation = async (location: Server): Promise<NginxLocation> => {
 };
 
 const createConfig = async (
-	server: Omit<SimpleServer, "filename">
+	server: Omit<SimpleServer, "filename">,
+	defaultUsername = "admin"
 ): Promise<string> => {
 	const { server: jsonServer } = await baseConf();
 
@@ -144,10 +153,13 @@ const createConfig = async (
 		jsonServer.ssl_dhparam = "/etc/letsencrypt/dhparams/dhparam.pem";
 	}
 
-	jsonServer["location /"] = await createLocation({
-		...server,
-		location: "/"
-	} as Locations[0]);
+	jsonServer["location /"] = await createLocation(
+		{
+			...server,
+			location: "/"
+		} as Locations[0],
+		defaultUsername
+	);
 
 	if (Object.entries(jsonServer["location /"]).length == 0) {
 		delete jsonServer["location /"];
@@ -158,7 +170,7 @@ const createConfig = async (
 		await Promise.all(
 			server.locations.map(async (location) => {
 				jsonServer[`location ${location.location}`] =
-					await createLocation(location);
+					await createLocation(location, defaultUsername);
 			})
 		);
 	}

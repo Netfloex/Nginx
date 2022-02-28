@@ -13,6 +13,8 @@ const htpasswd = ({ username, password }: Auth): string =>
 const createAuthFile = async (
 	users: Auth[]
 ): Promise<{ filename: string; hash: string }> => {
+	console.log(users);
+
 	const hash = createHash(JSON.stringify(users));
 	const filename = join(settings.authPath, hash);
 

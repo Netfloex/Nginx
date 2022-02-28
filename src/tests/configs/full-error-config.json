@@ -1,5 +1,6 @@
 {
 	"cloudflare": "false",
+	"username": "not allowed to use :",
 	"servers": {
 		"dns_error": "http://not-existing",
 		"example.com": {

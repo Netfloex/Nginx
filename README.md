@@ -376,6 +376,9 @@ The password is hashed using Apache's apr1 md5 algorithm. A .htpasswd file is cr
 		password: "pass"
 	},
 
+	// Shorthand for using default username (admin by default)
+	auth: "password",
+
 	// Multiple Users
 	auth: [
 		{
@@ -388,6 +391,20 @@ The password is hashed using Apache's apr1 md5 algorithm. A .htpasswd file is cr
 		}
 	]
 };
+```
+
+If you do not specify the username the default will be used (admin), to change this edit:
+
+```js
+/* Config: */ {
+	username: "bob"
+	servers: {
+		"example.com": {
+			proxy_pass: "http://example",
+			auth: "password" // Username is bob
+		}
+	}
+}
 ```
 
 [Code](src/utils/createAuthFile.ts)

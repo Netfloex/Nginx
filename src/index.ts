@@ -134,7 +134,10 @@ const main = async (): Promise<ExitCode> => {
 			const fileName =
 				join(settings.nginxConfigPath, `${i}-${server.filename}`) +
 				".conf";
-			await outputFile(fileName, await createConfig(server));
+			await outputFile(
+				fileName,
+				await createConfig(server, config.username)
+			);
 
 			log.configDone(server.server_name);
 		})
