@@ -1,11 +1,9 @@
+import { replaceCurrentDir } from "./test-utils";
+
 import createConfig from "@lib/createConfig";
 import settings from "@utils/settings";
 
 import fullValidServer from "@configs/full-valid-server.json";
-
-const replaceCurrentDir = (config: string): string => {
-	return config.replace(new RegExp(process.cwd(), "g"), "/current");
-};
 
 describe("Create config", () => {
 	test("Base Config", async () => {

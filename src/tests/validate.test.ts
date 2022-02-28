@@ -1,3 +1,4 @@
+import { replaceCurrentDir } from "./test-utils";
 import chalk from "chalk";
 
 import validateConfig from "@lib/validateConfig";
@@ -31,6 +32,8 @@ describe("Validate Config", () => {
 			console.log(mockedLog.mock.calls.flat());
 		}
 		expect(value).not.toBe(null);
-		expect(value).toMatchSnapshot();
+		expect(
+			JSON.parse(replaceCurrentDir(JSON.stringify(value)))
+		).toMatchSnapshot();
 	});
 });

@@ -37,6 +37,9 @@
 				"rewrites": {
 					"rewrite": "^ https://example.com"
 				},
+				"includes": {
+					"include": "src/nginx/proxy_pass.conf"
+				},
 
 				"no_return_allowed": {
 					"locations": {
