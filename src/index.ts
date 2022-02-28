@@ -14,10 +14,13 @@ import parseUserConfig from "@utils/parseUserConfig";
 import settings from "@utils/settings";
 import store from "@utils/useStore";
 
-const main = async (): Promise<number> => {
-	const started = Date.now();
+enum ExitCode {
+	success = 0,
+	failure = -1
+}
+
+const main = async (): Promise<ExitCode> => {
 	let stopping = false;
-	log.started();
 
 	let configFilePath = settings.configFile;
 
@@ -71,13 +74,13 @@ const main = async (): Promise<number> => {
 	}
 
 	if (stopping) {
-		return -1;
+		return ExitCode.failure;
 	}
 
 	const validatedConfig = await validateConfig(results);
 
 	if (validatedConfig == null) {
-		return -1;
+		return ExitCode.failure;
 	}
 
 	log.configValid(configFilePath!);
@@ -89,7 +92,7 @@ const main = async (): Promise<number> => {
 
 	if (!(await pathExists(settings.nginxConfigPath))) {
 		log.noOld();
-		return -1;
+		return ExitCode.failure;
 	}
 
 	log.rmOld();
@@ -139,20 +142,23 @@ const main = async (): Promise<number> => {
 
 	await Promise.all(promises);
 
-	log.finished(started);
-	return 0;
+	return ExitCode.success;
 };
 
+const started = Date.now();
+log.started();
 main()
-	.then((code) => {
-		if (code == -1) {
+	.then((exitCode) => {
+		if (exitCode == ExitCode.success) {
+			log.finished(started);
+		} else {
 			log.exited();
-			process.exitCode = -1;
+			process.exitCode = ExitCode.failure;
 		}
 	})
 	.catch((error) => {
 		log.exception();
 		console.error(error);
 		log.exited();
-		process.exitCode = -1;
+		process.exitCode = ExitCode.failure;
 	});
