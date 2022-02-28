@@ -38,11 +38,15 @@ class Log {
 	}
 
 	public finished(started: number) {
-		this.done(chalk`{green Done in ${(Date.now() - started) / 1000}s}`);
+		this.done(
+			chalk`{green Done} in {yellow ${(Date.now() - started) / 1000}s}`
+		);
 	}
 
-	public exited() {
-		this.error(chalk`{red Exited}`);
+	public exited(started: number) {
+		this.error(
+			chalk`{red Exited} in {yellow ${(Date.now() - started) / 1000}s}`
+		);
 	}
 
 	public exception() {
@@ -128,6 +132,14 @@ class Log {
 			chalk`JS Error: {dim ${error.message}}\n${
 				error.stack?.split("\n")[1]
 			}`
+		);
+	}
+
+	public configJSInvalidType(type: string, expected: string[]) {
+		this.error(
+			chalk`The JS file returned {dim ${type}}, expected ${expected
+				.map((str) => chalk`{dim ${str}}`)
+				.join(" or ")}`
 		);
 	}
 

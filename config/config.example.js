@@ -15,10 +15,10 @@ module.exports = {
 				// Custom CSS example
 				adguard: {
 					// adguard.example.com
-					proxy_pass: "http://adguard:80",
+					proxy_pass: "http://adguard",
 					// This file gets downloaded and compressed, its then appended to the <head>
 					custom_css:
-						"https://theme-park.dev/CSS/themes/adguard/organizr-dark.css"
+						"https://theme-park.dev/css/base/adguard/organizr.css"
 				},
 
 				// Custom JS example
@@ -34,7 +34,7 @@ module.exports = {
 				bitwarden: {
 					proxy_pass: "http://bitwarden",
 					custom_css:
-						"https://theme-park.dev/CSS/themes/bitwarden/organizr-dark.css",
+						"https://theme-park.dev/css/base/bitwarden/organizr.css",
 					locations: {
 						"/notifications/hub": {
 							proxy_pass: "http://bitwarden:3012",

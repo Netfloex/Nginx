@@ -12,7 +12,16 @@ const parseUserConfig = async (
 
 	if (ext.match(/^\.js$/)) {
 		try {
-			return require(configFilePath);
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const data: unknown = require(configFilePath);
+			if (typeof data == "object" && data) {
+				return data as Record<string, unknown>;
+			} else if (typeof data == "function") {
+				return await data();
+			} else {
+				log.configJSInvalidType(typeof data, ["object", "function"]);
+				return false;
+			}
 		} catch (error) {
 			log.configJSError(error as Error);
 			return false;

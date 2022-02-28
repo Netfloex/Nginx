@@ -155,13 +155,13 @@ main()
 		if (exitCode == ExitCode.success) {
 			log.finished(started);
 		} else {
-			log.exited();
+			log.exited(started);
 			process.exitCode = ExitCode.failure;
 		}
 	})
 	.catch((error) => {
 		log.exception();
 		console.error(error);
-		log.exited();
+		log.exited(started);
 		process.exitCode = ExitCode.failure;
 	});
