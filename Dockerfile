@@ -17,18 +17,13 @@ RUN yarn install --production --ignore-scripts --prefer-offline
 
 FROM jonasal/nginx-certbot:3.0.1-alpine AS runner
 
-# Install Node
-COPY --from=builder /usr/lib /usr/lib
-COPY --from=builder /usr/local/share /usr/local/share
-COPY --from=builder /usr/local/lib /usr/local/lib
-COPY --from=builder /usr/local/include /usr/local/include
-COPY --from=builder /usr/local/bin /usr/local/bin
-
 # Remove builtin configs from parent container 
 RUN rm /etc/nginx/conf.d/*
 
 WORKDIR /app
 
+
+RUN apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/v3.11/main/ nodejs=12.22.6-r0
 
 
 ENV NODE_ENV production
