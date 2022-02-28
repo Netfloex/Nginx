@@ -228,7 +228,8 @@ export const domainSchema = subdomainSchema
 
 const nginxSchema = z
 	.object({
-		log: z.string()
+		log: z.string(),
+		server_tokens: z.boolean()
 	})
 	.partial()
 	.strict();

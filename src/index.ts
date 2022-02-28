@@ -117,17 +117,21 @@ const main = async (): Promise<ExitCode> => {
 		remove(settings.cloudflareConfPath);
 	}
 
-	if (config?.nginx?.log) {
-		promises.push(
-			(async (): Promise<void> => {
-				await editNginxConfig((nginxConf) => {
-					nginxConf.http ??= {};
+	promises.push(
+		((): Promise<void> =>
+			editNginxConfig((nginxConf) => {
+				nginxConf.http ??= {};
+
+				if (config.nginx?.log)
 					nginxConf.http.log_format = `main ${config!.nginx!.log}`;
-					return nginxConf;
-				});
-			})()
-		);
-	}
+
+				nginxConf.http.server_tokens = config.nginx?.server_tokens
+					? "on"
+					: "off";
+
+				return nginxConf;
+			}))()
+	);
 
 	promises.push(
 		...config.servers.map(async (server, i) => {
