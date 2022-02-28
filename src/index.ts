@@ -68,18 +68,18 @@ const main = async (): Promise<ExitCode> => {
 		}
 	}
 
-	if (!settings.certbotMail) {
-		log.noCertbotEmail();
-		stopping = true;
-	}
-
 	if (stopping) {
 		return ExitCode.failure;
 	}
 
 	const validatedConfig = await validateConfig(results);
 
-	if (validatedConfig == null) {
+	if (!settings.certbotMail) {
+		log.noCertbotEmail();
+		stopping = false;
+	}
+
+	if (validatedConfig == null || stopping) {
 		return ExitCode.failure;
 	}
 

@@ -124,7 +124,7 @@ exports[`Validate Config It tests for invalid number of return types 1`] = `
 [
   "[ERROR] There was an issue with your config, the errors are listed below.",
   "[ERROR] Path: servers.no returns",
-  "[ERROR] Error: Please specify at least one \\"return\\" type: proxy_pass, return, redirect, rewrite, html, static, raw",
+  "[ERROR] Error: Please specify at least one \\"return\\" type: proxy_pass, return, redirect, rewrite, html, static, raw, include",
   "[ERROR] Path: servers.example.com",
   "[ERROR] Error: Too many \\"return\\" types, found: proxy_pass, redirect, rewrite, html, return, please use only one of them.",
 ]

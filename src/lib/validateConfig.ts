@@ -17,9 +17,10 @@ const returnKeys = [
 	"rewrite",
 	"html",
 	"static",
-	"raw"
+	"raw",
+	"include"
 ];
-const optionalReturnKeys = ["raw"];
+const optionalReturnKeys = ["raw", "include"];
 
 const literalSchema = z.union([z.string(), z.number(), z.boolean()]);
 const literalOptArraySchema = z.union([
@@ -36,14 +37,12 @@ const urlSchema = z
 	.string()
 	.url()
 	.refine(
-		(url) => {
-			return !z.string().url().safeParse(url).success
-				? url
-				: ["http:", "https:"].includes(new URL(url).protocol);
-		},
-		{
-			message: "Invalid protocol"
-		}
+		(url) => ["http:", "https:"].includes(new URL(url).protocol),
+		(url) => ({
+			message: chalk`{dim ${
+				new URL(url).protocol
+			}} is not a valid protocol`
+		})
 	);
 
 const authSchema = z
@@ -61,19 +60,18 @@ const authSchema = z
 	.strict();
 
 const proxyPassSchema = urlSchema
-	.superRefine(async (url, ctx) => {
-		if (settings.dontCheckDns || !z.string().url().safeParse(url).success)
-			return;
+	.refine(
+		async (url) => {
+			if (settings.dontCheckDns) return true;
 
-		const { hostname } = new URL(url);
-		const valid = await dnsLookup(hostname);
-		if (!valid) {
-			ctx.addIssue({
-				message: chalk`DNS lookup failed for: {yellow ${hostname}}`,
-				code: z.ZodIssueCode.custom
-			});
-		}
-	})
+			return await dnsLookup(new URL(url).hostname);
+		},
+		(url) => ({
+			message: chalk`DNS lookup failed for: {yellow ${
+				new URL(url).hostname
+			}}`
+		})
+	)
 	.transform((proxy_pass) => ({
 		proxy_pass
 	}));
@@ -116,9 +114,7 @@ const pathNameSchema = (error: string) =>
 		.string()
 		.transform((str) => resolve(str))
 		.refine(
-			async (path) => {
-				return !(await pathExists(path));
-			},
+			async (path) => await pathExists(path),
 			(path) => ({
 				message: chalk`${error}: {dim ${path}}`
 			})
@@ -157,8 +153,8 @@ export const locationSchema = z
 	.strict();
 
 const headersTransform = (
-	options: z.infer<typeof locationSchema>
-): z.infer<typeof locationSchema> => {
+	options: z.output<typeof locationSchema>
+): z.output<typeof locationSchema> => {
 	const headers = {
 		...options.headers,
 		...("cors" in options &&
