@@ -1,4 +1,6 @@
 declare module "@webantic/nginx-config-parser" {
+	import { Json } from "@models/Json";
+
 	export interface NginxConfig {
 		server: Server;
 	}
@@ -36,11 +38,13 @@ declare module "@webantic/nginx-config-parser" {
 
 		include?: string[];
 		alias?: string;
-		[T: string]: string[] | string | number | boolean;
+		[T: string]: Json;
 	}
+
 	class Parser {
 		public toJSON: <Config>(conf: string) => Config;
 		public toConf: <Config>(json: Config) => string;
 	}
+
 	export default Parser;
 }

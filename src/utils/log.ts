@@ -137,7 +137,6 @@ class Log {
 
 	public configIssue(issue: ZodIssue) {
 		const path = issue.path.join(".") || "config";
-		this.log();
 		this.error(chalk`{magenta Path}: {dim ${path}}`);
 		this.error(chalk`{magenta Error}: ${issue.message}`);
 	}

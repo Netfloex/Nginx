@@ -105,10 +105,19 @@ const createLocation = async (location: Server): Promise<NginxLocation> => {
 		block.auth_basic_user_file = filename;
 	}
 
+	// Raw
+
 	if (location.raw) {
 		Object.entries(location.raw).forEach(([key, value]) => {
 			block[key] = value;
 		});
+	}
+
+	// Include
+
+	if (location.include) {
+		block.include ??= [];
+		block.include.push(...location.include);
 	}
 
 	return block;

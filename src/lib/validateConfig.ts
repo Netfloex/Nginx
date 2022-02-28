@@ -8,6 +8,7 @@ import dnsLookup from "@utils/dnsLookup";
 import log from "@utils/log";
 import settings from "@utils/settings";
 
+import { Json } from "@models/Json";
 import { InputConfig, OutputConfig } from "@models/config";
 
 const returnKeys = [
@@ -19,10 +20,17 @@ const returnKeys = [
 	"static",
 	"raw"
 ];
-
 const optionalReturnKeys = ["raw"];
 
-export const jsUnion = z.union([z.string(), z.number(), z.boolean()]);
+const literalSchema = z.union([z.string(), z.number(), z.boolean()]);
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const jsonSchema = (() => {
+	const jsonSchema: z.ZodSchema<Json> = z.lazy(() =>
+		z.union([literalSchema, z.array(jsonSchema)])
+	);
+
+	return jsonSchema;
+})();
 
 export const returnKeysFromOption = (
 	options: Record<string, unknown>
@@ -99,6 +107,22 @@ const oneReturnRefinement =
 		}
 	};
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const pathNameSchema = (error: string) =>
+	z
+		.string()
+		.transform((str) => resolve(str))
+		.superRefine(async (path, ctx) => {
+			if (!(await pathExists(path))) {
+				ctx.addIssue({
+					code: ZodIssueCode.custom,
+					message: chalk`${error}: {dim ${path}}`
+				});
+			}
+		});
+
+const includePathNameSchema = pathNameSchema("Include path does not exists");
+
 export const locationSchema = z
 	.object({
 		proxy_pass: urlSchema,
@@ -106,7 +130,7 @@ export const locationSchema = z
 		custom_css: urlsOrUrlSchema,
 		custom_js: urlsOrUrlSchema,
 		return: z.string().or(z.number()),
-		headers: z.record(jsUnion),
+		headers: z.record(jsonSchema),
 		cors: z
 			.boolean()
 			.transform((bool) => (bool ? "*" : false))
@@ -123,18 +147,11 @@ export const locationSchema = z
 		rewrite: z.string(),
 		auth: authSchema.transform((auth) => [auth]).or(authSchema.array()),
 		html: z.string(),
-		static: z
-			.string()
-			.transform((str) => resolve(str))
-			.superRefine(async (path, ctx) => {
-				if (!(await pathExists(path))) {
-					ctx.addIssue({
-						code: ZodIssueCode.custom,
-						message: chalk`Static path does not exist: {dim ${path}}`
-					});
-				}
-			}),
-		raw: z.record(jsUnion)
+		static: pathNameSchema("Static path does not exist"),
+		raw: z.record(jsonSchema),
+		include: includePathNameSchema
+			.transform((string) => [string])
+			.or(includePathNameSchema.array())
 	})
 	.partial()
 	.strict();
