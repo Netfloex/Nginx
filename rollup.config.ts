@@ -12,17 +12,11 @@ export default defineConfig({
 		generatedCode: "es5",
 		plugins: [terser()]
 	},
-	external: ["glob", "json5"],
 	plugins: [
 		typescript({
-			exclude: ["src/tests"],
-			tsconfigOverride: {
-				compilerOptions: {
-					module: "ESNext"
-				}
-			}
+			exclude: ["src/tests"]
 		}),
-		commonjs(),
+		commonjs({ ignore: ["glob"] }),
 		nodeResolve()
 	]
 });

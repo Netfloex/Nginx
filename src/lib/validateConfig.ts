@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { pathExists } from "fs-extra";
 import { resolve } from "path";
 import { URL } from "url";
-import { z, ZodIssueCode } from "zod";
+import { z } from "zod";
 
 import dnsLookup from "@utils/dnsLookup";
 import log from "@utils/log";
@@ -35,9 +35,16 @@ export const returnKeysFromOption = (
 const urlSchema = z
 	.string()
 	.url()
-	.refine((url) => ["http:", "https:"].includes(new URL(url).protocol), {
-		message: "Invalid protocol"
-	});
+	.refine(
+		(url) => {
+			return !z.string().url().safeParse(url).success
+				? url
+				: ["http:", "https:"].includes(new URL(url).protocol);
+		},
+		{
+			message: "Invalid protocol"
+		}
+	);
 
 const authSchema = z
 	.object({
@@ -55,7 +62,8 @@ const authSchema = z
 
 const proxyPassSchema = urlSchema
 	.superRefine(async (url, ctx) => {
-		if (settings.dontCheckDns) return;
+		if (settings.dontCheckDns || !z.string().url().safeParse(url).success)
+			return;
 
 		const { hostname } = new URL(url);
 		const valid = await dnsLookup(hostname);
@@ -72,8 +80,7 @@ const proxyPassSchema = urlSchema
 
 const urlsOrUrlSchema = urlSchema
 	.array()
-	.or(urlSchema)
-	.transform((data) => [data].flat());
+	.or(urlSchema.transform((str) => [str]));
 
 const oneReturnRefinement =
 	(allowNone = false) =>
@@ -108,14 +115,14 @@ const pathNameSchema = (error: string) =>
 	z
 		.string()
 		.transform((str) => resolve(str))
-		.superRefine(async (path, ctx) => {
-			if (!(await pathExists(path))) {
-				ctx.addIssue({
-					code: ZodIssueCode.custom,
-					message: chalk`${error}: {dim ${path}}`
-				});
-			}
-		});
+		.refine(
+			async (path) => {
+				return !(await pathExists(path));
+			},
+			(path) => ({
+				message: chalk`${error}: {dim ${path}}`
+			})
+		);
 
 const includePathNameSchema = pathNameSchema("Include path does not exists");
 
@@ -127,18 +134,15 @@ export const locationSchema = z
 		custom_js: urlsOrUrlSchema,
 		return: z.string().or(z.number()),
 		headers: z.record(literalSchema),
-		cors: z
-			.boolean()
-			.transform((bool) => (bool ? "*" : false))
-			.or(
-				urlSchema
-					.transform((url) => new URL(url).origin)
-					.or(
-						z.string().refine((str) => str == "*", {
-							message: 'use "*" as a wildcard'
-						})
-					)
-			),
+		cors: z.union([
+			z.union([
+				urlSchema.transform((url) => new URL(url).origin),
+				z.string().refine((str) => str == "*", {
+					message: 'use "*" as a wildcard'
+				})
+			]),
+			z.boolean().transform((bool) => (bool ? "*" : false))
+		]),
 		redirect: z.string(),
 		rewrite: z.string(),
 		auth: authSchema.transform((auth) => [auth]).or(authSchema.array()),

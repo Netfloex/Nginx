@@ -1,7 +1,6 @@
 import chalk from "chalk";
 import { readdirSync } from "fs-extra";
 import { join } from "path";
-import { mocked } from "ts-jest/utils";
 
 import validateConfig from "@lib/validateConfig";
 import log from "@utils/log";
@@ -12,7 +11,7 @@ chalk.level = 0;
 
 describe("The examples should be valid", () => {
 	log.log = jest.fn().mockName("log.log");
-	const mockedLog = mocked(log.log);
+	const mockedLog = jest.mocked(log.log);
 
 	const examples = readdirSync(settings.configPath)
 		.filter((file) => file.match(/example/))

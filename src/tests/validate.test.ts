@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import { mocked } from "ts-jest/utils";
 
 import validateConfig from "@lib/validateConfig";
 import log from "@utils/log";
@@ -12,7 +11,7 @@ chalk.level = 0;
 
 describe("Validate Config", () => {
 	log.log = jest.fn().mockName("log.log");
-	const mockedLog = mocked(log.log);
+	const mockedLog = jest.mocked(log.log);
 
 	test("It checks for an invalid config", async () => {
 		expect(await validateConfig(fullErrorConfig)).toBe(null);

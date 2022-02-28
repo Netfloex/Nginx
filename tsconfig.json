@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"baseUrl": ".",
+		"moduleResolution": "node",
 		"paths": {
 			"@models/*": ["src/models/*"],
 			"@utils/*": ["src/utils/*"],
@@ -11,12 +12,17 @@
 		"forceConsistentCasingInFileNames": true,
 		"incremental": true,
 		"lib": ["ES2019.Array"],
-		"module": "commonjs",
+		"module": "ESNext",
 		"outDir": "dist",
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"strict": true,
 		"target": "es5"
 	},
-	"include": ["src"]
+	"include": ["src"],
+	"ts-node": {
+		"compilerOptions": {
+			"module": "commonjs"
+		}
+	}
 }

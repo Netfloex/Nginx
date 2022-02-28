@@ -1,6 +1,6 @@
 import { readFile } from "fs-extra";
 import { load, YAMLException } from "js-yaml";
-import { parse } from "json5";
+import JSON5 from "json5";
 import { extname } from "path";
 
 import log from "@utils/log";
@@ -32,7 +32,7 @@ const parseUserConfig = async (
 
 	if (ext.match(/^\.json[c5]?$/)) {
 		try {
-			return parse(content, (key, value) => {
+			return JSON5.parse(content, (_, value) => {
 				if (typeof value == "string") {
 					const matches = value.match(/%env:([\w-]+)%/g);
 

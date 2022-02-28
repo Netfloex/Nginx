@@ -1,6 +1,5 @@
 import { compilerOptions } from "./tsconfig.json";
-import { InitialOptionsTsJest } from "ts-jest/dist/types";
-import { pathsToModuleNameMapper } from "ts-jest/utils";
+import { pathsToModuleNameMapper, InitialOptionsTsJest } from "ts-jest";
 
 const options: InitialOptionsTsJest = {
 	preset: "ts-jest",
