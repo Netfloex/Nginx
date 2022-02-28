@@ -24,6 +24,6 @@
 	"rewrite": "^ https://rewrite",
 	"websocket": true,
 	"raw": {
-		"custom": "option"
+		"custom": ["option"]
 	}
 }

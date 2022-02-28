@@ -8,7 +8,6 @@ import dnsLookup from "@utils/dnsLookup";
 import log from "@utils/log";
 import settings from "@utils/settings";
 
-import { Json } from "@models/Json";
 import { InputConfig, OutputConfig } from "@models/config";
 
 const returnKeys = [
@@ -23,14 +22,11 @@ const returnKeys = [
 const optionalReturnKeys = ["raw"];
 
 const literalSchema = z.union([z.string(), z.number(), z.boolean()]);
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const jsonSchema = (() => {
-	const jsonSchema: z.ZodSchema<Json> = z.lazy(() =>
-		z.union([literalSchema, z.array(jsonSchema)])
-	);
-
-	return jsonSchema;
-})();
+const literalOptArraySchema = z.union([
+	literalSchema.transform((data) => [data]),
+	literalSchema.array()
+]);
+export type Literals = z.output<typeof literalOptArraySchema>;
 
 export const returnKeysFromOption = (
 	options: Record<string, unknown>
@@ -130,7 +126,7 @@ export const locationSchema = z
 		custom_css: urlsOrUrlSchema,
 		custom_js: urlsOrUrlSchema,
 		return: z.string().or(z.number()),
-		headers: z.record(jsonSchema),
+		headers: z.record(literalSchema),
 		cors: z
 			.boolean()
 			.transform((bool) => (bool ? "*" : false))
@@ -148,7 +144,7 @@ export const locationSchema = z
 		auth: authSchema.transform((auth) => [auth]).or(authSchema.array()),
 		html: z.string(),
 		static: pathNameSchema("Static path does not exist"),
-		raw: z.record(jsonSchema),
+		raw: z.record(literalOptArraySchema),
 		include: includePathNameSchema
 			.transform((string) => [string])
 			.or(includePathNameSchema.array())

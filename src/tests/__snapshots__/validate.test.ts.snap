@@ -36,7 +36,9 @@ exports[`Validate Config It accepts a valid config 1`] = `
         },
       ],
       "raw": {
-        "custom": "option",
+        "custom": [
+          "option",
+        ],
       },
       "subdomains": {
         "no_return_allowed": {

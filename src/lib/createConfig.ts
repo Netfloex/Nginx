@@ -109,7 +109,8 @@ const createLocation = async (location: Server): Promise<NginxLocation> => {
 
 	if (location.raw) {
 		Object.entries(location.raw).forEach(([key, value]) => {
-			block[key] = value;
+			block[key] ??= [];
+			block[key].push(...value);
 		});
 	}
 

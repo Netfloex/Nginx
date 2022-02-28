@@ -1,5 +1,5 @@
 declare module "@webantic/nginx-config-parser" {
-	import { Json } from "@models/Json";
+	import { Literals } from "@lib/validateConfig";
 
 	export interface NginxConfig {
 		server: Server;
@@ -38,7 +38,7 @@ declare module "@webantic/nginx-config-parser" {
 
 		include?: string[];
 		alias?: string;
-		[T: string]: Json;
+		[T: string]: Literals;
 	}
 
 	class Parser {
