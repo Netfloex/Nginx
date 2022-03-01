@@ -32,16 +32,17 @@ ENV FORCE_COLOR 1
 ENV DATA_PATH /app/data
 ENV NGINX_PATH /etc/nginx
 ENV NGINX_CONFIG_PATH /etc/nginx/user_conf.d
+ENV NGINX_BASE_CONFIGS_PATH /app/nginx
 
 COPY --from=builder /app/src/nginx/builtin /etc/nginx/conf.d
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/src/nginx ./src/nginx
+COPY --from=builder /app/dist/index.js ./index.js
+COPY --from=builder /app/src/nginx ./nginx
+RUN rm -r ./nginx/builtin
 COPY --from=builder /app/entrypoint.sh ./entrypoint.sh
 
 
 
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
 
 HEALTHCHECK --interval=5s --timeout=5s --retries=3 \
 	CMD wget -nv -t1 --spider 'http://localhost/healthcheck' || exit 1

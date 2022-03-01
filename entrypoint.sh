@@ -1,7 +1,7 @@
 #!/bin/bash
 
 start() {
-    node .
+    node index.js
 }
 
 reload() {
