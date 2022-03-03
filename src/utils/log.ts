@@ -93,7 +93,7 @@ class Log {
 	public startingCertbot(count: number) {
 		this.info(
 			chalk`{yellow Requesting certificates for {dim ${count}} domain${
-				count > 1 ? "s" : ""
+				count != 1 ? "s" : ""
 			}}${
 				!settings.staging
 					? chalk`{yellow ...}`

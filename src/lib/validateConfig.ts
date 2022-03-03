@@ -262,7 +262,7 @@ const validateConfig = async (
 		return result.data;
 	}
 
-	log.invalidConfig(result.error.issues.length > 1);
+	log.invalidConfig(result.error.issues.length != 1);
 	result.error.issues.forEach((issue) => {
 		if (issue.code == z.ZodIssueCode.invalid_union) {
 			const errors: string[] = issue.unionErrors.flatMap((error) =>
