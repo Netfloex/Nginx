@@ -1,4 +1,4 @@
-import { Server } from "@models/config";
+import { OutputConfig, Server } from "@models/config";
 
 export type SimpleServer = Server & {
 	server_name: string;
@@ -10,14 +10,6 @@ export type Auth = {
 	password: string;
 };
 
-type NginxConfig = {
-	log?: string;
-};
-
-type ParsedConfig = {
+export type ParsedConfig = Omit<OutputConfig, "servers"> & {
 	servers: SimpleServer[];
-	cloudflare?: boolean;
-	nginx?: NginxConfig;
 };
-
-export default ParsedConfig;

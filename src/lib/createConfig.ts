@@ -7,6 +7,7 @@ import createHash from "@utils/createHash";
 import downloadCSSToFile from "@utils/downloadCSSToFile";
 import downloadJSToFile from "@utils/downloadJSToFile";
 import settings from "@utils/settings";
+import { sslFilesFor } from "@utils/sslFilesFor";
 
 import { SimpleServer } from "@models/ParsedConfig";
 import { Locations, Server } from "@models/config";
@@ -143,14 +144,8 @@ const createConfig = async (
 
 	// SSL Certificate files
 	if (!server.disable_cert) {
-		const sslKeysPath = join(
-			"/etc/letsencrypt/live",
-			server.certbot_name ?? server.server_name
-		);
-		jsonServer.ssl_certificate = join(sslKeysPath, "fullchain.pem");
-		jsonServer.ssl_certificate_key = join(sslKeysPath, "privkey.pem");
-		jsonServer.ssl_trusted_certificate = join(sslKeysPath, "chain.pem");
-		jsonServer.ssl_dhparam = "/etc/letsencrypt/dhparams/dhparam.pem";
+		const files = sslFilesFor(server);
+		Object.assign(jsonServer, files);
 	}
 
 	jsonServer["location /"] = await createLocation(

@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"baseUrl": ".",
+		"downlevelIteration": true,
 		"moduleResolution": "node",
 		"paths": {
 			"@models/*": ["src/models/*"],

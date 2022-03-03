@@ -1,18 +1,22 @@
-import { outputFile, pathExists, readdir, remove } from "fs-extra";
+import { pathExists, readdir, remove } from "fs-extra";
 import { join } from "path";
 
-import createConfig from "@lib/createConfig";
+import { certbot } from "@lib/certbot";
 import parseServers from "@lib/parseServers";
 import validateConfig from "@lib/validateConfig";
 import {
 	requestCloudflareIps,
 	updateCloudflareRealIp
 } from "@utils/cloudflare";
+import { createConfigFiles } from "@utils/createConfigFiles";
 import { editNginxConfig } from "@utils/editNginxConfig";
+import { filterServersWithSslFiles } from "@utils/filterServersWithSslFiles";
 import log from "@utils/log";
 import parseUserConfig from "@utils/parseUserConfig";
 import settings from "@utils/settings";
 import store from "@utils/useStore";
+
+import { ParsedConfig } from "@models/ParsedConfig";
 
 enum ExitCode {
 	success = 0,
@@ -74,18 +78,13 @@ const main = async (): Promise<ExitCode> => {
 
 	const validatedConfig = await validateConfig(results);
 
-	if (!settings.certbotMail) {
-		log.noCertbotEmail();
-		stopping = false;
-	}
-
-	if (validatedConfig == null || stopping) {
+	if (validatedConfig == null) {
 		return ExitCode.failure;
 	}
 
 	log.configValid(configFilePath!);
 
-	const config = {
+	const config: ParsedConfig = {
 		...validatedConfig,
 		servers: await parseServers(validatedConfig.servers)
 	};
@@ -118,36 +117,33 @@ const main = async (): Promise<ExitCode> => {
 	}
 
 	promises.push(
-		((): Promise<void> =>
-			editNginxConfig((nginxConf) => {
-				nginxConf.http ??= {};
+		editNginxConfig((nginxConf) => {
+			nginxConf.http ??= {};
 
-				if (config.nginx?.log)
-					nginxConf.http.log_format = `main ${config!.nginx!.log}`;
+			if (config.nginx?.log)
+				nginxConf.http.log_format = `main ${config!.nginx!.log}`;
 
-				nginxConf.http.server_tokens = config.nginx?.server_tokens
-					? "on"
-					: "off";
+			nginxConf.http.server_tokens = config.nginx?.server_tokens
+				? "on"
+				: "off";
 
-				return nginxConf;
-			}))()
-	);
-
-	promises.push(
-		...config.servers.map(async (server, i) => {
-			const fileName =
-				join(settings.nginxConfigPath, `${i}-${server.filename}`) +
-				".conf";
-			await outputFile(
-				fileName,
-				await createConfig(server, config.username)
-			);
-
-			log.configDone(server.server_name);
+			return nginxConf;
 		})
 	);
 
+	const sslServers = config.servers.filter((server) => !server.disable_cert);
+	const serversWithKeys = await filterServersWithSslFiles(sslServers);
+	const serversWithoutKeys = sslServers.filter(
+		(server) => !serversWithKeys.includes(server)
+	);
+
+	promises.push(...createConfigFiles(serversWithKeys, config.username));
+
 	await Promise.all(promises);
+
+	await certbot(serversWithoutKeys);
+	await filterServersWithSslFiles(serversWithoutKeys, true);
+	await Promise.all(createConfigFiles(serversWithoutKeys));
 
 	return ExitCode.success;
 };

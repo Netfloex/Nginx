@@ -53,12 +53,6 @@ class Log {
 		this.error("An error occurred:");
 	}
 
-	public noCertbotEmail() {
-		this.error(
-			chalk`{red You must set the {reset {bold {dim CERBOT_EMAIL}}} environment variable, certbot can't launch without it.}`
-		);
-	}
-
 	// Old configurations
 
 	public rmOld() {
@@ -79,6 +73,46 @@ class Log {
 	public nginxConfNotFound(nginxPath: string) {
 		this.warn(chalk`nginx.conf does not exist: {dim ${nginxPath}}`);
 	}
+
+	// Certbot and Certificates
+
+	public noCertbotEmail() {
+		this.error(
+			chalk`{red You must set the {reset {bold {dim CERBOT_EMAIL}}} environment variable, certbot can not run without it.}`
+		);
+	}
+
+	public noCertbot() {
+		this.error(chalk`Certbot binary not found.`);
+	}
+
+	public skippingCertbot() {
+		this.info(chalk`Skipped requesting certificates`);
+	}
+
+	public startingCertbot(count: number) {
+		this.info(
+			chalk`{yellow Requesting certificates for {dim ${count}} domain${
+				count > 1 ? "s" : ""
+			}}${
+				!settings.staging
+					? chalk`{yellow ...}`
+					: chalk`, using {bold Staging} environment`
+			}`
+		);
+	}
+
+	public missingSslFiles(serverName: string, last: boolean) {
+		if (!last)
+			this.warn(
+				chalk`Missing certificate files for {dim ${serverName}}, disabled until created.`
+			);
+		else
+			this.error(
+				chalk`Could not find all the certificate files for {dim ${serverName}}, you can disable this by using the {dim disable_cert} option.`
+			);
+	}
+
 	// Nginx Config
 
 	public configDone(config: string) {
@@ -159,7 +193,7 @@ class Log {
 
 	public configENVNotFound(envKey: string, env: string) {
 		this.warn(
-			chalk`Config contained {dim ${envKey}}, however {dim process.env.${env}} was not defined.`
+			chalk`Config contains {dim ${envKey}}, while {dim process.env.${env}} was not defined.`
 		);
 	}
 
@@ -224,7 +258,7 @@ class Log {
 
 	public cloudflareCached() {
 		this.info(
-			chalk`{blue Not updating ips}, Current config has been updated less than {dim ${this.cloudflareExpiryDays}} days`
+			chalk`{bold Not} updating ips, Current config has been updated less than {dim ${this.cloudflareExpiryDays}} days ago`
 		);
 	}
 

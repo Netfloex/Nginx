@@ -32,7 +32,9 @@ const settings = {
 	dontCheckDns: !!env.DONT_CHECK_HOSTS ?? false,
 	dontDownloadCustomFiles: !!env.DONT_DOWNLOAD_FILES ?? false,
 
-	certbotMail: env.CERTBOT_EMAIL
+	disableCertbot: env.DISABLE_CERTBOT,
+	certbotMail: env.CERTBOT_EMAIL,
+	staging: env.STAGING
 };
 
 export default settings;
