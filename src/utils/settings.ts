@@ -1,4 +1,7 @@
 import { join, resolve } from "path";
+import yn from "yn";
+
+import { parseIntDefault } from "@utils/parseIntDefault";
 
 const { env } = process;
 
@@ -26,15 +29,17 @@ const settings = {
 	authPath: r(env.AUTH_PATH, join(dataPath, "auth")),
 	storePath: r(env.STORE_PATH, join(dataPath, "store.json")),
 
-	cloudflareExpiry: +(
-		(env.CLOUDFLARE_CACHE_DURATION ?? 1000 * 60 * 60 * 24 * 7) // 7 Days
+	cloudflareExpiry: parseIntDefault(
+		env.CLOUDFLARE_CACHE_DURATION,
+		1000 * 60 * 60 * 24 * 7 // 7 Days
 	),
-	dontCheckDns: !!env.DONT_CHECK_HOSTS ?? false,
-	dontDownloadCustomFiles: !!env.DONT_DOWNLOAD_FILES ?? false,
 
-	disableCertbot: env.DISABLE_CERTBOT,
+	dontCheckDns: yn(env.DONT_CHECK_HOSTS) ?? false,
+	dontDownloadCustomFiles: yn(env.DONT_DOWNLOAD_FILES) ?? false,
+
+	disableCertbot: yn(env.DISABLE_CERTBOT),
 	certbotMail: env.CERTBOT_EMAIL,
-	staging: env.STAGING
+	staging: yn(env.STAGING)
 };
 
 export default settings;
