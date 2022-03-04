@@ -144,6 +144,27 @@ class Log {
 		);
 	}
 
+	public creatingDHParams() {
+		this.info(
+			chalk`{yellow Creating a {dim ${settings.dhParamSize}} bit Diffie-Hellman parameter. This could take a while.}`
+		);
+	}
+
+	public createdDHParams() {
+		this.done(
+			chalk`Diffie-Hellman parameters are created successfully. {dim ${settings.dhParamPath}}`
+		);
+	}
+
+	public letsencryptNoPath() {
+		this.error(
+			chalk`Could not find the letsencrypt directory: {dim ${settings.letsencryptPath}}`
+		);
+		this.error(
+			chalk`So the Diffie-Hellman parameter could not be created at {dim ${settings.dhParamPath}}`
+		);
+	}
+
 	// Nginx Config
 
 	public configDone(config: string) {

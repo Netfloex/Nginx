@@ -11,6 +11,8 @@ const dataPath = r(env.DATA_PATH, "data");
 const nginxPath = r(env.NGINX_PATH, "nginx");
 const nginxConfigPath = r(env.NGINX_CONFIG_PATH, join(nginxPath, "conf.d"));
 
+const letsencryptPath = r(env.LETSENCRYPT_PATH, "/etc/letsencrypt");
+
 const settings = {
 	configPath: r(env.CONFIG_PATH, "config"),
 	configFile: env.CONFIG_FILE ? resolve(env.CONFIG_FILE) : undefined,
@@ -22,6 +24,11 @@ const settings = {
 	cloudflareConfPath: r(
 		env.CLOUDFLARE_CONFIG_PATH,
 		join(nginxConfigPath, "cloudflare.conf")
+	),
+	letsencryptPath,
+	dhParamPath: r(
+		env.DHPARAM_PATH,
+		join(letsencryptPath, "dhparams", "dhparam.pem")
 	),
 
 	dataPath,
@@ -37,6 +44,8 @@ const settings = {
 	dontCheckDns: yn(env.DONT_CHECK_HOSTS) ?? false,
 	dontDownloadCustomFiles: yn(env.DONT_DOWNLOAD_FILES) ?? false,
 
+	dhParamSize: parseIntDefault(env.DHPARAM_SIZE, 2048),
+	disableDH: yn(env.DISABLE_DHPARAMS),
 	disableCertbot: yn(env.DISABLE_CERTBOT),
 	certbotMail: env.CERTBOT_EMAIL,
 	staging: yn(env.STAGING)

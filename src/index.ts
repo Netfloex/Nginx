@@ -9,6 +9,7 @@ import {
 	updateCloudflareRealIp
 } from "@utils/cloudflare";
 import { createConfigFiles } from "@utils/createConfigFiles";
+import { createDHPemIfNotExists } from "@utils/createDHPemIfNotExists";
 import { editNginxConfig } from "@utils/editNginxConfig";
 import { filterServersWithValidSslFiles } from "@utils/filterServersWithValidSslFiles";
 import log from "@utils/log";
@@ -142,8 +143,14 @@ const main = async (): Promise<ExitCode> => {
 	await Promise.all(promises);
 
 	await certbot(serversWithoutKeys);
-	await filterServersWithValidSslFiles(serversWithoutKeys, true);
-	await Promise.all(createConfigFiles(serversWithoutKeys, config.username));
+
+	await createDHPemIfNotExists();
+	await Promise.all(
+		createConfigFiles(
+			await filterServersWithValidSslFiles(serversWithoutKeys, true),
+			config.username
+		)
+	);
 
 	return ExitCode.success;
 };
