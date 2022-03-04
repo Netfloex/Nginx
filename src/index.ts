@@ -141,7 +141,7 @@ const main = async (): Promise<ExitCode> => {
 
 	await Promise.all(promises);
 
-	await certbot(serversWithKeys);
+	await certbot(serversWithoutKeys);
 	await filterServersWithValidSslFiles(serversWithoutKeys, true);
 	await Promise.all(createConfigFiles(serversWithoutKeys, config.username));
 
