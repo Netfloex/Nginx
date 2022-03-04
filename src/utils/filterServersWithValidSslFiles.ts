@@ -13,7 +13,8 @@ export const filterServersWithValidSslFiles = async (
 	const out: SimpleServer[] = [];
 
 	server: for (const server of servers) {
-		const sslFilePaths = Object.values(sslFilesFor(server));
+		const sslFiles = sslFilesFor(server);
+		const sslFilePaths = Object.values(sslFiles);
 
 		for (const file of sslFilePaths) {
 			if (!(await pathExists(file))) {
@@ -22,7 +23,9 @@ export const filterServersWithValidSslFiles = async (
 				continue server;
 			}
 		}
-		const expiry = await parseCertificateExpiry(sslFilePaths[0]);
+		const expiry = await parseCertificateExpiry(
+			sslFiles.ssl_certificate_key
+		);
 
 		if (!expiry) continue server;
 		const days = expiry.diffNow().as("days");
