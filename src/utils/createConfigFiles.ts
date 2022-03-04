@@ -9,7 +9,7 @@ import { SimpleServer } from "@models/ParsedConfig";
 
 export const createConfigFiles = (
 	servers: SimpleServer[],
-	defaultUsername?: string
+	defaultUsername: string | undefined
 ): Promise<void>[] => {
 	return servers.map(async (server, i) => {
 		const nginxConfig = await createConfig(server, defaultUsername);
