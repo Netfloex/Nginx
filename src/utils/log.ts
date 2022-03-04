@@ -129,6 +129,12 @@ class Log {
 		);
 	}
 
+	public certificateParseFailed(file: string, error: string) {
+		this.error(
+			chalk`Parsing of the certificate {dim ${file}} failed: {dim ${error}}`
+		);
+	}
+
 	public certificateExpiresIn(certificate: string, days: number) {
 		const hasExpired = days <= 0;
 		this.info(

@@ -22,9 +22,10 @@ export const filterServersWithValidSslFiles = async (
 				continue server;
 			}
 		}
-		const days = (await parseCertificateExpiry(sslFilePaths[0]))
-			.diffNow()
-			.as("days");
+		const expiry = await parseCertificateExpiry(sslFilePaths[0]);
+
+		if (!expiry) continue server;
+		const days = expiry.diffNow().as("days");
 
 		if (days < 30) {
 			// Certificate expires in less than 30 days
