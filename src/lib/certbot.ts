@@ -19,20 +19,23 @@ const hasCertbot = async (): Promise<boolean> => {
 	try {
 		await exec("command -v certbot", true);
 	} catch (error) {
-		if (error instanceof Error && error.message.endsWith("127")) {
-			log.noCertbot();
-			return false;
-		} else throw error;
+		log.noCertbot();
+		return false;
 	}
 	return true;
 };
 
 export const certbot = async (servers: SimpleServer[]): Promise<void> => {
+	if (!servers.length) {
+		return log.certbotNotNeeded();
+	}
+
 	if (!hasMail() || settings.disableCertbot || !(await hasCertbot())) {
 		return log.skippingCertbot();
 	}
 
 	log.startingCertbot(servers.length);
+
 	const certNames = [
 		...new Set(
 			servers.map((server) => server.certbot_name ?? server.server_name)

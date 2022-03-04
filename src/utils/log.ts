@@ -5,6 +5,8 @@ import { ZodIssue } from "zod";
 
 import settings from "@utils/settings";
 
+import { SimpleServer } from "@models/ParsedConfig";
+
 class Log {
 	public log;
 
@@ -86,6 +88,12 @@ class Log {
 		this.error(chalk`Certbot binary not found.`);
 	}
 
+	public certbotNotNeeded() {
+		this.info(
+			chalk`All domains have their valid certificates, skipping certbot.`
+		);
+	}
+
 	public skippingCertbot() {
 		this.info(chalk`Skipped requesting certificates`);
 	}
@@ -111,6 +119,23 @@ class Log {
 			this.error(
 				chalk`Could not find all the certificate files for {dim ${serverName}}, you can disable this by using the {dim disable_cert} option.`
 			);
+	}
+
+	public certificateValid(server: SimpleServer, days: number) {
+		this.info(
+			chalk`Certificate for {dim ${
+				server.certbot_name ?? server.server_name
+			}} is valid for {bold ${Math.round(days)}} days.`
+		);
+	}
+
+	public certificateExpiresIn(certificate: string, days: number) {
+		const hasExpired = days <= 0;
+		this.info(
+			chalk`The certificate {dim ${certificate}}, expire${
+				hasExpired ? "d" : "s in"
+			} ${days} days ${hasExpired ? "ago" : ""}`
+		);
 	}
 
 	// Nginx Config

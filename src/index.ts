@@ -10,7 +10,7 @@ import {
 } from "@utils/cloudflare";
 import { createConfigFiles } from "@utils/createConfigFiles";
 import { editNginxConfig } from "@utils/editNginxConfig";
-import { filterServersWithSslFiles } from "@utils/filterServersWithSslFiles";
+import { filterServersWithValidSslFiles } from "@utils/filterServersWithValidSslFiles";
 import log from "@utils/log";
 import parseUserConfig from "@utils/parseUserConfig";
 import settings from "@utils/settings";
@@ -132,7 +132,7 @@ const main = async (): Promise<ExitCode> => {
 	);
 
 	const sslServers = config.servers.filter((server) => !server.disable_cert);
-	const serversWithKeys = await filterServersWithSslFiles(sslServers);
+	const serversWithKeys = await filterServersWithValidSslFiles(sslServers);
 	const serversWithoutKeys = sslServers.filter(
 		(server) => !serversWithKeys.includes(server)
 	);
@@ -141,8 +141,8 @@ const main = async (): Promise<ExitCode> => {
 
 	await Promise.all(promises);
 
-	await certbot(serversWithoutKeys);
-	await filterServersWithSslFiles(serversWithoutKeys, true);
+	await certbot(serversWithKeys);
+	await filterServersWithValidSslFiles(serversWithoutKeys, true);
 	await Promise.all(createConfigFiles(serversWithoutKeys));
 
 	return ExitCode.success;
