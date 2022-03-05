@@ -28,7 +28,7 @@ const parseUserConfig = async (
 		}
 	}
 
-	const content = await readFile(configFilePath, "utf8");
+	const content = await readFile(configFilePath, "utf-8");
 
 	if (ext.match(/^\.ya?ml$/)) {
 		try {

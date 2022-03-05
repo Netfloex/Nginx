@@ -18,7 +18,7 @@ export const editNginxConfig = async (
 	const parser = new Parser();
 
 	if (await pathExists(nginxPath)) {
-		const nginxConfig = await readFile(nginxPath, "utf8");
+		const nginxConfig = await readFile(nginxPath, "utf-8");
 
 		const concatSplitStrings = nginxConfig.replace(/" '\n\s+'/g, " ");
 

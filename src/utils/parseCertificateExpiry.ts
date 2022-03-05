@@ -1,4 +1,4 @@
-import { readFile } from "fs-extra";
+import { pathExists, readFile } from "fs-extra";
 import { DateTime } from "luxon";
 import { pki } from "node-forge";
 
@@ -7,7 +7,12 @@ import log from "@utils/log";
 export const parseCertificateExpiry = async (
 	certificateFile: string
 ): Promise<DateTime | false> => {
-	const certificate = await readFile(certificateFile, "");
+	if (!(await pathExists(certificateFile))) {
+		log.certificateParseFailed(certificateFile, "The file does not exists");
+		return false;
+	}
+
+	const certificate = await readFile(certificateFile, "utf-8");
 
 	try {
 		const cert = pki.certificateFromPem(certificate);

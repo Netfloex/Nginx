@@ -2,7 +2,7 @@ import { pathExists } from "fs-extra";
 
 import log from "@utils/log";
 import { parseCertificateExpiry } from "@utils/parseCertificateExpiry";
-import { sslFilesFor } from "@utils/sslFilesFor";
+import { sslFileFor, sslFilesFor } from "@utils/sslFilesFor";
 
 import { SimpleServer } from "@models/ParsedConfig";
 
@@ -23,8 +23,9 @@ export const filterServersWithValidSslFiles = async (
 				continue server;
 			}
 		}
+
 		const expiry = await parseCertificateExpiry(
-			sslFiles.ssl_certificate_key
+			sslFileFor(server, "cert.pem")
 		);
 
 		if (!expiry) continue server;
