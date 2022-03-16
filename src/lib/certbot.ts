@@ -25,12 +25,20 @@ const hasCertbot = async (): Promise<boolean> => {
 	return true;
 };
 
+const certbotDisabled = (): boolean => {
+	if (settings.disableCertbot) {
+		log.certbotDisabled();
+		return true;
+	}
+	return false;
+};
+
 export const certbot = async (servers: SimpleServer[]): Promise<void> => {
 	if (!servers.length) {
 		return log.certbotNotNeeded();
 	}
 
-	if (!hasMail() || settings.disableCertbot || !(await hasCertbot())) {
+	if (!hasMail() || certbotDisabled() || !(await hasCertbot())) {
 		return log.skippingCertbot();
 	}
 
@@ -49,29 +57,26 @@ export const certbot = async (servers: SimpleServer[]): Promise<void> => {
 	// 		})
 	// 		.flat()
 	// );
-	await Promise.all(
-		certNames.map(async (certName) => {
-			const command = createShellCommand("certbot certonly", {
-				"agree-tos": "",
-				keep: "",
-				authenticator: "webroot",
-				"webroot-path": "/var/www/letsencrypt",
-				"cert-name": certName,
-				domain: certName,
-				"preferred-challenges": "http-01",
-				email: settings.certbotMail,
-				"non-interactive": "",
-				...(settings.staging && { "test-cert": "" })
-			});
-			console.log(command);
+	for (const certName of certNames) {
+		const command = createShellCommand("certbot certonly", {
+			"agree-tos": "",
+			keep: "",
+			authenticator: "webroot",
+			"webroot-path": "/var/www/letsencrypt",
+			"cert-name": certName,
+			domain: certName,
+			"preferred-challenges": "http-01",
+			email: settings.certbotMail,
+			"non-interactive": "",
+			...(settings.staging && { "test-cert": "" })
+		});
 
-			await exec(command, true).catch((err) => {
-				console.log("Certbot ran into an error:");
-				console.error(err.stdout);
-				console.error(err.stderr);
-			});
-		})
-	);
+		await exec(command, true).catch((err) => {
+			console.log("Certbot ran into an error:");
+			console.error(err.stdout);
+			console.error(err.stderr);
+		});
+	}
 };
 
 const createShellCommand = (

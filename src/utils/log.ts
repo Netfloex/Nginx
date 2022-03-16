@@ -94,6 +94,10 @@ class Log {
 		);
 	}
 
+	public certbotDisabled() {
+		this.info(chalk`Certbot is disabled.`);
+	}
+
 	public skippingCertbot() {
 		this.info(chalk`Skipped requesting certificates`);
 	}
@@ -110,6 +114,10 @@ class Log {
 		);
 	}
 
+	public certbotLog(log: string) {
+		console.log(chalk`[{green CERTBOT}] ${log}`);
+	}
+
 	public missingSslFiles(serverName: string, last: boolean) {
 		if (!last)
 			this.warn(
@@ -117,7 +125,7 @@ class Log {
 			);
 		else
 			this.error(
-				chalk`Could not find all the certificate files for {dim ${serverName}}, you can disable this by using the {dim disable_cert} option.`
+				chalk`Could not find all the certificate files for {dim ${serverName}}, you can disable SSL by using the {dim disable_cert} option.`
 			);
 	}
 
