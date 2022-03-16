@@ -39,7 +39,7 @@ describe("Utilities", () => {
 		expect(exists).not.toBe(false);
 		expect(notExisting).toBe(false);
 		if (exists !== false)
-			expect(exists.toISO()).toEqual("2013-10-04T14:47:15.000+02:00");
+			expect(exists.toUTC().toISO()).toEqual("2013-10-04T12:47:15.000Z");
 	});
 
 	test("Parse Integer with Default", () => {
