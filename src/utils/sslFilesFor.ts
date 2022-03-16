@@ -4,8 +4,13 @@ import settings from "@utils/settings";
 
 import { SimpleServer } from "@models/ParsedConfig";
 
+type ServerWithNecessaryProperties = Pick<
+	SimpleServer,
+	"certbot_name" | "server_name"
+>;
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const sslFilesFor = (server: Omit<SimpleServer, "filename">) => {
+export const sslFilesFor = (server: ServerWithNecessaryProperties) => {
 	const sslFile = (filename: string): string => sslFileFor(server, filename);
 	return {
 		ssl_certificate: sslFile("fullchain.pem"),
@@ -16,7 +21,7 @@ export const sslFilesFor = (server: Omit<SimpleServer, "filename">) => {
 };
 
 export const sslFileFor = (
-	server: Omit<SimpleServer, "filename">,
+	server: ServerWithNecessaryProperties,
 	filename: string
 ): string =>
 	join(

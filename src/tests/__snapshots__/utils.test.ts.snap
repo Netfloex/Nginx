@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Utilities Create SSL File Paths for a Servername 1`] = `
+{
+  "ssl_certificate": "/etc/letsencrypt/live/example.com/fullchain.pem",
+  "ssl_certificate_key": "/etc/letsencrypt/live/example.com/privkey.pem",
+  "ssl_dhparam": "/etc/letsencrypt/dhparams/dhparam.pem",
+  "ssl_trusted_certificate": "/etc/letsencrypt/live/example.com/chain.pem",
+}
+`;
