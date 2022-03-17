@@ -138,7 +138,15 @@ const main = async (): Promise<ExitCode> => {
 		(server) => !serversWithKeys.includes(server)
 	);
 
-	promises.push(...createConfigFiles(serversWithKeys, config.username));
+	promises.push(
+		...createConfigFiles(
+			[
+				...serversWithKeys, // SSL enabled servers, with all files for it
+				...config.servers.filter((server) => server.disable_cert) // SSL Disabled Servers
+			],
+			config.username
+		)
+	);
 
 	await Promise.all(promises);
 
