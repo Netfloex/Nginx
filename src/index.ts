@@ -143,8 +143,7 @@ const main = async (): Promise<ExitCode> => {
 	await Promise.all(promises);
 
 	await certbot(serversWithoutKeys);
-
-	await createDHPemIfNotExists();
+	if (serversWithoutKeys.length) await createDHPemIfNotExists();
 	await Promise.all(
 		createConfigFiles(
 			await filterServersWithValidSslFiles(serversWithoutKeys, true),
