@@ -65,7 +65,7 @@ export const certbot = async (servers: SimpleServer[]): Promise<void> => {
 			"webroot-path": "/var/www/letsencrypt",
 			"cert-name": certName,
 			domain: certName,
-			"key-name": "rsa",
+			"key-type": "rsa",
 			"preferred-challenges": "http-01",
 			email: settings.certbotMail,
 			"non-interactive": "",
