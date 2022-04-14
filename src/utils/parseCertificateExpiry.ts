@@ -1,6 +1,6 @@
+import { parse } from "cert2json";
 import { pathExists, readFile } from "fs-extra";
 import { DateTime } from "luxon";
-import { pki } from "node-forge";
 
 import log from "@utils/log";
 
@@ -15,8 +15,8 @@ export const parseCertificateExpiry = async (
 	const certificate = await readFile(certificateFile, "utf-8");
 
 	try {
-		const cert = pki.certificateFromPem(certificate);
-		return DateTime.fromJSDate(cert.validity.notAfter);
+		const cert = parse(certificate);
+		return DateTime.fromJSDate(cert.tbs.validity.notAfter);
 	} catch (error) {
 		if (error instanceof Error)
 			log.certificateParseFailed(certificateFile, error.message);

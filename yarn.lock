@@ -1014,13 +1014,6 @@
   resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-2.3.0.tgz#0f4d912c385e47890374cb694da9bc93bacbe2b0"
   integrity sha512-mWXdRlg+5dWvxU+uaijB2RY5NrJtMEXR6j+D6W66hPuezSVXrQqQvWa/JNHntgEYgjzeoVRrQVmMWAbKjUJiFQ==
 
-"@types/node-forge@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@types/node-forge/-/node-forge-1.0.0.tgz#0b4e9507209485945115a4db4879f39632230593"
-  integrity sha512-h0bgwPKq5u99T9Gor4qtV1lCZ41xNkai0pie1n/a2mh2/4+jENWOlo7AJ4YKxTZAnSZ8FRurUpdIN7ohaPPuHA==
-  dependencies:
-    "@types/node" "*"
-
 "@types/node@*":
   version "16.0.0"
   resolved "https://registry.npmjs.org/@types/node/-/node-16.0.0.tgz"
@@ -1508,6 +1501,11 @@ caniuse-lite@^1.0.30001312:
   version "1.0.30001312"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001312.tgz#e11eba4b87e24d22697dae05455d5aea28550d5f"
   integrity sha512-Wiz1Psk2MEK0pX3rUzWaunLTZzqS2JYZFzNKqAiJGiuxIjRPLgV6+VDPOg6lQOUxmDwhTlh198JsTTi8Hzw6aQ==
+
+cert2json@^1.0.11:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/cert2json/-/cert2json-1.0.11.tgz#239be0d73604fa49a89c0241a5024a503a012461"
+  integrity sha512-vAMvwpBMeq5ppwFRay7XCn1716kMhZBK5OxWJcCSTR2tmM/dXQ9vFzQ3pd8kYxPdkcthhv2eHb2X0E5yH+0F2A==
 
 chalk@4.1.2, chalk@^4.0.0:
   version "4.1.2"
@@ -3429,11 +3427,6 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
-
-node-forge@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-1.2.1.tgz#82794919071ef2eb5c509293325cec8afd0fd53c"
-  integrity sha512-Fcvtbb+zBcZXbTTVwqGA5W+MKBj56UjVRevvchv5XrcyXbmNdesfZL37nlcWOfpgHhgmxApw3tQbTr4CqNmX4w==
 
 node-int64@^0.4.0:
   version "0.4.0"
