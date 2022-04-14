@@ -49,14 +49,7 @@ export const certbot = async (servers: SimpleServer[]): Promise<void> => {
 			servers.map((server) => server.certbot_name ?? server.server_name)
 		)
 	];
-	// const i = await Promise.all(
-	// 	servers
-	// 		.map((server) => {
-	// 			const sslFiles = Object.values(sslFilesFor(server));
-	// 			return sslFiles.map((file) => outputFile(file, ""));
-	// 		})
-	// 		.flat()
-	// );
+
 	for (const certName of certNames) {
 		const command = createShellCommand("certbot certonly", {
 			"agree-tos": "",
@@ -65,7 +58,7 @@ export const certbot = async (servers: SimpleServer[]): Promise<void> => {
 			"webroot-path": "/var/www/letsencrypt",
 			"cert-name": certName,
 			domain: certName,
-			"key-type": "rsa",
+			"key-type": settings.useECDSA ? "ecdsa" : "rsa",
 			"preferred-challenges": "http-01",
 			email: settings.certbotMail,
 			"non-interactive": "",

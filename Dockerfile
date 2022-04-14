@@ -33,7 +33,6 @@ ENV DATA_PATH /app/data
 ENV NGINX_PATH /etc/nginx
 ENV NGINX_CONFIG_PATH /etc/nginx/user_conf.d
 ENV NGINX_BASE_CONFIGS_PATH /app/nginx
-ENV USE_ECDSA 0
 
 COPY --from=builder /app/src/nginx/builtin /etc/nginx/conf.d
 COPY --from=builder /app/dist/index.js ./index.js

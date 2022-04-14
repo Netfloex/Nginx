@@ -48,7 +48,8 @@ const settings = {
 	disableDH: yn(env.DISABLE_DHPARAMS),
 	disableCertbot: yn(env.DISABLE_CERTBOT),
 	certbotMail: env.CERTBOT_EMAIL,
-	staging: yn(env.STAGING)
+	staging: yn(env.STAGING),
+	useECDSA: yn(env.USE_ECDSA, { default: true })
 };
 
 export default settings;
