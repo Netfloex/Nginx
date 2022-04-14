@@ -114,8 +114,17 @@ class Log {
 		);
 	}
 
-	public certbotLog(log: string) {
-		console.log(chalk`[{green CERTBOT}] ${log}`);
+	public certbotLog(
+		index: number,
+		size: number,
+		certificate: string,
+		log: string
+	) {
+		console.log(
+			chalk`[{green CERTBOT}] [{yellow ${
+				index + 1
+			}}/{yellow ${size}}] ${certificate}: {dim ${log}}`
+		);
 	}
 
 	public missingSslFiles(serverName: string, last: boolean) {

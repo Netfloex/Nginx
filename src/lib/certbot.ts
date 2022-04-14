@@ -72,11 +72,22 @@ export const certbot = async (servers: SimpleServer[]): Promise<void> => {
 			...(settings.staging && { "test-cert": "" })
 		});
 
-		await exec(command, true).catch((err) => {
-			console.log("Certbot ran into an error:");
-			console.error(err.stdout);
-			console.error(err.stderr);
-		});
+		await exec(command, true)
+			.catch((err) => {
+				console.log("Certbot ran into an error:");
+				console.error(err.stdout);
+				console.error(err.stderr);
+			})
+			.then((output) => {
+				if (output && output.stdout) {
+					log.certbotLog(
+						certNames.indexOf(certName),
+						certNames.length,
+						certName,
+						output.stdout.split("\n")[0]
+					);
+				}
+			});
 	}
 };
 
