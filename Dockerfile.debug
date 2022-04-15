@@ -1,11 +1,3 @@
-ARG NODE_IMAGE=node:12-alpine
-
-FROM $NODE_IMAGE AS deps
-WORKDIR /app
-
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
-
 FROM jonasal/nginx-certbot:3.0.1-alpine AS runner
 
 # Remove builtin configs from parent container 
