@@ -853,14 +853,6 @@
     is-module "^1.0.0"
     resolve "^1.19.0"
 
-"@rollup/plugin-replace@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@rollup/plugin-replace/-/plugin-replace-4.0.0.tgz#e34c457d6a285f0213359740b43f39d969b38a67"
-  integrity sha512-+rumQFiaNac9y64OHtkHGmdjm7us9bo1PlbgQfdihQtuNxzjpaB064HbRnewUOggLQxVCCyINfStkgmBeQpv1g==
-  dependencies:
-    "@rollup/pluginutils" "^3.1.0"
-    magic-string "^0.25.7"
-
 "@rollup/pluginutils@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@rollup/pluginutils/-/pluginutils-3.1.0.tgz#706b4524ee6dc8b103b3c995533e5ad680c02b9b"
@@ -1510,10 +1502,10 @@ caniuse-lite@^1.0.30001312:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001312.tgz#e11eba4b87e24d22697dae05455d5aea28550d5f"
   integrity sha512-Wiz1Psk2MEK0pX3rUzWaunLTZzqS2JYZFzNKqAiJGiuxIjRPLgV6+VDPOg6lQOUxmDwhTlh198JsTTi8Hzw6aQ==
 
-cert2json@^1.0.11:
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/cert2json/-/cert2json-1.0.11.tgz#239be0d73604fa49a89c0241a5024a503a012461"
-  integrity sha512-vAMvwpBMeq5ppwFRay7XCn1716kMhZBK5OxWJcCSTR2tmM/dXQ9vFzQ3pd8kYxPdkcthhv2eHb2X0E5yH+0F2A==
+cert2json@^1.0.12:
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/cert2json/-/cert2json-1.0.12.tgz#5200eeb8bd4c76f7529b1184b5a2d885618991c9"
+  integrity sha512-Y1SmKbVj40blkfWPhv2QCpTIlgEQ8JBLor6RMi2GalKIIyucnoXfbH3TjzYvgCNIr3DJymSlVdzc4VDXj7csfQ==
 
 chalk@4.1.2, chalk@^4.0.0:
   version "4.1.2"
