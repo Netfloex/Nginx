@@ -1,21 +1,37 @@
 #!/bin/bash
+PREFIX="[NCM] (entrypoint.sh)"
+
+cp nginx/builtin/* /etc/nginx/conf.d
+
+nginx -g "daemon off;" & NGINX=$!
 
 start() {
+    echo "$PREFIX Generating configs"
     node index.js
 }
 
 reload() {
-    echo Reloading...
     if start; then
-        kill -1 $nginx 2>/dev/null
-        wait $nginx
+        echo "$PREFIX Reload nginx"
+        nginx -s reload && echo "$PREFIX Nginx reloaded"
+        wait -n $NGINX
     fi
-    
 }
 
+clean_exit() {
+    nginx -s stop
+}
+
+trap exit TERM INT QUIT
+trap clean_exit EXIT
 trap reload SIGHUP
 
 if start; then
-    /scripts/start_nginx_certbot.sh & nginx=$!
-    wait $nginx
+    echo "$PREFIX Reloading Nginx"
+    nginx -s reload
 fi
+
+
+
+wait $NGINX
+exit $?
