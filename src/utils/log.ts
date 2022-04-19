@@ -120,10 +120,18 @@ class Log {
 		certificate: string,
 		log: string
 	) {
-		console.log(
+		this.log(
 			chalk`[{green CERTBOT}] [{yellow ${
 				index + 1
 			}}/{yellow ${size}}] ${certificate}: {dim ${log}}`
+		);
+	}
+
+	public certbotError(stdout: string, stderr: string) {
+		this.error(
+			chalk`Certbot ran into an error:\n {dim ${[stdout, stderr].join(
+				"\n"
+			)}}`
 		);
 	}
 

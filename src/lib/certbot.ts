@@ -67,9 +67,7 @@ export const certbot = async (servers: SimpleServer[]): Promise<void> => {
 
 		await exec(command, true)
 			.catch((err) => {
-				console.log("Certbot ran into an error:");
-				console.error(err.stdout);
-				console.error(err.stderr);
+				log.certbotError(err.stdout, err.stderr);
 			})
 			.then((output) => {
 				if (output && output.stdout) {
