@@ -2,6 +2,7 @@ import { pathExists, readdir, remove } from "fs-extra";
 import { join } from "path";
 
 import { certbot } from "@lib/certbot";
+import { logger, started } from "@lib/logger";
 import parseServers from "@lib/parseServers";
 import validateConfig from "@lib/validateConfig";
 import {
@@ -12,7 +13,6 @@ import { createConfigFiles } from "@utils/createConfigFiles";
 import { createDHPemIfNotExists } from "@utils/createDHPemIfNotExists";
 import { editNginxConfig } from "@utils/editNginxConfig";
 import { filterServersWithValidSslFiles } from "@utils/filterServersWithValidSslFiles";
-import log from "@utils/log";
 import parseUserConfig from "@utils/parseUserConfig";
 import settings from "@utils/settings";
 import store from "@utils/useStore";
@@ -31,12 +31,12 @@ const main = async (): Promise<ExitCode> => {
 
 	if (configFilePath) {
 		if (!(await pathExists(configFilePath))) {
-			log.configNotFound(configFilePath);
+			logger.configNotFound({ path: configFilePath });
 			stopping = true;
 		}
 	} else {
 		if (!(await pathExists(settings.configPath))) {
-			log.configFolderNotFound(settings.configPath);
+			logger.configFolderNotFound({ path: settings.configPath });
 			stopping = true;
 		} else {
 			const configs = await readdir(settings.configPath);
@@ -46,11 +46,11 @@ const main = async (): Promise<ExitCode> => {
 			);
 
 			if (!configPaths.length) {
-				log.configNotFound(settings.configPath);
+				logger.configNotFound({ path: settings.configPath });
 				stopping = true;
 			} else {
 				if (configPaths.length > 1) {
-					log.multipleConfigs(configPaths);
+					logger.multipleConfigs({ configs: configPaths });
 				}
 
 				configFilePath = join(settings.configPath, configPaths[0]);
@@ -63,12 +63,12 @@ const main = async (): Promise<ExitCode> => {
 		results = await parseUserConfig(configFilePath!);
 
 		if (!results) {
-			log.configError(configFilePath!);
+			logger.configError({ config: configFilePath! });
 			stopping = true;
 		}
 
 		if (Object.keys(results).length == 0) {
-			log.configEmpty();
+			logger.configEmpty({ config: configFilePath! });
 			stopping = true;
 		}
 	}
@@ -83,7 +83,7 @@ const main = async (): Promise<ExitCode> => {
 		return ExitCode.failure;
 	}
 
-	log.configValid(configFilePath!);
+	logger.configValid({ file: configFilePath! });
 
 	const config: ParsedConfig = {
 		...validatedConfig,
@@ -91,11 +91,12 @@ const main = async (): Promise<ExitCode> => {
 	};
 
 	if (!(await pathExists(settings.nginxConfigPath))) {
-		log.noOld();
+		logger.noOldConfigs();
+		logger.configsLocationHint();
 		return ExitCode.failure;
 	}
 
-	log.rmOld();
+	logger.removeOldConfigs();
 	await readdir(settings.nginxConfigPath).then(async (files) => {
 		const oldConfigFiles = files.filter((g) => g.match(/^\d/));
 		// Delete em
@@ -162,20 +163,19 @@ const main = async (): Promise<ExitCode> => {
 	return ExitCode.success;
 };
 
-const started = Date.now();
-log.started();
+logger.start();
 main()
 	.then((exitCode) => {
 		if (exitCode == ExitCode.success) {
-			log.finished(started);
+			logger.done({ started });
 		} else {
-			log.exited(started);
+			logger.exited({ started });
 			process.exitCode = ExitCode.failure;
 		}
 	})
 	.catch((error) => {
-		log.exception();
+		logger.exception();
 		console.error(error);
-		log.exited(started);
+		logger.exited({ started });
 		process.exitCode = ExitCode.failure;
 	});

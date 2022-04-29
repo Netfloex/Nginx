@@ -1,12 +1,13 @@
 import asn1 from "asn1.js";
 import { createDiffieHellman } from "crypto";
+import { performance } from "perf_hooks";
 
-import log from "@utils/log";
+import { logger } from "@lib/logger";
 import settings from "@utils/settings";
 
 export const createDHParams = (): string => {
-	log.creatingDHParams();
-
+	logger.creatingDHParams();
+	const started = performance.now();
 	const dhparam = asn1
 		.define("", function () {
 			this.seq().obj(this.key("p").int(), this.key("g").int());
@@ -20,7 +21,7 @@ export const createDHParams = (): string => {
 			{ label: "DH PARAMETERS" }
 		);
 
-	log.createdDHParams();
+	logger.createdDHParams({ started });
 
 	return dhparam;
 };

@@ -2,7 +2,7 @@ import Parser from "@webantic/nginx-config-parser";
 import { pathExists, readFile, writeFile } from "fs-extra";
 import { join } from "path";
 
-import log from "@utils/log";
+import { logger } from "@lib/logger";
 import settings from "@utils/settings";
 
 import { NginxConf } from "@models/nginx.conf";
@@ -25,7 +25,7 @@ export const editNginxConfig = async (
 		oldConfig = parser.toJSON<NginxConf>(concatSplitStrings);
 	} else {
 		oldConfig = {};
-		log.nginxConfNotFound(nginxPath);
+		logger.nginxConfNotFound({ nginxPath });
 	}
 
 	const edited = editConfig(oldConfig);

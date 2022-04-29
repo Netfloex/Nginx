@@ -1,5 +1,6 @@
 import { join } from "path";
 
+import { logger } from "@lib/logger";
 import { createDHParams } from "@utils/createDHParams";
 import createHash from "@utils/createHash";
 import dnsLookup from "@utils/dnsLookup";
@@ -8,6 +9,8 @@ import { parseIntDefault } from "@utils/parseIntDefault";
 import { sslFilesFor } from "@utils/sslFilesFor";
 
 describe("Utilities", () => {
+	logger.overWriteLogFunction = jest.fn().mockName("logger");
+	logger.disableTime = true;
 	test("Diffie-Hellman parameters", () => {
 		const params = createDHParams();
 

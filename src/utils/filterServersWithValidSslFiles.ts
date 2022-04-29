@@ -1,6 +1,6 @@
 import { pathExists } from "fs-extra";
 
-import log from "@utils/log";
+import { logger } from "@lib/logger";
 import { parseCertificateExpiry } from "@utils/parseCertificateExpiry";
 import { sslFileFor, sslFilesFor } from "@utils/sslFilesFor";
 
@@ -19,7 +19,14 @@ export const filterServersWithValidSslFiles = async (
 		for (const file of sslFilePaths) {
 			if (!(await pathExists(file))) {
 				// File does not exists
-				log.missingSslFiles(server.server_name, last);
+
+				if (!last)
+					logger.missingSSLFiles({ serverName: server.server_name });
+				else
+					logger.missingSSLFilesFinal({
+						serverName: server.server_name
+					});
+
 				continue server;
 			}
 		}
@@ -33,11 +40,14 @@ export const filterServersWithValidSslFiles = async (
 
 		if (days < 30) {
 			// Certificate expires in less than 30 days
-			log.certificateExpiresIn(server.server_name, Math.round(days));
+			logger.certificateExpiry({
+				serverName: server.server_name,
+				days: days
+			});
 			continue server;
 		}
 
-		log.certificateValid(server, days);
+		logger.certificateValid({ serverName: server.server_name, days: days });
 
 		out.push(server);
 	}

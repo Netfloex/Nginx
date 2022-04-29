@@ -3,7 +3,7 @@ import { load, YAMLException } from "js-yaml";
 import JSON5 from "json5";
 import { extname } from "path";
 
-import log from "@utils/log";
+import { logger } from "@lib/logger";
 
 const parseUserConfig = async (
 	configFilePath: string
@@ -19,11 +19,14 @@ const parseUserConfig = async (
 			} else if (typeof data == "function") {
 				return await data();
 			} else {
-				log.configJSInvalidType(typeof data, ["object", "function"]);
+				logger.configJSInvalidType({
+					type: typeof data,
+					expected: ["object", "function"]
+				});
 				return false;
 			}
 		} catch (error) {
-			log.configJSError(error as Error);
+			logger.configJSError({ error: error as Error });
 			return false;
 		}
 	}
@@ -34,7 +37,7 @@ const parseUserConfig = async (
 		try {
 			return load(content) as Record<string, unknown>;
 		} catch (error) {
-			log.configYamlError(error as YAMLException);
+			logger.configYamlError({ error: error as YAMLException });
 			return false;
 		}
 	}
@@ -55,7 +58,10 @@ const parseUserConfig = async (
 									process.env[env]
 								);
 							} else {
-								log.configENVNotFound(match, env);
+								logger.configENVNotFound({
+									env,
+									envKey: match
+								});
 							}
 						});
 					}
@@ -63,7 +69,7 @@ const parseUserConfig = async (
 				return value;
 			});
 		} catch (error) {
-			log.configJSONError(error as Error);
+			logger.configJSONError({ error: error as Error });
 			return false;
 		}
 	}

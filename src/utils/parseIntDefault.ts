@@ -1,4 +1,5 @@
-import chalk from "chalk";
+const logger = import("@lib/logger");
+// Lazy load because of circular dependency
 
 export const parseIntDefault = (
 	string: string | undefined,
@@ -7,9 +8,7 @@ export const parseIntDefault = (
 	if (!string) return or;
 
 	if (isNaN(parseInt(string))) {
-		console.log(
-			chalk`Could not parse {dim ${string}} to a number, defaulting to ${or}`
-		);
+		logger.then((l) => l.logger.parseIntFailed({ string, or }));
 		return or;
 	}
 	return parseInt(string);

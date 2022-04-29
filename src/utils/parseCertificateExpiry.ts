@@ -2,13 +2,16 @@ import { parse } from "cert2json";
 import { pathExists, readFile } from "fs-extra";
 import { DateTime } from "luxon";
 
-import log from "@utils/log";
+import { logger } from "@lib/logger";
 
 export const parseCertificateExpiry = async (
 	certificateFile: string
 ): Promise<DateTime | false> => {
 	if (!(await pathExists(certificateFile))) {
-		log.certificateParseFailed(certificateFile, "The file does not exists");
+		logger.certificateParseFailed({
+			file: certificateFile,
+			error: "The file does not exists"
+		});
 		return false;
 	}
 
@@ -19,7 +22,10 @@ export const parseCertificateExpiry = async (
 		return DateTime.fromJSDate(cert.tbs.validity.notAfter);
 	} catch (error) {
 		if (error instanceof Error)
-			log.certificateParseFailed(certificateFile, error.message);
+			logger.certificateParseFailed({
+				file: certificateFile,
+				error: error.stack ?? error.message
+			});
 		else console.error(error);
 		return false;
 	}

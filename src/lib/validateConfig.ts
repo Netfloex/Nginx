@@ -4,8 +4,8 @@ import { resolve } from "path";
 import { URL } from "url";
 import { z } from "zod";
 
+import { logger } from "@lib/logger";
 import dnsLookup from "@utils/dnsLookup";
-import log from "@utils/log";
 import settings from "@utils/settings";
 
 import { InputConfig, OutputConfig } from "@models/config";
@@ -262,7 +262,7 @@ const validateConfig = async (
 		return result.data;
 	}
 
-	log.invalidConfig(result.error.issues.length != 1);
+	logger.invalidConfig({ plural: result.error.issues.length != 1 });
 	result.error.issues.forEach((issue) => {
 		if (issue.code == z.ZodIssueCode.invalid_union) {
 			const errors: string[] = issue.unionErrors.flatMap((error) =>
@@ -273,7 +273,7 @@ const validateConfig = async (
 				chalk` {gray or} `
 			)}`;
 		}
-		log.configIssue(issue);
+		logger.configIssue({ issue });
 	});
 
 	return null;

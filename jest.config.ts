@@ -1,6 +1,8 @@
 import { compilerOptions } from "./tsconfig.json";
 import { pathsToModuleNameMapper, InitialOptionsTsJest } from "ts-jest";
 
+process.env.FORCE_COLOR = "0";
+
 const options: InitialOptionsTsJest = {
 	preset: "ts-jest",
 	testEnvironment: "node",

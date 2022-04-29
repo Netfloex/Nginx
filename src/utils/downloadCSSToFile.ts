@@ -1,9 +1,9 @@
 import { outputFile, pathExists } from "fs-extra";
 import { join } from "path";
 
+import { logger } from "@lib/logger";
 import createHash from "@utils/createHash";
 import downloadCSS from "@utils/downloadCSS";
-import log from "@utils/log";
 import settings from "@utils/settings";
 
 const downloadCSSToFile = async (custom_css: string[]): Promise<void> => {
@@ -17,26 +17,26 @@ const downloadCSSToFile = async (custom_css: string[]): Promise<void> => {
 			);
 
 			if (await pathExists(fileName)) {
-				log.cachedCSS(cssUrl);
+				logger.cachedCSS({ url: cssUrl });
 				return;
 			}
-			log.downloadCSS(cssUrl);
+			logger.downloadCSS({ url: cssUrl });
 			await downloadCSS(cssUrl).then(async (output) => {
 				if (output.errors) {
-					log.CSSError(
-						cssUrl,
-						Array.isArray(output.errors)
+					logger.CSSError({
+						url: cssUrl,
+						error: Array.isArray(output.errors)
 							? output.errors.join("\n")
 							: output.errors
-					);
+					});
 
 					return;
 				}
 
-				log.CSSDownloaded(cssUrl);
+				logger.downloadedCSS({ url: cssUrl });
 
 				await outputFile(fileName, output.styles).catch((e) => {
-					log.CSSWriteError(fileName, e);
+					logger.CSSWriteError({ fileName, error: e });
 
 					throw e;
 				});

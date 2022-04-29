@@ -1,6 +1,6 @@
 import execSh from "exec-sh";
 
-import log from "@utils/log";
+import { logger } from "@lib/logger";
 import settings from "@utils/settings";
 
 import { SimpleServer } from "@models/ParsedConfig";
@@ -11,7 +11,7 @@ const hasMail = (): boolean => {
 	if (settings.certbotMail) {
 		return true;
 	}
-	log.noCertbotEmail();
+	logger.noCertbotEmail();
 	return false;
 };
 
@@ -19,7 +19,7 @@ const hasCertbot = async (): Promise<boolean> => {
 	try {
 		await exec("command -v certbot", true);
 	} catch (error) {
-		log.noCertbot();
+		logger.noCertbotBinary();
 		return false;
 	}
 	return true;
@@ -27,7 +27,7 @@ const hasCertbot = async (): Promise<boolean> => {
 
 const certbotDisabled = (): boolean => {
 	if (settings.disableCertbot) {
-		log.certbotDisabled();
+		logger.certbotDisabled();
 		return true;
 	}
 	return false;
@@ -35,14 +35,14 @@ const certbotDisabled = (): boolean => {
 
 export const certbot = async (servers: SimpleServer[]): Promise<void> => {
 	if (!servers.length) {
-		return log.certbotNotNeeded();
+		return logger.allValid();
 	}
 
 	if (!hasMail() || certbotDisabled() || !(await hasCertbot())) {
-		return log.skippingCertbot();
+		return logger.skippingCertbot();
 	}
 
-	log.startingCertbot(servers.length);
+	logger.requestingCertificates({ count: servers.length });
 
 	const certNames = [
 		...new Set(
@@ -67,16 +67,16 @@ export const certbot = async (servers: SimpleServer[]): Promise<void> => {
 
 		await exec(command, true)
 			.catch((err) => {
-				log.certbotError(err.stdout, err.stderr);
+				logger.certbotError({ messages: [err.stdout, err.stderr] });
 			})
 			.then((output) => {
 				if (output && output.stdout) {
-					log.certbotLog(
-						certNames.indexOf(certName),
-						certNames.length,
-						certName,
-						output.stdout.split("\n")[0]
-					);
+					logger.certbotLog({
+						index: certNames.indexOf(certName),
+						size: certNames.length,
+						certificate: certName,
+						log: output.stdout.split("\n")[0]
+					});
 				}
 			});
 	}

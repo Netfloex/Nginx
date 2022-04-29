@@ -1,18 +1,16 @@
 import { replaceCurrentDir } from "./test-utils";
-import chalk from "chalk";
 
+import { logger } from "@lib/logger";
 import validateConfig from "@lib/validateConfig";
-import log from "@utils/log";
 
 import fullErrorConfig from "@configs/full-error-config.json";
 import fullValidConfig from "@configs/full-valid-config.json";
 import invalidReturnTypesConfig from "@configs/invalid-return-types-config.json";
 
-chalk.level = 0;
-
 describe("Validate Config", () => {
-	log.log = jest.fn().mockName("log.log");
-	const mockedLog = jest.mocked(log.log);
+	logger.overWriteLogFunction = jest.fn().mockName("logger");
+	logger.disableTime = true;
+	const mockedLog = jest.mocked(logger.overWriteLogFunction);
 
 	test("It checks for an invalid config", async () => {
 		expect(await validateConfig(fullErrorConfig)).toBe(null);

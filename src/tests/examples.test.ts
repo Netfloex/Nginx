@@ -1,17 +1,15 @@
-import chalk from "chalk";
 import { readdirSync } from "fs-extra";
 import { join } from "path";
 
+import { logger } from "@lib/logger";
 import validateConfig from "@lib/validateConfig";
-import log from "@utils/log";
 import parseUserConfig from "@utils/parseUserConfig";
 import settings from "@utils/settings";
 
-chalk.level = 0;
-
 describe("The examples should be valid", () => {
-	log.log = jest.fn().mockName("log.log");
-	const mockedLog = jest.mocked(log.log);
+	logger.overWriteLogFunction = jest.fn().mockName("logger");
+	logger.disableTime = true;
+	const mockedLog = jest.mocked(logger.overWriteLogFunction);
 
 	const examples = readdirSync(settings.configPath)
 		.filter((file) => file.match(/example/))

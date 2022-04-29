@@ -2,7 +2,7 @@ import { outputFile } from "fs-extra";
 import { join } from "path";
 
 import createConfig from "@lib/createConfig";
-import log from "@utils/log";
+import { logger } from "@lib/logger";
 import settings from "@utils/settings";
 
 import { SimpleServer } from "@models/ParsedConfig";
@@ -19,6 +19,6 @@ export const createConfigFiles = (
 
 		await outputFile(fileName, nginxConfig);
 
-		log.configDone(server.server_name);
+		logger.configDone({ serverName: server.server_name });
 	});
 };

@@ -3,8 +3,8 @@ import { createWriteStream, ensureFile, pathExists } from "fs-extra";
 import { join } from "path";
 import { Stream } from "stream";
 
+import { logger } from "@lib/logger";
 import createHash from "@utils/createHash";
-import log from "@utils/log";
 import settings from "@utils/settings";
 
 const downloadJSToFile = async (custom_js: string[]): Promise<void> => {
@@ -18,11 +18,11 @@ const downloadJSToFile = async (custom_js: string[]): Promise<void> => {
 			);
 
 			if (await pathExists(fileName)) {
-				log.cachedJS(jsUrl);
+				logger.cachedJS({ url: jsUrl });
 				return;
 			}
 
-			log.downloadJS(jsUrl);
+			logger.downloadJS({ url: jsUrl });
 			return new Promise((resolve, reject) => {
 				axios
 					.get<Stream>(jsUrl, { responseType: "stream" })
@@ -30,7 +30,7 @@ const downloadJSToFile = async (custom_js: string[]): Promise<void> => {
 						await ensureFile(fileName);
 						const stream = createWriteStream(fileName);
 						stream.on("close", () => {
-							log.JSDownloaded(jsUrl);
+							logger.downloadedJS({ url: jsUrl });
 							resolve();
 						});
 						res.data.pipe(stream);

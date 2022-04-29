@@ -1,7 +1,7 @@
 import axios from "axios";
 import { outputFile, pathExists } from "fs-extra";
 
-import log from "@utils/log";
+import { logger } from "@lib/logger";
 import settings from "@utils/settings";
 import store from "@utils/useStore";
 
@@ -21,18 +21,17 @@ type Data = {
 export const requestCloudflareIps = async (): Promise<Data> => {
 	await store.read();
 
-	log.updatingCloudflare();
-
-	if (
-		Date.now() - (store.data.cloudflare.updated ?? 0) <
-		settings.cloudflareExpiry
-	) {
+	logger.updatingCloudflare();
+	const timeAgo = Date.now() - (store.data.cloudflare.updated ?? 0);
+	if (timeAgo < settings.cloudflareExpiry) {
 		if (store.data.cloudflare.ips) {
-			log.cloudflareCached();
+			logger.cloudflareCached({
+				timeAgo
+			});
 			return { type: Type.Cached, ips: store.data.cloudflare.ips };
 		}
 	} else if (store.data.cloudflare.updated) {
-		log.cloudflareExpired();
+		logger.cloudflareExpired();
 	}
 
 	const started = Date.now();
@@ -54,10 +53,10 @@ export const requestCloudflareIps = async (): Promise<Data> => {
 	await store.write();
 
 	if (store.data.cloudflare.ips && !changed) {
-		log.cloudflareUnchanged(took);
+		logger.cloudflareUnchanged({ took });
 		return { type: Type.Unchanged, ips };
 	} else {
-		log.cloudflareUpdated(took);
+		logger.cloudflareUpdated({ took });
 		return { type: Type.Updated, ips };
 	}
 };
@@ -74,6 +73,6 @@ export const updateCloudflareRealIp = async ({
 			"\n\nreal_ip_header CF-Connecting-IP;";
 
 		await outputFile(settings.cloudflareConfPath, realIpList);
-		log.cloudflareRealIp();
+		logger.cloudflareDone({ length: ips.length });
 	}
 };
