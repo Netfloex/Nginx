@@ -45,7 +45,6 @@ const settings = {
 	dontDownloadCustomFiles: yn(env.DONT_DOWNLOAD_FILES) ?? false,
 
 	dhParamSize: parseIntDefault(env.DHPARAM_SIZE, 2048),
-	disableDH: yn(env.DISABLE_DHPARAMS),
 	disableCertbot: yn(env.DISABLE_CERTBOT),
 	certbotMail: env.CERTBOT_EMAIL,
 	staging: yn(env.STAGING),

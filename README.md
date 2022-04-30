@@ -2,12 +2,10 @@
 
 This docker container makes it a lot easier to manage Nginx configs.
 
-The container uses [JonasAlfredsson/docker-nginx-certbot](https://github.com/JonasAlfredsson/docker-nginx-certbot) as a parent image.
-This means SSL certificates are automatically managed and [more](https://github.com/JonasAlfredsson/docker-nginx-certbot#noteworthy-features).
-
-This container simplifies the process of writing multiple Nginx config files.
-There is only one configuration file needed.
-Nginx Config Manager expands this one file in to multiple Nginx config files.
+Instead of creating an entire new file with a lot of boilerplate you can just easily add a new line to the config.
+Nginx Config Manager will create the Nginx config for you, and automatically requests certificates for it using certbot.
+It will also create Diffie-Hellman parameters, this could take a while when the container launches for the first time.
+If you use cloudflare, it can also automatically restore your visitor ip addresses. (See [Cloudflare](#cloudflare-real-ip))
 
 ## Installation
 
@@ -50,29 +48,6 @@ The file should be placed in the config folder as `config.(yml|yaml|json|jsonc|j
 <a href="config/config.example.yml">
 <img src="https://img.shields.io/badge/Example-YAML-red" alt="yaml">
 </a>
-
-## Server Options
-
--   [Proxy Pass](#proxy-pass)
--   [Custom CSS](#custom-css)
--   [Custom JS](#custom-js)
--   [Websocket](#websocket)
--   [Headers](#headers)
--   [Cors](#cors)
-
--   [Return](#return)
--   [HTML](#html)
--   [Redirect](#redirect)
--   [Rewrite](#rewrite)
--   [Static Files](#static)
-
--   [Basic Auth](#basic-auth)
--   [Location Blocks](#location-blocks)
-
-## Global Options
-
--   [Cloudflare Real IP](#cloudflare-real-ip)
--   [Access Log Format](#accesslog-format)
 
 ## Getting Started
 
@@ -184,6 +159,29 @@ PASSWORD=Doe
 ```
 
 [Code](src/utils/parseUserConfig.ts)
+
+## Server Options
+
+-   [Proxy Pass](#proxy-pass)
+-   [Custom CSS](#custom-css)
+-   [Custom JS](#custom-js)
+-   [Websocket](#websocket)
+-   [Headers](#headers)
+-   [Cors](#cors)
+
+-   [Return](#return)
+-   [HTML](#html)
+-   [Redirect](#redirect)
+-   [Rewrite](#rewrite)
+-   [Static Files](#static)
+
+-   [Basic Auth](#basic-auth)
+-   [Location Blocks](#location-blocks)
+
+## Global Options
+
+-   [Cloudflare Real IP](#cloudflare-real-ip)
+-   [Access Log Format](#accesslog-format)
 
 ## Options
 
@@ -330,7 +328,7 @@ Allows for complex redirects, the redirect only happens if the first argument ma
 
 This is equivalent to Nginx's [rewrite](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html#rewrite)
 
-Note: If possible redirect/return should be used.
+> Note: If possible redirect/return should be used.
 
 ```js
 /* Server/Subdomain/Location: */ {
@@ -487,9 +485,19 @@ To disable this check, set the following variable:
 DONT_CHECK_HOSTS="true" # Default: false
 ```
 
+#### Don't download custom files
+
+Disables the actual downloading of the files specified using `custom_css` or `custom_js`.
+
+Mainly useful for testing in [this workflow](.github/workflows/main.yml)
+
+```bash
+DONT_DOWNLOAD_FILES="true"
+```
+
 #### Cloudflare Cache Duration
 
-The [Cloudflare Option](#cloudflare-real-ip) caches the ips.
+The [Cloudflare Option](#cloudflare-real-ip) caches the list of ip addresses.
 By default for 7 days.
 To customize this duration set the following variable in milliseconds:
 
@@ -497,19 +505,109 @@ To customize this duration set the following variable in milliseconds:
 CLOUDFLARE_CACHE_DURATION="2419200000" # Default: 604800000
 ```
 
-#### Paths
+#### Diffie-Hellman parameter size
+
+The default size is 2048, which should be secure enough.
+If you make this value larger it will take longer to create.
+
+> Note: if you want to change the size, you should also delete your old dhparam.pem otherwise it won't be recreated.
 
 ```bash
-# The config file
-CONFIG_PATH="/config.json" # Default: ./config/config.json | Docker: /app/config/config.json
-
-# The default directory, for custom files and store.json
-DATA_PATH="/data" # Default: ./data | Docker: /app/data
-
-# Further customization, by default they are inside the directory above
-CUSTOM_FILES_PATH="/custom" # Default: $DATA/custom # Used by custom_css & custom_js
-AUTH_PATH="/auth" # Default: $DATA/auth # Used by auth
-STORE_PATH="/store.json" # Default: $DATA/store.json # Used by cloudflare
+DHPARAM_SIZE="2048"
 ```
 
-[Code](src/utils/env.ts)
+#### Disable Certbot
+
+If you have a domain without or with expired certificates this container will request certificates for that domain.
+
+To disable this you can set the following:
+
+```bash
+DISABLE_CERTBOT="true"
+```
+
+#### Certbot Email (Required)
+
+This email is used to request certificates using certbot.
+Letsencrypt will send you an email when a certificate expires soon.
+In the future an option will be added to register without email using certbot's `--register-unsafely-without-email`. More info [here](https://eff-certbot.readthedocs.io/en/stable/using.html#certbot-command-line-options)
+
+```bash
+CERTBOT_EMAIL="email@example.com"
+```
+
+#### Letsencrypt Staging environment
+
+When using Letsencrypt's production environment to test things out, there is a high chance you will be running against rate limits.
+
+In order to use the [staging environment](https://letsencrypt.org/docs/staging-environment/):
+
+```bash
+STAGING="true"
+```
+
+#### ECDSA or RSA certificates
+
+By default the container requests ECDSA certificates, which uses a newer encryption algorithm than RSA certificates.
+
+If you still want RSA certificates:
+
+> Note: You might need to wait until your certificates expire in order to replace them automatically.
+
+```bash
+USE_ECDSA="false"
+```
+
+#### Paths
+
+All values are set to there default, the commented value is the path inside the container.
+
+You can update each path by setting the environment variable
+
+```bash
+# The config folder
+CONFIG_PATH="./config" # /app/config
+
+# If you want to point to a specific file instead of a folder
+CONFIG_FILE= # Unset
+
+
+
+# Nginx folder
+NGINX_PATH="./nginx" # /etc/nginx
+
+# Generated configs folder
+NGINX_CONFIG_PATH="$NGINX_PATH/conf.d" # /etc/nginx/conf.d
+
+# The cloudflare ip list config path
+CLOUDFLARE_CONFIG_PATH="$NGINX_CONFIG_PATH/cloudflare.conf" # /etc/nginx/conf.d/cloudflare.conf
+
+
+
+# Letsencrypt directory
+LETSENCRYPT_PATH="/etc/letsencrypt"
+
+# Diffie-Hellman file
+DHPARAM_PATH="$LETSENCRYPT_PATH/dhparams/dhparams.pem" # /etc/letsencrypt/dhparams/dhparams.pem
+
+
+
+# Data location, cloudflare ip cache, custom files and auth files
+DATA_PATH="./data" # /app/data
+
+# Stores custom files: CSS & JS
+CUSTOM_FILES_PATH="$DATA_PATH/custom" # /app/data/custom
+
+# Stores auth files, Stores the username:hashed_password
+AUTH_PATH="$DATA_PATH/auth" # /app/data/auth
+
+# Stores a cache of the cloudflare ip list.
+STORE_PATH="$DATA_PATH/store.json" # /app/data/store.json
+```
+
+[Code](src/utils/settings.ts)
+
+## Old Parent Image
+
+In older versions this container used [JonasAlfredsson/docker-nginx-certbot](https://github.com/JonasAlfredsson/docker-nginx-certbot) as a parent container.
+Since version v2.0.0 most of it's features like requesting certificates and generating Diffie-Hellman parameters are now included in this container.

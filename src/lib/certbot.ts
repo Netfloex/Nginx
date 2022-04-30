@@ -37,8 +37,7 @@ export const certbot = async (servers: SimpleServer[]): Promise<void> => {
 	if (!servers.length) {
 		return logger.allValid();
 	}
-
-	if (!hasMail() || certbotDisabled() || !(await hasCertbot())) {
+	if (certbotDisabled() || !hasMail() || !(await hasCertbot())) {
 		return logger.skippingCertbot();
 	}
 
