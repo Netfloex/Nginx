@@ -16,7 +16,7 @@ version: "3.3"
 
 services:
     nginx:
-        image: netfloex/nginx:v1.0.5
+        image: netfloex/nginx:v2.0.0
         container_name: nginx
         environment:
             CERTBOT_EMAIL: EMAIL # Required
@@ -27,7 +27,7 @@ services:
             #  Optional
 
             # - ./logs:/var/log/nginx
-            # - ./nginx_config_files:/etc/nginx/user_conf.d
+            # - ./nginx_config_files:/etc/nginx/conf.d
             - ./data:/app/data # Needed when using custom files or cloudflare, this is used as a cache.
 
             # Required
