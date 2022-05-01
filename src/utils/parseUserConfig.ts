@@ -10,14 +10,20 @@ const parseUserConfig = async (
 ): Promise<Record<string, unknown> | false> => {
 	const ext = extname(configFilePath);
 
-	if (ext.match(/^\.js$/)) {
+	if (ext == ".js") {
 		try {
-			// eslint-disable-next-line @typescript-eslint/no-var-requires
-			const data: unknown = require(configFilePath);
+			const imported = await import(configFilePath);
+			const data = imported.default;
 			if (typeof data == "object" && data) {
 				return data as Record<string, unknown>;
 			} else if (typeof data == "function") {
-				return await data();
+				const generatedData = data();
+
+				if (generatedData instanceof Promise) {
+					logger.configPromise();
+				}
+
+				return await generatedData;
 			} else {
 				logger.configJSInvalidType({
 					type: typeof data,
@@ -26,7 +32,7 @@ const parseUserConfig = async (
 				return false;
 			}
 		} catch (error) {
-			logger.configJSError({ error: error as Error });
+			logger.configJSError({ error });
 			return false;
 		}
 	}
@@ -69,7 +75,7 @@ const parseUserConfig = async (
 				return value;
 			});
 		} catch (error) {
-			logger.configJSONError({ error: error as Error });
+			logger.configJSONError({ error });
 			return false;
 		}
 	}

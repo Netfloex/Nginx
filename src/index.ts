@@ -62,12 +62,12 @@ const main = async (): Promise<ExitCode> => {
 	if (!stopping) {
 		results = await parseUserConfig(configFilePath!);
 
-		if (!results) {
+		if (results === false) {
 			logger.configError({ config: configFilePath! });
 			stopping = true;
 		}
 
-		if (Object.keys(results).length == 0) {
+		if (!results || Object.keys(results).length == 0) {
 			logger.configEmpty({ config: configFilePath! });
 			stopping = true;
 		}

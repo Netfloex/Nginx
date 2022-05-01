@@ -21,6 +21,14 @@ export const defineLogList = <
 	list: T
 ): T => list;
 
+const formatError = (error: unknown): string =>
+	error instanceof Error
+		? chalk`{dim ${error.message}}\n{dim ${error.stack
+				?.split("\n")
+				.slice(0, 3)
+				.join("\n")}}`
+		: chalk.dim(error);
+
 export const logMessages = defineLogList({
 	// Global
 
@@ -250,15 +258,15 @@ export const logMessages = defineLogList({
 		Tag.config,
 		chalk`Yaml Error: {dim ${error.reason}}:\n${error.mark.snippet}`
 	],
-	configJSONError: ({ error = new Error() }: { error: Error }) => [
+	configJSONError: ({ error }: { error: unknown }) => [
 		Log.error,
 		Tag.config,
-		chalk`JSON Error: {dim ${error.message}}`
+		chalk`JSON Error: ${formatError(error)}`
 	],
-	configJSError: ({ error = new Error() }: { error: Error }) => [
+	configJSError: ({ error }: { error: unknown }) => [
 		Log.error,
 		Tag.config,
-		chalk`JS Error: {dim ${error.message}}\n${error.stack?.split("\n")[1]}`
+		chalk`JS Error: ${formatError(error)}`
 	],
 	configJSInvalidType: ({
 		type,
@@ -304,6 +312,11 @@ export const logMessages = defineLogList({
 		Tag.config,
 		chalk`Config contains {dim ${envKey}}, while {dim process.env.${env}} was not defined.`
 	],
+	configPromise: () => [
+		Log.info,
+		Tag.config,
+		chalk`Config is a promise, waiting until it resolves.`
+	],
 
 	// CSS
 
@@ -332,13 +345,13 @@ export const logMessages = defineLogList({
 		error
 	}: {
 		fileName: string;
-		error: Error;
+		error: unknown;
 	}) => [
 		Log.error,
 		Tag.css,
-		chalk`{red Could not save the CSS file} {dim ${fileName}}\n{dim ${
-			error?.message ?? error
-		}}`
+		chalk`{red Could not save the CSS file} {dim ${fileName}}\n${formatError(
+			error
+		)}`
 	],
 
 	// JS
