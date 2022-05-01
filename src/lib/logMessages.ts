@@ -165,9 +165,9 @@ export const logMessages = defineLogList({
 		return [
 			Log.info,
 			Tag.certbot,
-			chalk`The certificate for {dim ${serverName}}, expire${
+			chalk`{yellow The certificate for {dim ${serverName}}, expire${
 				hasExpired ? "d" : "s in"
-			} ${Math.round(days)} days ${hasExpired ? "ago" : ""}`
+			} {bold ${Math.round(days)}} days ${hasExpired ? "ago" : ""}}`
 		];
 	},
 	certificateParseFailed: ({
