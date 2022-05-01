@@ -41,14 +41,19 @@ const settings = {
 		1000 * 60 * 60 * 24 * 7 // 7 Days
 	),
 
-	dontCheckDns: yn(env.DONT_CHECK_HOSTS) ?? false,
-	dontDownloadCustomFiles: yn(env.DONT_DOWNLOAD_FILES) ?? false,
+	dontCheckDns: yn(env.DONT_CHECK_HOSTS, { default: false }),
+	dontDownloadCustomFiles: yn(env.DONT_DOWNLOAD_FILES, { default: false }),
 
 	dhParamSize: parseIntDefault(env.DHPARAM_SIZE, 2048),
-	disableCertbot: yn(env.DISABLE_CERTBOT),
+	disableCertbot: yn(env.DISABLE_CERTBOT, { default: false }),
 	certbotMail: env.CERTBOT_EMAIL,
-	staging: yn(env.STAGING),
-	useECDSA: yn(env.USE_ECDSA, { default: true })
+	staging: yn(env.STAGING, { default: false }),
+	useECDSA: yn(env.USE_ECDSA, { default: true }),
+
+	logFormatColumns: yn(env.LOG_FORMAT_COLUMNS, { default: true }),
+	logShowTime: yn(env.LOG_SHOW_TIME, { default: true }),
+	logShowName: yn(env.LOG_SHOW_NAME, { default: true }),
+	logShowTag: yn(env.LOG_SHOW_TAG, { default: true })
 };
 
 export default settings;

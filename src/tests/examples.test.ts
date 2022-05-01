@@ -8,7 +8,7 @@ import settings from "@utils/settings";
 
 describe("The examples should be valid", () => {
 	logger.overWriteLogFunction = jest.fn().mockName("logger");
-	logger.disableTime = true;
+
 	const mockedLog = jest.mocked(logger.overWriteLogFunction);
 
 	const examples = readdirSync(settings.configPath)

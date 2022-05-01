@@ -10,7 +10,6 @@ import { sslFilesFor } from "@utils/sslFilesFor";
 
 describe("Utilities", () => {
 	logger.overWriteLogFunction = jest.fn().mockName("logger");
-	logger.disableTime = true;
 	test("Diffie-Hellman parameters", () => {
 		const params = createDHParams();
 

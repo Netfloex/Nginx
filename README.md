@@ -558,6 +558,30 @@ If you still want RSA certificates:
 USE_ECDSA="false"
 ```
 
+#### Log formatting
+
+By default the log is formatted so every message starts at the same width.
+
+If you want to disable the adding of spaces you can disable this by setting:
+
+```bash
+LOG_FORMAT_COLUMNS="false"
+```
+
+#### Disable log elements
+
+If you would like to disable certain elements in the log messages you can:
+
+| Time   | Name  |        | Tag      |
+| ------ | ----- | ------ | -------- | --------------- |
+| 0.100s | [NCM] | [INFO] | [CONFIG] | Config is valid |
+
+```bash
+LOG_SHOW_TIME="false"
+LOG_SHOW_NAME="false"
+LOG_SHOW_TAG="false"
+```
+
 #### Paths
 
 All values are set to there default, the commented value is the path inside the container.

@@ -1,15 +1,18 @@
 import chalk from "chalk";
 import { performance } from "perf_hooks";
+import stringWidth from "string-width";
 
 import { logMessages } from "@lib/logMessages";
+import { fixedLength } from "@utils/fixedLength";
+import settings from "@utils/settings";
 import { startedToSeconds } from "@utils/startedToSeconds";
 
 export enum Log {
+	log,
 	info,
 	warn,
 	done,
-	error,
-	log
+	error
 }
 
 export enum Tag {
@@ -22,6 +25,7 @@ export enum Tag {
 	cloudflare,
 	env
 }
+
 const TagList: Record<Tag, string> = {
 	"0": "",
 	"1": chalk`[{green CERTBOT}]`,
@@ -32,6 +36,25 @@ const TagList: Record<Tag, string> = {
 	"6": chalk`[{hex("#FF8800") CLOUDFLARE}]`,
 	"7": chalk`[{blue ENV}]`
 };
+
+const TypeList: Record<Log, string> = {
+	"0": "",
+	"1": chalk`[{yellow INFO}]`,
+	"2": chalk`[{red WARN}]`,
+	"3": chalk`[{green DONE}]`,
+	"4": chalk`[{red ERROR}]`
+};
+
+/* 
+	Compute the longest visible length of the values in an object
+*/
+
+const longestLengthValue = (obj: Record<string, string>): number =>
+	Math.max(...Object.values(obj).map((val) => stringWidth(val)));
+
+const longestTagLength = longestLengthValue(TagList);
+const longestTypeLength = longestLengthValue(TypeList);
+
 export const started = performance.now();
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -40,17 +63,9 @@ const createLogFunction = <Key extends keyof typeof logMessages>(key: Key) => {
 		const [logType, logTag, message] = logMessages[key](
 			...(args as [never])
 		);
-		const type =
-			logType == Log.info
-				? chalk`[{yellow INFO}]`
-				: logType == Log.warn
-				? chalk`[{red WARN}]`
-				: logType == Log.done
-				? chalk`[{green DONE}]`
-				: logType == Log.error
-				? chalk`[{red ERROR}]`
-				: "";
-		const tag = TagList[logTag];
+
+		const type = fixedLength(TypeList[logType], longestTypeLength);
+		const tag = fixedLength(TagList[logTag], longestTagLength);
 
 		const logCall = logger.overWriteLogFunction
 			? logger.overWriteLogFunction
@@ -62,11 +77,11 @@ const createLogFunction = <Key extends keyof typeof logMessages>(key: Key) => {
 
 		logCall(
 			[
-				!logger.disableTime &&
+				settings.logShowTime &&
 					chalk`{dim ${startedToSeconds(started)}s}`,
-				chalk`[{blue NCM}]`,
-				tag,
+				settings.logShowName && chalk`[{blue NCM}]`,
 				type,
+				settings.logShowTag && tag,
 				message
 			]
 				.filter(Boolean)
@@ -81,7 +96,6 @@ type Logger = {
 	) => void;
 } & {
 	overWriteLogFunction?: (message: string) => void;
-	disableTime?: true;
 };
 
 export const logger: Logger = (

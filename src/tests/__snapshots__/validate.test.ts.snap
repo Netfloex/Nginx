@@ -90,56 +90,56 @@ exports[`Validate Config It accepts a valid config 1`] = `
 
 exports[`Validate Config It checks for an invalid config 1`] = `
 [
-  "[NCM] [CONFIG] [ERROR] There was an issue with your config, the errors are listed below.",
-  "[NCM] [CONFIG] [ERROR] Path: cloudflare
+  "[NCM] [ERROR] [CONFIG]     There was an issue with your config, the errors are listed below.",
+  "[NCM] [ERROR] [CONFIG]     Path: cloudflare
 Error: Expected boolean, received string",
-  "[NCM] [CONFIG] [ERROR] Path: username
+  "[NCM] [ERROR] [CONFIG]     Path: username
 Error: Username can't contain \\":\\"",
-  "[NCM] [CONFIG] [ERROR] Path: config
+  "[NCM] [ERROR] [CONFIG]     Path: config
 Error: Unrecognized key(s) in object: 'unknown'",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.proxy_pass
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.proxy_pass
 Error: Invalid url",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.headers
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.headers
 Error: Expected object, received array",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.redirect
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.redirect
 Error: Expected string, received array",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.rewrite
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.rewrite
 Error: Expected string, received array",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.html
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.html
 Error: Expected string, received array",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.certbot_name
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.certbot_name
 Error: Expected string, received array",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.custom_css
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.custom_css
 Error: Expected array, received object or Expected string, received object",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.custom_js.0
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.custom_js.0
 Error: Invalid url",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.return
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.return
 Error: Expected string, received array or Expected number, received array",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.locations.invalid
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.locations.invalid
 Error: Invalid url",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.cors
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.cors
 Error: Invalid url or use \\"*\\" as a wildcard",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.auth.password
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.auth.password
 Error: Should be at least 1 characters",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.auth
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.auth
 Error: Unrecognized key(s) in object: 'unknown'",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.auth.username
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.auth.username
 Error: Username can't contain \\":\\"",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.subdomains.too_many
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.subdomains.too_many
 Error: Too many \\"return\\" types, found: redirect, html, raw, please use only one of them.",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com.locations.extra.auth
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.locations.extra.auth
 Error: Expected string, received object or Required",
-  "[NCM] [CONFIG] [ERROR] Path: servers.dns_error
+  "[NCM] [ERROR] [CONFIG]     Path: servers.dns_error
 Error: DNS lookup failed for: not-existing",
 ]
 `;
 
 exports[`Validate Config It tests for invalid number of return types 1`] = `
 [
-  "[NCM] [CONFIG] [ERROR] There was an issue with your config, the errors are listed below.",
-  "[NCM] [CONFIG] [ERROR] Path: servers.no returns
+  "[NCM] [ERROR] [CONFIG]     There was an issue with your config, the errors are listed below.",
+  "[NCM] [ERROR] [CONFIG]     Path: servers.no returns
 Error: Please specify at least one \\"return\\" type: proxy_pass, return, redirect, rewrite, html, static, raw, include",
-  "[NCM] [CONFIG] [ERROR] Path: servers.example.com
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com
 Error: Too many \\"return\\" types, found: proxy_pass, redirect, rewrite, html, return, please use only one of them.",
 ]
 `;

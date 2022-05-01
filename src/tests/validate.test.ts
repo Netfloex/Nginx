@@ -9,7 +9,7 @@ import invalidReturnTypesConfig from "@configs/invalid-return-types-config.json"
 
 describe("Validate Config", () => {
 	logger.overWriteLogFunction = jest.fn().mockName("logger");
-	logger.disableTime = true;
+
 	const mockedLog = jest.mocked(logger.overWriteLogFunction);
 
 	test("It checks for an invalid config", async () => {
