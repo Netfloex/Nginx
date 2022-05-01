@@ -27,7 +27,7 @@ ENV FORCE_COLOR 1
 ENV DATA_PATH /app/data
 ENV NGINX_PATH /etc/nginx
 ENV NGINX_CONFIG_PATH /etc/nginx/conf.d
-ENV NGINX_BASE_CONFIGS_PATH /app/nginx
+ENV NGINX_BASE_CONFIGS_PATH ${NGINX_CONFIG_PATH}/base
 
 
 # Dependencies
@@ -38,23 +38,17 @@ RUN apk add --no-cache bash
 RUN apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/v3.11/main/ nodejs=12.22.6-r0
 # - Certbot
 
-RUN apk add --no-cache --virtual=run-deps certbot
-RUN mkdir -p /var/www/letsencrypt
-
-# Delete unneeded files
-RUN rm -rf /tmp/* \
-	/var/cache/apk/*  \
-	/var/tmp/
+RUN apk add --no-cache --virtual=run-deps certbot && \
+	mkdir -p /var/www/letsencrypt
 
 
-
-
+# Copy builtin configs
+# These are later copied again by the entrypoint script
+COPY src/nginx/builtin /app/nginx/builtin
 # Delete Nginx's default config
-RUN rm -f /etc/nginx/conf.d/*
+RUN rm -f ${NGINX_CONFIG_PATH}/*
 # Copy the compiled js file
 COPY --from=builder /app/dist/index.js ./index.js
-# Copy builtin configs
-COPY src/nginx/builtin /etc/nginx/conf.d
 # Copy the script that launches nginx and the js file
 COPY entrypoint.sh .
 

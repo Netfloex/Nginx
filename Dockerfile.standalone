@@ -27,7 +27,7 @@ ENV FORCE_COLOR 1
 ENV DATA_PATH /app/data
 ENV NGINX_PATH /etc/nginx
 ENV NGINX_CONFIG_PATH /etc/nginx/conf.d
-ENV NGINX_BASE_CONFIGS_PATH /etc/nginx/conf.d/base
+ENV NGINX_BASE_CONFIGS_PATH ${NGINX_CONFIG_PATH}/base
 
 # Copy important files in entrypoint.sh
 ENV STANDALONE true
@@ -37,13 +37,9 @@ ENV STANDALONE true
 # - Bash
 RUN apk add --no-cache bash
 # - Certbot
-RUN apk add --no-cache --virtual=run-deps certbot
-RUN mkdir -p /var/www/letsencrypt
 
-# Delete unneeded files
-RUN rm -rf /tmp/* \
-	/var/cache/apk/*  \
-	/var/tmp/
+RUN apk add --no-cache --virtual=run-deps certbot && \
+	mkdir -p /var/www/letsencrypt
 
 
 # Copy builtin configs

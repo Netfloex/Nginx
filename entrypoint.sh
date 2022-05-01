@@ -18,12 +18,12 @@ clean_exit() {
     nginx -s stop
 }
 
+cp -r nginx/builtin/* /etc/nginx/conf.d
 
 if [ ! -z "$STANDALONE" ];then
     echo "$PREFIX Running in standalone mode"
     mkdir -p /etc/nginx/conf.d
     rm -f /etc/nginx/conf.d/default.conf
-    cp -r nginx/builtin/* /etc/nginx/conf.d
     start;
     exit
 fi
