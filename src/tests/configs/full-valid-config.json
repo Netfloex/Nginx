@@ -39,7 +39,7 @@
 					"rewrite": "^ https://example.com"
 				},
 				"includes": {
-					"include": "src/nginx/proxy_pass.conf"
+					"include": "src/nginx/builtin/base/proxy_pass.conf"
 				},
 				"defaultUsername": {
 					"auth": "password",

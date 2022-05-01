@@ -25,7 +25,7 @@ exports[`Create config Full Server 1`] = `
     ssl_dhparam                /etc/letsencrypt/dhparams/dhparam.pem;
     location / {
         proxy_pass              http://example;
-        include                 /current/src/nginx/proxy_pass.conf;
+        include                 /current/src/nginx/builtin/base/proxy_pass.conf;
         return                  200 \\"html\\";
         rewrite                 ^ https://rewrite;
         proxy_set_header        Upgrade $http_upgrade;

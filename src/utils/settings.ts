@@ -16,7 +16,7 @@ const letsencryptPath = r(env.LETSENCRYPT_PATH, "/etc/letsencrypt");
 const settings = {
 	configPath: r(env.CONFIG_PATH, "config"),
 	configFile: env.CONFIG_FILE ? resolve(env.CONFIG_FILE) : undefined,
-	nginxIncludePath: r(env.NGINX_BASE_CONFIGS_PATH, "src/nginx"),
+	nginxIncludePath: r(env.NGINX_BASE_CONFIGS_PATH, "src/nginx/builtin/base"),
 
 	nginxPath,
 
