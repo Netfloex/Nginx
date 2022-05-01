@@ -49,24 +49,24 @@ export const logMessages = defineLogList({
 
 	removeOldConfigs: () => [
 		Log.info,
-		Tag.main,
+		Tag.nginx,
 		chalk`{yellow Removing old generated configs...} {dim ${settings.nginxConfigPath}}`
 	],
 
 	noOldConfigs: () => [
 		Log.error,
-		Tag.main,
+		Tag.nginx,
 		chalk`{red Nginx Config Path not found:} {dim ${settings.nginxConfigPath}}`
 	],
 	configsLocationHint: () => [
 		Log.info,
-		Tag.main,
+		Tag.nginx,
 		chalk`You can set {dim NGINX_CONFIG_PATH} env variable to customize this location.`
 	],
 
 	nginxConfNotFound: ({ nginxPath }: { nginxPath: string }) => [
 		Log.warn,
-		Tag.main,
+		Tag.nginx,
 		chalk`nginx.conf does not exist: {dim ${nginxPath}}`
 	],
 
@@ -208,7 +208,7 @@ export const logMessages = defineLogList({
 
 	configDone: ({ serverName }: { serverName: string }) => [
 		Log.done,
-		Tag.main,
+		Tag.nginx,
 		chalk`${serverName}`
 	],
 
