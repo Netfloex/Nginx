@@ -1,0 +1,36 @@
+version: "3.3"
+
+services:
+    ncm:
+        image: netfloex/nginx:standalone # v2.0.0 does not exists
+        container_name: ncm
+        environment:
+            CERTBOT_EMAIL: EMAIL # Required
+            TZ: Europe/Amsterdam
+        volumes:
+            # Shared Volumes
+            - letsencrypt:/etc/letsencrypt
+            - nginx:/etc/nginx
+
+            - ./config:/app/config
+            - ./data:/app/data # Needed when using custom files or cloudflare, this is used as a cache.
+
+    nginx:
+        image: nginx:stable-alpine
+        container_name: nginx
+        restart: unless-stopped
+        environment:
+            TZ: Europe/Amsterdam
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            # Shared Volumes
+            - letsencrypt:/etc/letsencrypt
+            - nginx:/etc/nginx
+
+            # - ./logs:/var/log/nginx
+
+volumes:
+    letsencrypt:
+    nginx:

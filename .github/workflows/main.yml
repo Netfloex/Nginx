@@ -31,7 +31,7 @@ jobs:
                   CERTBOT_EMAIL: required
                   CONFIG_FILE: src/tests/configs/full-valid-config.json
 
-    withnginx:
+    latest:
         runs-on: ubuntu-latest
         needs: typescript
         steps:

@@ -9,7 +9,14 @@ If you use cloudflare, it can also automatically restore your visitor ip address
 
 ## Installation
 
-Docker Compose:
+This version uses `nginx:stable-alpine` as a parent container. This allows it to reload nginx by itself.
+If you would like to have a standalone version see [#standalone](#standalone)
+
+[docker-compose.example.yml](docker-compose.example.yml):
+
+The only required change is `CERTBOT_EMAIL`.
+
+[Click Here](#environment-options) for a list of Environment Options.
 
 ```yaml
 version: "3.3"
@@ -49,14 +56,7 @@ The file should be placed in the config folder as `config.(yml|yaml|json|jsonc|j
 <img src="https://img.shields.io/badge/Example-YAML-red" alt="yaml">
 </a>
 
-## Getting Started
-
-For an example docker-compose.yml see: [docker-compose.example.yml](docker-compose.example.yml).
-The only required change is `CERTBOT_EMAIL`.
-
-[Click Here](#environment-options) for a list of Environment Options.
-
-To create and edit your servers open the file `config/config.js`.
+Pick your favorite language to write your config in and create a file like "config/config.yml"
 
 Simple Example:
 
@@ -86,7 +86,7 @@ module.exports = {
 };
 ```
 
-This example fetches [the latest ips from Cloudflare](#cloudflare-real-ip), enables SSL with Certbot, and creates two config files:
+This example fetches [the latest ips from Cloudflare](#cloudflare-real-ip), enables SSL with Certbot, creates DH-Params, and creates two config files:
 
 ```
     example.com  >  http://mysite:3000
@@ -126,7 +126,7 @@ You can also write:
 ## Reloading config
 
 The config can be reloaded by sending a SIGHUP signal to the container.
-This updates Nginx's configuration files and runs certbot.
+This updates Nginx's configuration files and renews certificates if needed.
 
 When running inside docker:
 
@@ -572,9 +572,9 @@ LOG_FORMAT_COLUMNS="false"
 
 If you would like to disable certain elements in the log messages you can:
 
-| Time   | Name  |        | Tag      |
-| ------ | ----- | ------ | -------- | --------------- |
 | 0.100s | [NCM] | [INFO] | [CONFIG] | Config is valid |
+| ------ | ----- | ------ | -------- | --------------- |
+| Time   | Name  |        | Tag      |                 |
 
 ```bash
 LOG_SHOW_TIME="false"
@@ -630,6 +630,16 @@ STORE_PATH="$DATA_PATH/store.json" # /app/data/store.json
 ```
 
 [Code](src/utils/settings.ts)
+
+# Standalone
+
+You can also run this container without Nginx builtin.
+
+> Keep in mind that this also means that NCM won't be able to reload nginx.
+
+> So you will have to this manually by running `docker exec nginx nginx -s reload` each time new configs are created
+
+In order to do so see this [Docker Compose](docker-compose.standalone.yml)
 
 ## Old Parent Image
 
