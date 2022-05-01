@@ -31,7 +31,7 @@ jobs:
                   CERTBOT_EMAIL: required
                   CONFIG_FILE: src/tests/configs/full-valid-config.json
 
-    docker:
+    withnginx:
         runs-on: ubuntu-latest
         needs: typescript
         steps:
@@ -41,3 +41,15 @@ jobs:
                   username: netfloex
                   token: ${{ secrets.DOCKERHUB_TOKEN }}
                   tags: netfloex/nginx:latest
+
+    standalone:
+        runs-on: ubuntu-latest
+        needs: typescript
+        steps:
+            - name: Build and push to docker hub
+              uses: netfloex/actions/docker@master
+              with:
+                  username: netfloex
+                  token: ${{ secrets.DOCKERHUB_TOKEN }}
+                  file: ./Dockerfile.standalone
+                  tags: netfloex/nginx:standalone
