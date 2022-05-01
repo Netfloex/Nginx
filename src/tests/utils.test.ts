@@ -1,12 +1,17 @@
+import chalk from "chalk";
 import { join } from "path";
+import { performance } from "perf_hooks";
 
 import { logger } from "@lib/logger";
 import { createDHParams } from "@utils/createDHParams";
 import createHash from "@utils/createHash";
 import dnsLookup from "@utils/dnsLookup";
+import { fixedLength } from "@utils/fixedLength";
+import { msToDays } from "@utils/msToDays";
 import { parseCertificateExpiry } from "@utils/parseCertificateExpiry";
 import { parseIntDefault } from "@utils/parseIntDefault";
 import { sslFilesFor } from "@utils/sslFilesFor";
+import { startedToSeconds } from "@utils/startedToSeconds";
 
 describe("Utilities", () => {
 	logger.overWriteLogFunction = jest.fn().mockName("logger");
@@ -28,6 +33,24 @@ describe("Utilities", () => {
 	test("DNS Lookup", async () => {
 		expect(await dnsLookup("example.com")).toBe(true);
 		expect(await dnsLookup("false.doesnotexists")).toBe(false);
+	});
+
+	test("Fixed Length", () => {
+		const length = 50;
+
+		expect(fixedLength("30 Chars", length)).toHaveLength(length);
+		const longString =
+			"This is a string longer than 30 chars. It should not add spaces";
+		expect(fixedLength(longString, length)).toHaveLength(longString.length);
+		expect(
+			fixedLength(chalk`{blue Even with {bold colors}}`, length)
+		).toHaveLength(length);
+	});
+
+	test("Milliseconds to days", () => {
+		const msPerDay = 1000 * 60 * 60 * 24;
+		expect(msToDays(10 * msPerDay)).toBe(10);
+		expect(msToDays(5.5 * msPerDay)).toBe(6);
 	});
 
 	test("Parse Certificate Expiry", async () => {
@@ -55,5 +78,12 @@ describe("Utilities", () => {
 
 	test("Create SSL File Paths for a Servername", () => {
 		expect(sslFilesFor({ server_name: "example.com" })).toMatchSnapshot();
+	});
+
+	test("Started to seconds", () => {
+		expect(
+			startedToSeconds(performance.now() - 1100).startsWith("1.1")
+			// Will output "1.100", but this is timing related
+		).toBeTruthy();
 	});
 });
