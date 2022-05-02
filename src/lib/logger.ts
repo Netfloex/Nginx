@@ -24,7 +24,8 @@ export enum Tag {
 	js,
 	cloudflare,
 	env,
-	nginx
+	nginx,
+	dns
 }
 
 const TagList: Record<Tag, string> = {
@@ -36,7 +37,8 @@ const TagList: Record<Tag, string> = {
 	"5": chalk`[{yellow JS}]`,
 	"6": chalk`[{hex("#FF8800") CLOUDFLARE}]`,
 	"7": chalk`[{blue ENV}]`,
-	"8": chalk`[{green NGINX}]`
+	"8": chalk`[{green NGINX}]`,
+	"9": chalk`[{red DNS}]`
 };
 
 const TypeList: Record<Log, string> = {

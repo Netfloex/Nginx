@@ -130,7 +130,7 @@ Error: Too many \\"return\\" types, found: redirect, html, raw, please use only 
   "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.locations.extra.auth
 Error: Expected string, received object or Required",
   "[NCM] [ERROR] [CONFIG]     Path: servers.dns_error
-Error: DNS lookup failed for: not-existing",
+Error: Could not resolve not-existing",
 ]
 `;
 

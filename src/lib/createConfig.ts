@@ -27,7 +27,14 @@ const createLocation = async (
 
 	// Proxy Pass
 	if (location.proxy_pass) {
-		block.proxy_pass = location.proxy_pass;
+		if (settings.dontExitNoUpstream) {
+			block.set ??= [];
+			block.set.push(`$upstream "${location.proxy_pass}"`);
+			block.proxy_pass = "$upstream";
+		} else {
+			block.proxy_pass = location.proxy_pass;
+		}
+
 		block.include ??= [];
 		block.include.push(join(settings.nginxIncludePath, "proxy_pass.conf"));
 	}
@@ -157,6 +164,10 @@ const createConfig = async (
 		Object.assign(jsonServer, files);
 	}
 
+	if (settings.dontExitNoUpstream) {
+		jsonServer.resolver = settings.dnsResolver;
+	}
+
 	const locationSlash = await createLocation(
 		{
 			...server,
@@ -181,9 +192,8 @@ const createConfig = async (
 	}
 
 	if (usesCustom(server)) {
-		jsonServer["location /custom_assets"] = {
-			alias: settings.customFilesPath
-		};
+		jsonServer["location /custom_assets"] = {};
+		jsonServer["location /custom_assets"].alias = settings.customFilesPath;
 	}
 
 	const config = parser.toConf({

@@ -42,6 +42,8 @@ const settings = {
 	),
 
 	dontCheckDns: yn(env.DONT_CHECK_HOSTS, { default: false }),
+	dontExitNoUpstream: yn(env.DONT_EXIT_NO_UPSTREAM, { default: false }),
+	dnsResolver: env.DNS_RESOLVER ?? "127.0.0.11 valid=30s",
 	dontDownloadCustomFiles: yn(env.DONT_DOWNLOAD_FILES, { default: false }),
 	enableConfigMissingCerts: yn(env.ENABLE_CONFIG_MISSING_CERTS, {
 		default: false

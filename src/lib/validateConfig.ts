@@ -66,13 +66,18 @@ const proxyPassSchema = urlSchema
 	.refine(
 		async (url) => {
 			if (settings.dontCheckDns) return true;
+			const host = new URL(url).hostname;
+			const exists = await dnsLookup(host);
 
-			return await dnsLookup(new URL(url).hostname);
+			if (exists) return exists;
+			if (settings.dontExitNoUpstream) {
+				logger.warnNoHost({ host });
+				return true;
+			}
+			return exists;
 		},
 		(url) => ({
-			message: chalk`DNS lookup failed for: {yellow ${
-				new URL(url).hostname
-			}}`
+			message: chalk`Could not resolve {yellow ${new URL(url).hostname}}`
 		})
 	)
 	.transform((proxy_pass) => ({

@@ -476,13 +476,24 @@ module.exports = {
 
 For every `proxy_pass`'s hostname a DNS lookup is performed to test if it can be found in upstream.
 
-If the dns lookup fails the container exits with an error: `dns lookup failed for: host`.
+If the dns lookup fails the container exits with an error: `Could not resolve: host`.
 This check is useful because otherwise Nginx will exit later.
 
 To disable this check, set the following variable:
 
 ```bash
 DONT_CHECK_HOSTS="true" # Default: false
+```
+
+#### Allow unresolved hosts
+
+When nginx encounters a `proxy_pass` directive it does a DNS lookup.
+If this fails Nginx will exit / wont start.
+
+To allow starting you can set:
+
+```bash
+DONT_EXIT_NO_UPSTREAM="true" # Default: false
 ```
 
 #### Don't download custom files
@@ -492,7 +503,7 @@ Disables the actual downloading of the files specified using `custom_css` or `cu
 Mainly useful for testing in [this workflow](.github/workflows/main.yml)
 
 ```bash
-DONT_DOWNLOAD_FILES="true"
+DONT_DOWNLOAD_FILES="true" # Default: false
 ```
 
 #### Cloudflare Cache Duration

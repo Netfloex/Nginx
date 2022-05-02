@@ -421,5 +421,13 @@ export const logMessages = defineLogList({
 		Log.warn,
 		Tag.env,
 		chalk`Could not parse {dim ${string}} to a number, defaulting to ${or}`
+	],
+
+	// DNS
+
+	warnNoHost: ({ host }: { host: string }) => [
+		Log.warn,
+		Tag.dns,
+		chalk`Could not resolve {yellow ${host}}, normally this would exit.`
 	]
 } as const);

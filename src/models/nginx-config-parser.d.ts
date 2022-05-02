@@ -6,9 +6,10 @@ declare module "@webantic/nginx-config-parser" {
 	}
 
 	interface Server {
+		resolver: string;
 		listen: string[];
 		server_name?: string;
-		[location: `location ${string}`]: Location;
+		[location: `location ${string}`]: NginxLocation;
 
 		proxy_set_header: string[];
 		proxy_http_version: number;
@@ -20,6 +21,8 @@ declare module "@webantic/nginx-config-parser" {
 	}
 
 	export interface NginxLocation {
+		set?: string[];
+
 		proxy_set_header?: string[];
 		proxy_http_version?: number;
 
