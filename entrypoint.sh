@@ -18,12 +18,29 @@ clean_exit() {
     nginx -s stop
 }
 
-cp -r nginx/builtin/* /etc/nginx/conf.d
+if [[ ! -d "$NGINX_CONFIG_PATH" ]]; then
+    echo "$PREFIX The path '$NGINX_CONFIG_PATH' does not exists"
+    if [ ! -z "$STANDALONE" ];then
+        echo "$PREFIX Please mount '$NGINX_PATH' inside a *volume* shared with nginx"
+        echo "$PREFIX More information: https://github.com/Netfloex/Nginx#standalone"
+    else
+        echo "$PREFIX This should not happen in the non-standalone version"
+        echo "$PREFIX This could happen because:"
+        echo "		1. You deleted '$NGINX_CONFIG_PATH'"
+        echo "		2. You edited the environment variable 'NGINX_CONFIG_PATH'"
+        echo "		3. You mounted an empty folder at '$NGINX_PATH'"
+        echo .
+        echo "$PREFIX If you did not do any of the above please create an issue."
+    fi
+    exit
+fi
+
+cp -r nginx/builtin/* "$NGINX_CONFIG_PATH"
 
 if [ ! -z "$STANDALONE" ];then
     echo "$PREFIX Running in standalone mode"
-    mkdir -p /etc/nginx/conf.d
-    rm -f /etc/nginx/conf.d/default.conf
+    mkdir -p "$NGINX_CONFIG_PATH"
+    rm -f "$NGINX_CONFIG_PATH/default.conf"
     start;
     exit
 fi
