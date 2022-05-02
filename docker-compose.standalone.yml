@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
     ncm:
-        image: netfloex/nginx:standalone # v2.0.0 does not exists
+        image: netfloex/nginx:standalone-v2.2.0
         container_name: ncm
         environment:
             CERTBOT_EMAIL: EMAIL # Required

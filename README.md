@@ -23,7 +23,7 @@ version: "3.3"
 
 services:
     nginx:
-        image: netfloex/nginx:v2.0.0
+        image: netfloex/nginx:v2.2.0
         container_name: nginx
         environment:
             CERTBOT_EMAIL: EMAIL # Required
