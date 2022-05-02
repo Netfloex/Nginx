@@ -19,26 +19,26 @@ RUN yarn install --production --ignore-scripts --prefer-offline
 FROM nginx:stable-alpine AS runner
 
 
-ENV NODE_ENV production
 
 WORKDIR /app
 
+ENV NODE_ENV production
 ENV FORCE_COLOR 1
 ENV DATA_PATH /app/data
 ENV NGINX_PATH /etc/nginx
-ENV NGINX_CONFIG_PATH /etc/nginx/conf.d
+ENV NGINX_CONFIG_PATH ${NGINX_PATH}/conf.d
 ENV NGINX_BASE_CONFIGS_PATH ${NGINX_CONFIG_PATH}/base
 
 
 # Dependencies
 
-# - Bash
-RUN apk add --no-cache bash
-# - Node
-RUN apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/v3.11/main/ nodejs=12.22.6-r0
-# - Certbot
-
-RUN apk add --no-cache --virtual=run-deps certbot && \
+#	  Bash
+RUN apk add --no-cache bash && \
+	# Node
+	apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/v3.11/main/ nodejs=12.22.6-r0 && \
+	# Certbot
+	apk add --no-cache certbot && \
+	# Directory for certificates
 	mkdir -p /var/www/letsencrypt
 
 

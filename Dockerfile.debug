@@ -1,4 +1,4 @@
-FROM jonasal/nginx-certbot:3.0.1-alpine AS runner
+FROM nginx:stable-alpine AS runner
 
 # Remove builtin configs from parent container 
 RUN rm /etc/nginx/conf.d/*
@@ -9,12 +9,10 @@ WORKDIR /app
 RUN apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/v3.11/main/ nodejs=12.22.6-r0 yarn
 
 
-ENV NODE_ENV production
-
 ENV FORCE_COLOR 1
 ENV DATA_PATH /app/data
 ENV NGINX_PATH /etc/nginx
-ENV NGINX_CONFIG_PATH /etc/nginx/user_conf.d
+ENV NGINX_CONFIG_PATH ${NGINX_PATH}/conf.d
 
 
 CMD [ "yarn", "dev" ]
