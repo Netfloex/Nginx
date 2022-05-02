@@ -10,10 +10,10 @@ services:
         volumes:
             # Shared Volumes
             - letsencrypt:/etc/letsencrypt
-            - nginx:/etc/nginx
+            - nginx:/etc/nginx # Must be a volume
+            - ./data:/app/data # Needed when using custom files, auth or cloudflare
 
             - ./config:/app/config
-            - ./data:/app/data # Needed when using custom files or cloudflare, this is used as a cache.
 
     nginx:
         image: nginx:stable-alpine
@@ -28,6 +28,7 @@ services:
             # Shared Volumes
             - letsencrypt:/etc/letsencrypt
             - nginx:/etc/nginx
+            - ./data:/app/data # Needed when using custom files, auth or cloudflare
 
             # - ./logs:/var/log/nginx
 
