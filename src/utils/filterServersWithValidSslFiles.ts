@@ -2,6 +2,7 @@ import { pathExists } from "fs-extra";
 
 import { logger } from "@lib/logger";
 import { parseCertificateExpiry } from "@utils/parseCertificateExpiry";
+import settings from "@utils/settings";
 import { sslFileFor, sslFilesFor } from "@utils/sslFilesFor";
 
 import { SimpleServer } from "@models/ParsedConfig";
@@ -22,10 +23,20 @@ export const filterServersWithValidSslFiles = async (
 
 				if (!last)
 					logger.missingSSLFiles({ serverName: server.server_name });
-				else
+				else {
 					logger.missingSSLFilesFinal({
 						serverName: server.server_name
 					});
+
+					/* 
+						This setting allows for a config without certificate files
+						If it is the second try, return all configs
+
+					*/
+					if (settings.enableConfigMissingCerts) {
+						out.push(server);
+					}
+				}
 
 				continue server;
 			}

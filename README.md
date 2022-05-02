@@ -526,6 +526,16 @@ To disable this you can set the following:
 DISABLE_CERTBOT="true"
 ```
 
+#### Enable config without certificates
+
+A domain without certificates will not be created (because Nginx will throw an error on launch)
+
+If you would like to create configs even when it has missing certificate files:
+
+```bash
+ENABLE_CONFIG_MISSING_CERTS="true"
+```
+
 #### Certbot Email (Required)
 
 This email is used to request certificates using certbot.

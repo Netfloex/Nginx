@@ -20,7 +20,7 @@ const returnKeys = [
 	"raw",
 	"include"
 ];
-const optionalReturnKeys = ["raw", "include"];
+const optionalReturnKeys = ["raw", "include", "rewrite"];
 
 const literalSchema = z.union([z.string(), z.number(), z.boolean()]);
 const literalOptArraySchema = z.union([

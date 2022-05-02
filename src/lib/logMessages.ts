@@ -146,7 +146,11 @@ export const logMessages = defineLogList({
 	missingSSLFilesFinal: ({ serverName }: { serverName: string }) => [
 		Log.error,
 		Tag.certbot,
-		chalk`The certificate files for {dim ${serverName}} could not be created, please see the error above. This domain is now disabled.`
+		chalk`The certificate files for {dim ${serverName}} could not be created, please see the error above. ${
+			settings.enableConfigMissingCerts
+				? chalk`This domain will still be {bold enabled}`
+				: "This domain is now disabled."
+		}`
 	],
 	certificateValid: ({
 		serverName,

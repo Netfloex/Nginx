@@ -43,6 +43,9 @@ const settings = {
 
 	dontCheckDns: yn(env.DONT_CHECK_HOSTS, { default: false }),
 	dontDownloadCustomFiles: yn(env.DONT_DOWNLOAD_FILES, { default: false }),
+	enableConfigMissingCerts: yn(env.ENABLE_CONFIG_MISSING_CERTS, {
+		default: false
+	}),
 
 	dhParamSize: parseIntDefault(env.DHPARAM_SIZE, 2048),
 	disableCertbot: yn(env.DISABLE_CERTBOT, { default: false }),
