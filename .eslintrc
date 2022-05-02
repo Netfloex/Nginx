@@ -15,7 +15,7 @@
 		"sourceType": "module"
 	},
 	"plugins": ["@typescript-eslint", "import"],
-	"ignorePatterns": ["/letsencrypt", "/config", "/dist"],
+	"ignorePatterns": ["/letsencrypt", "/config", "/dist", "/nginx", "/data"],
 	"rules": {
 		"@typescript-eslint/explicit-function-return-type": ["error"],
 		"@typescript-eslint/no-non-null-assertion": 0,

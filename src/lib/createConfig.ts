@@ -6,6 +6,7 @@ import createAuthFile from "@utils/createAuthFile";
 import createHash from "@utils/createHash";
 import downloadCSSToFile from "@utils/downloadCSSToFile";
 import downloadJSToFile from "@utils/downloadJSToFile";
+import { isObjectEmpty } from "@utils/isObjectEmpty";
 import settings from "@utils/settings";
 import { sslFilesFor } from "@utils/sslFilesFor";
 
@@ -15,13 +16,15 @@ import { Locations, Server } from "@models/config";
 const parser = new ConfigParser();
 
 const usesCustom = (options: Server): boolean =>
-	!!(options.custom_css?.length || options.custom_js?.length);
+	!!options.custom_css?.length || !!options.custom_js?.length;
 
 const createLocation = async (
 	location: Server,
 	defaultUsername: string
 ): Promise<NginxLocation> => {
 	const block: NginxLocation = {};
+	const promises: Promise<void>[] = [];
+
 	// Proxy Pass
 	if (location.proxy_pass) {
 		block.proxy_pass = location.proxy_pass;
@@ -73,7 +76,7 @@ const createLocation = async (
 			);
 
 			if (!settings.dontDownloadCustomFiles)
-				await downloadCSSToFile(location.custom_css);
+				promises.push(downloadCSSToFile(location.custom_css));
 		}
 
 		// Custom JS
@@ -90,7 +93,7 @@ const createLocation = async (
 			);
 
 			if (!settings.dontDownloadCustomFiles)
-				await downloadJSToFile(location.custom_js);
+				promises.push(downloadJSToFile(location.custom_js));
 		}
 	}
 
@@ -104,14 +107,18 @@ const createLocation = async (
 	// Auth
 
 	if (location.auth) {
-		const { filename, hash } = await createAuthFile(
-			location.auth.map((auth) => ({
-				...auth,
-				username: auth.username ?? defaultUsername
-			}))
+		promises.push(
+			(async (): Promise<void> => {
+				const { filename, hash } = await createAuthFile(
+					location.auth!.map((auth) => ({
+						...auth,
+						username: auth.username ?? defaultUsername
+					}))
+				);
+				block.auth_basic = hash;
+				block.auth_basic_user_file = filename;
+			})()
 		);
-		block.auth_basic = hash;
-		block.auth_basic_user_file = filename;
 	}
 
 	// Raw
@@ -129,6 +136,8 @@ const createLocation = async (
 		block.include ??= [];
 		block.include.push(...location.include);
 	}
+
+	await Promise.all(promises);
 
 	return block;
 };
@@ -148,24 +157,25 @@ const createConfig = async (
 		Object.assign(jsonServer, files);
 	}
 
-	jsonServer["location /"] = await createLocation(
+	const locationSlash = await createLocation(
 		{
 			...server,
 			location: "/"
 		} as Locations[0],
 		defaultUsername
 	);
-
-	if (Object.entries(jsonServer["location /"]).length == 0) {
-		delete jsonServer["location /"];
-	}
+	if (!isObjectEmpty(locationSlash)) jsonServer["location /"] = locationSlash;
 
 	// Custom Locations
 	if (server.locations?.length) {
 		await Promise.all(
 			server.locations.map(async (location) => {
-				jsonServer[`location ${location.location}`] =
-					await createLocation(location, defaultUsername);
+				const namedLocation = await createLocation(
+					location,
+					defaultUsername
+				);
+				if (!isObjectEmpty(namedLocation))
+					jsonServer[`location ${location.location}`] = namedLocation;
 			})
 		);
 	}
