@@ -29,6 +29,7 @@ jobs:
                   DONT_DOWNLOAD_FILES: true
                   DONT_CHECK_HOSTS: true
                   CERTBOT_EMAIL: required
+                  ENABLE_CONFIG_MISSING_CERTS: true
                   CONFIG_FILE: src/tests/configs/full-valid-config.json
 
     latest:
