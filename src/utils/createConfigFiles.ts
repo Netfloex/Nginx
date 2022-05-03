@@ -19,6 +19,6 @@ export const createConfigFiles = (
 
 		await outputFile(fileName, nginxConfig);
 
-		logger.configDone({ serverName: server.server_name });
+		logger.configDone({ server });
 	});
 };

@@ -7,11 +7,14 @@ import { msToDays } from "@utils/msToDays";
 import settings from "@utils/settings";
 import { startedToSeconds } from "@utils/startedToSeconds";
 
+import { SimpleServer } from "@models/ParsedConfig";
+
 /* 
 	Typescript helper function
 	Input must be a valid Log Item
 	Output type is inferred
 */
+
 export const defineLogList = <
 	T extends Record<
 		string,
@@ -218,10 +221,12 @@ export const logMessages = defineLogList({
 
 	// Nginx Config
 
-	configDone: ({ serverName }: { serverName: string }) => [
+	configDone: ({ server }: { server: SimpleServer }) => [
 		Log.done,
 		Tag.nginx,
-		chalk`${serverName}`
+		server.proxy_pass
+			? chalk`{dim ${server.server_name}} {yellow {bold >}} {dim ${server.proxy_pass}}`
+			: chalk`${server.server_name}`
 	],
 
 	// User Config
