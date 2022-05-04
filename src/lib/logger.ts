@@ -59,7 +59,11 @@ const longestLengthValue = (obj: Record<string, string>): number =>
 const longestTagLength = longestLengthValue(TagList);
 const longestTypeLength = longestLengthValue(TypeList);
 
-export const started = performance.now();
+export let started = performance.now();
+
+export const resetStarted = (): void => {
+	started = performance.now();
+};
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const createLogFunction = <Key extends keyof typeof logMessages>(key: Key) => {

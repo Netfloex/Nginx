@@ -1,8 +1,10 @@
+import chok from "chokidar";
+import type { FSWatcher } from "chokidar";
 import { pathExists, readdir, remove } from "fs-extra";
 import { join } from "path";
 
 import { certbot } from "@lib/certbot";
-import { logger, started } from "@lib/logger";
+import { logger, resetStarted, started } from "@lib/logger";
 import parseServers from "@lib/parseServers";
 import validateConfig from "@lib/validateConfig";
 import {
@@ -23,6 +25,13 @@ enum ExitCode {
 	success = 0,
 	failure = -1
 }
+let watcher: FSWatcher | undefined;
+
+const createWatcherOnce = async (path: string): Promise<FSWatcher> => {
+	await watcher?.close();
+	watcher = chok.watch(path, {});
+	return watcher;
+};
 
 const main = async (): Promise<ExitCode> => {
 	let stopping = false;
@@ -56,6 +65,11 @@ const main = async (): Promise<ExitCode> => {
 				configFilePath = join(settings.configPath, configPaths[0]);
 			}
 		}
+	}
+	if (settings.watchConfigFile) {
+		(await createWatcherOnce(configFilePath!)).on("change", () => {
+			startMain();
+		});
 	}
 
 	let results;
@@ -163,19 +177,24 @@ const main = async (): Promise<ExitCode> => {
 	return ExitCode.success;
 };
 
-logger.start();
-main()
-	.then((exitCode) => {
-		if (exitCode == ExitCode.success) {
-			logger.done({ started });
-		} else {
+export const startMain = (): void => {
+	resetStarted();
+	logger.start();
+	main()
+		.then((exitCode) => {
+			if (exitCode == ExitCode.success) {
+				logger.done({ started });
+			} else {
+				logger.exited({ started });
+				process.exitCode = ExitCode.failure;
+			}
+		})
+		.catch((error) => {
+			logger.exception();
+			console.error(error);
 			logger.exited({ started });
 			process.exitCode = ExitCode.failure;
-		}
-	})
-	.catch((error) => {
-		logger.exception();
-		console.error(error);
-		logger.exited({ started });
-		process.exitCode = ExitCode.failure;
-	});
+		});
+};
+
+startMain();

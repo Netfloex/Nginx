@@ -1,4 +1,5 @@
 import commonjs from "@rollup/plugin-commonjs";
+import json from "@rollup/plugin-json";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { defineConfig } from "rollup";
 import { terser } from "rollup-plugin-terser";
@@ -13,6 +14,7 @@ export default defineConfig({
 		plugins: [terser()]
 	},
 	plugins: [
+		json(),
 		typescript({
 			exclude: ["src/tests"]
 		}),

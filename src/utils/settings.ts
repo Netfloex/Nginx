@@ -48,6 +48,7 @@ const settings = {
 	enableConfigMissingCerts: yn(env.ENABLE_CONFIG_MISSING_CERTS, {
 		default: false
 	}),
+	watchConfigFile: yn(env.WATCH_CONFIG_FILE, { default: false }),
 
 	dhParamSize: parseIntDefault(env.DHPARAM_SIZE, 2048),
 	disableCertbot: yn(env.DISABLE_CERTBOT, { default: false }),
