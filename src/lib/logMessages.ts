@@ -78,7 +78,7 @@ export const logMessages = defineLogList({
 	nginxConfNotFound: ({ nginxPath }: { nginxPath: string }) => [
 		Log.warn,
 		Tag.nginx,
-		chalk`nginx.conf does not exist: {dim ${nginxPath}}`
+		chalk`Could not find nginx.conf: {dim ${nginxPath}}`
 	],
 
 	// Certbot and certificates
@@ -86,7 +86,7 @@ export const logMessages = defineLogList({
 	noCertbotEmail: () => [
 		Log.error,
 		Tag.certbot,
-		chalk`{red You must set the {reset {bold {dim CERBOT_EMAIL}}} environment variable, certbot can not run without it.}`
+		chalk`{red You must set the {reset {dim CERBOT_EMAIL}} environment variable, certbot can not run without it.}`
 	],
 	noCertbotBinary: () => [
 		Log.error,
@@ -139,17 +139,17 @@ export const logMessages = defineLogList({
 	certbotError: ({ messages = [] }: { messages: string[] }) => [
 		Log.error,
 		Tag.certbot,
-		chalk`Certbot ran into an error:\n {dim ${messages.join("\n")}}`
+		chalk`{red Certbot ran into an error:}\n {dim ${messages.join("\n")}}`
 	],
 	missingSSLFiles: ({ serverName }: { serverName: string }) => [
 		Log.info,
 		Tag.certbot,
-		chalk`{dim ${serverName}} does not have all necessary certificate files, disabled until created.`
+		chalk`{yellow The server {dim ${serverName}} has missing certificate files, requesting...}`
 	],
 	missingSSLFilesFinal: ({ serverName }: { serverName: string }) => [
 		Log.error,
 		Tag.certbot,
-		chalk`The certificate files for {dim ${serverName}} could not be created, please see the error above. ${
+		chalk`{red The certificate files for {dim ${serverName}} could not be created, please see the error above.} ${
 			settings.enableConfigMissingCerts
 				? chalk`This domain will still be {bold enabled}`
 				: "This domain is now disabled."
@@ -221,7 +221,7 @@ export const logMessages = defineLogList({
 
 	// Nginx Config
 
-	configDone: ({ server }: { server: SimpleServer }) => [
+	configDone: ({ server = {} as SimpleServer }: { server: SimpleServer }) => [
 		Log.done,
 		Tag.nginx,
 		server.proxy_pass
