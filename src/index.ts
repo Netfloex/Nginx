@@ -1,5 +1,5 @@
-import chok from "chokidar";
 import type { FSWatcher } from "chokidar";
+import chok from "chokidar";
 import { pathExists, readdir, remove } from "fs-extra";
 import { join } from "path";
 

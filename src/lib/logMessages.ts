@@ -3,7 +3,9 @@ import { YAMLException } from "js-yaml";
 import { ZodIssue } from "zod";
 
 import { Log, Tag } from "@lib/logger";
+import { gradientNumber } from "@utils/gradientNumber";
 import { msToDays } from "@utils/msToDays";
+import { plural } from "@utils/plural";
 import settings from "@utils/settings";
 import { startedToSeconds } from "@utils/startedToSeconds";
 
@@ -111,9 +113,9 @@ export const logMessages = defineLogList({
 	requestingCertificates: ({ count = -1 }: { count: number }) => [
 		Log.info,
 		Tag.certbot,
-		chalk`{yellow Requesting certificates for {dim ${count}} domain${
-			count != 1 ? "s" : ""
-		}}${
+		chalk`{yellow Requesting certificates for {dim ${count}} domain${plural(
+			count
+		)}}${
 			!settings.staging
 				? chalk`{yellow ...}`
 				: chalk`, using {bold Staging} environment`
@@ -164,8 +166,10 @@ export const logMessages = defineLogList({
 	}) => [
 		Log.info,
 		Tag.certbot,
-		chalk`The certificate for {dim ${serverName}} is valid for {bold ${Math.round(
-			days
+		chalk`The certificate for {dim ${serverName}} is valid for {bold ${gradientNumber(
+			Math.round(days),
+			0,
+			90
 		)}} days`
 	],
 	certificateExpiry: ({
@@ -182,7 +186,9 @@ export const logMessages = defineLogList({
 			Tag.certbot,
 			chalk`{yellow The certificate for {dim ${serverName}}, expire${
 				hasExpired ? "d" : "s in"
-			} {bold ${Math.round(days)}} days ${hasExpired ? "ago" : ""}}`
+			} {bold ${gradientNumber(Math.round(days), 0, 90)}} days ${
+				hasExpired ? "ago" : ""
+			}}`
 		];
 	},
 	certificateParseFailed: ({
@@ -373,7 +379,7 @@ export const logMessages = defineLogList({
 	cachedJS: ({ url }: { url: string }) => [
 		Log.done,
 		Tag.js,
-		chalk`{blue JS file is already downloaded, skipping:} {dim ${url}}`
+		chalk`{blue JS file is already downloaded}, skipping: {dim ${url}}`
 	],
 	downloadedJS: ({ url }: { url: string }) => [
 		Log.done,
@@ -388,15 +394,21 @@ export const logMessages = defineLogList({
 		Tag.cloudflare,
 		chalk`{yellow Updating Cloudflare ip list...}`
 	],
-	cloudflareCached: ({ timeAgo }: { timeAgo: number }) => [
-		Log.info,
-		Tag.cloudflare,
-		chalk`Using cache: current ip list has been updated ${
-			msToDays(timeAgo) == 0
-				? "today"
-				: chalk`{dim ${msToDays(timeAgo)}} days ago`
-		}`
-	],
+	cloudflareCached: ({ timeAgo }: { timeAgo: number }) => {
+		const days = msToDays(timeAgo);
+
+		return [
+			Log.info,
+			Tag.cloudflare,
+			chalk`Using cache: current ip list has been updated ${
+				days == 0
+					? "today"
+					: `${gradientNumber(days, 0, 9, true)} day${plural(
+							days
+					  )} ago`
+			}`
+		];
+	},
 	cloudflareExpired: () => [
 		Log.info,
 		Tag.cloudflare,

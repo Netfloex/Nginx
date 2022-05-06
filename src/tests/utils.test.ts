@@ -10,6 +10,7 @@ import { fixedLength } from "@utils/fixedLength";
 import { msToDays } from "@utils/msToDays";
 import { parseCertificateExpiry } from "@utils/parseCertificateExpiry";
 import { parseIntDefault } from "@utils/parseIntDefault";
+import { plural } from "@utils/plural";
 import { sslFilesFor } from "@utils/sslFilesFor";
 import { startedToSeconds } from "@utils/startedToSeconds";
 
@@ -45,6 +46,18 @@ describe("Utilities", () => {
 		expect(
 			fixedLength(chalk`{blue Even with {bold colors}}`, length)
 		).toHaveLength(length);
+	});
+
+	test.todo("Gradient Number");
+
+	test("Plural", () => {
+		expect(plural(0)).toBe("s");
+		expect(plural(1)).toBe("");
+		expect(plural(2)).toBe("s");
+		const carsMessage = (n: number): string => `${n} car${plural(n)}`;
+		expect(carsMessage(0)).toBe("0 cars");
+		expect(carsMessage(1)).toBe("1 car");
+		expect(carsMessage(2)).toBe("2 cars");
 	});
 
 	test("Milliseconds to days", () => {
