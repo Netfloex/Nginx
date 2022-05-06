@@ -579,6 +579,17 @@ If you still want RSA certificates:
 USE_ECDSA="false"
 ```
 
+#### Watch config file
+
+Watches the config file for changes, and live reloads when it changes.
+
+> Currently this can only be used with the standalone image
+> Because the node process wil run forever so nginx won't be started
+
+```bash
+WATCH_CONFIG_FILE="true"
+```
+
 #### Log formatting
 
 By default the log is formatted so every message starts at the same width.
@@ -659,6 +670,8 @@ You can also run this container without Nginx builtin.
 > Keep in mind that this also means that NCM won't be able to reload nginx.
 
 > So you will have to this manually by running `docker exec nginx nginx -s reload` each time new configs are created
+
+If you want you let NCM watch your config file for changes [see here](#watch-config-file)
 
 In order to do so see this [Docker Compose](docker-compose.standalone.yml)
 

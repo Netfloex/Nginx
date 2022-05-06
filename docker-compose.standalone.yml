@@ -7,6 +7,8 @@ services:
         environment:
             CERTBOT_EMAIL: EMAIL # Required
             TZ: Europe/Amsterdam
+
+            WATCH_CONFIG_FILE: "true"
         volumes:
             # Shared Volumes
             - letsencrypt:/etc/letsencrypt
