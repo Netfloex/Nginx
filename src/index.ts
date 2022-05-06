@@ -125,11 +125,9 @@ const main = async (): Promise<ExitCode> => {
 
 	if (config.cloudflare) {
 		await store.init();
-		if (config.cloudflare) {
-			promises.push(requestCloudflareIps().then(updateCloudflareRealIp));
-		}
+		promises.push(requestCloudflareIps().then(updateCloudflareRealIp));
 	} else {
-		remove(settings.cloudflareConfPath);
+		promises.push(remove(settings.cloudflareConfPath));
 	}
 
 	promises.push(
@@ -137,7 +135,7 @@ const main = async (): Promise<ExitCode> => {
 			nginxConf.http ??= {};
 
 			if (config.nginx?.log)
-				nginxConf.http.log_format = `main ${config!.nginx!.log}`;
+				nginxConf.http.log_format = `main ${config.nginx.log}`;
 
 			nginxConf.http.server_tokens = config.nginx?.server_tokens
 				? "on"
