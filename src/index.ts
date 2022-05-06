@@ -1,5 +1,5 @@
 import type { FSWatcher } from "chokidar";
-import chok from "chokidar";
+import chokidar from "chokidar";
 import { pathExists, readdir, remove } from "fs-extra";
 import { join } from "path";
 
@@ -29,7 +29,7 @@ let watcher: FSWatcher | undefined;
 
 const createWatcherOnce = async (path: string): Promise<FSWatcher> => {
 	await watcher?.close();
-	watcher = chok.watch(path, {});
+	watcher = chokidar.watch(path, {});
 	return watcher;
 };
 

@@ -115,5 +115,3 @@ export const logger: Logger = (
 	}),
 	{} as Logger
 );
-
-// Object.values(logger).forEach((log) => log({}));

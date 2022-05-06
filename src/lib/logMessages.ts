@@ -184,10 +184,14 @@ export const logMessages = defineLogList({
 		return [
 			Log.info,
 			Tag.certbot,
-			chalk`{yellow The certificate for {dim ${serverName}}, expire${
-				hasExpired ? "d" : "s in"
-			} {bold ${gradientNumber(Math.round(days), 0, 90)}} days ${
-				hasExpired ? "ago" : ""
+			chalk`{yellow The certificate for {dim ${serverName}}, ${
+				hasExpired
+					? chalk`expired {red {bold ${Math.round(days)}}} days ago`
+					: chalk`expires in {bold ${gradientNumber(
+							Math.round(days),
+							0,
+							90
+					  )}} days`
 			}}`
 		];
 	},
@@ -394,7 +398,7 @@ export const logMessages = defineLogList({
 		Tag.cloudflare,
 		chalk`{yellow Updating Cloudflare ip list...}`
 	],
-	cloudflareCached: ({ timeAgo }: { timeAgo: number }) => {
+	cloudflareCached: ({ timeAgo = 0 }: { timeAgo: number }) => {
 		const days = msToDays(timeAgo);
 
 		return [

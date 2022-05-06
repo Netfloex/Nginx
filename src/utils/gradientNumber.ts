@@ -3,10 +3,10 @@ import chalk from "chalk";
 const colors: chalk.Chalk[] = [
 	chalk.redBright,
 	chalk.red,
-	chalk.yellowBright,
 	chalk.yellow,
-	chalk.greenBright,
-	chalk.green
+	chalk.yellow,
+	chalk.green,
+	chalk.greenBright
 ];
 /* 
 	Returns a colorized number depending on its value
@@ -23,11 +23,12 @@ export const gradientNumber = (
 	reverse = false
 ): string => {
 	const diffPerColor = (high - low) / colors.length;
-	const colorIndex = Math.floor(number / diffPerColor);
+	const colorIndex = Math.floor((number - low) / diffPerColor);
 
 	// Clamp between the length of array
 
 	const ci = Math.max(0, Math.min(colorIndex, colors.length - 1));
+	const orderedColors = reverse ? colors.reverse() : colors;
 
-	return (reverse ? colors.reverse() : colors)[ci](number);
+	return orderedColors[ci](number);
 };
