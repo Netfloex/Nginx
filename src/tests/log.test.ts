@@ -1,3 +1,4 @@
+import { replaceCurrentDir } from "./test-utils";
 import { performance } from "perf_hooks";
 
 import { logger } from "@lib/logger";
@@ -10,6 +11,8 @@ describe("Logger", () => {
 		Object.values(logger).forEach((log) => log({} as never));
 		expect(mockedLog).toBeCalledTimes(Object.values(logger).length);
 
-		expect(mockedLog.mock.calls.flat()).toMatchSnapshot();
+		expect(
+			mockedLog.mock.calls.flat().map((msg) => replaceCurrentDir(msg))
+		).toMatchSnapshot();
 	});
 });

@@ -1,2 +1,4 @@
-export const replaceCurrentDir = (config: string): string =>
-	config.replace(new RegExp(process.cwd(), "g"), "/current");
+export const replaceCurrentDir = <T>(msg: T): T | string =>
+	typeof msg == "string"
+		? msg.replace(new RegExp(process.cwd(), "g"), "/current")
+		: msg;
