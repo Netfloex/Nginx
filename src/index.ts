@@ -7,10 +7,7 @@ import { certbot } from "@lib/certbot";
 import { logger, resetStarted, started } from "@lib/logger";
 import parseServers from "@lib/parseServers";
 import validateConfig from "@lib/validateConfig";
-import {
-	requestCloudflareIps,
-	updateCloudflareRealIp
-} from "@utils/cloudflare";
+import { cloudflare } from "@utils/cloudflare";
 import { createConfigFiles } from "@utils/createConfigFiles";
 import { createDHPemIfNotExists } from "@utils/createDHPemIfNotExists";
 import { editNginxConfig } from "@utils/editNginxConfig";
@@ -125,7 +122,7 @@ const main = async (): Promise<ExitCode> => {
 
 	if (config.cloudflare) {
 		await store.init();
-		promises.push(requestCloudflareIps().then(updateCloudflareRealIp));
+		promises.push(cloudflare());
 	} else {
 		promises.push(remove(settings.cloudflareConfPath));
 	}
@@ -161,10 +158,15 @@ const main = async (): Promise<ExitCode> => {
 		)
 	);
 
+	promises.push(certbot(serversWithoutKeys));
+
+	if (serversWithoutKeys.length) promises.push(createDHPemIfNotExists());
+
+	//  Make sure all certificate files are created
 	await Promise.all(promises);
 
-	await certbot(serversWithoutKeys);
-	if (serversWithoutKeys.length) await createDHPemIfNotExists();
+	// If there still are missing certificate files
+	// Try again
 	await Promise.all(
 		createConfigFiles(
 			await filterServersWithValidSslFiles(serversWithoutKeys, true),

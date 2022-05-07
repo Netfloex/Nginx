@@ -18,7 +18,7 @@ type Data = {
 	ips: string[];
 };
 
-export const requestCloudflareIps = async (): Promise<Data> => {
+const requestCloudflareIps = async (): Promise<Data | false> => {
 	await store.read();
 
 	logger.updatingCloudflare();
@@ -35,9 +35,12 @@ export const requestCloudflareIps = async (): Promise<Data> => {
 	}
 
 	const started = Date.now();
-	const res = await axios.get<{ result: IpsResponse }>(
-		"https://api.cloudflare.com/client/v4/ips"
-	);
+	const res = await axios
+		.get<{ result: IpsResponse }>(
+			"https://api.cloudflare.com/client/v4/ips"
+		)
+		.catch((error) => logger.cloudflareAxiosError({ error }));
+	if (!res) return false;
 	const took = Date.now() - started;
 
 	const result = res.data.result;
@@ -61,10 +64,7 @@ export const requestCloudflareIps = async (): Promise<Data> => {
 	}
 };
 
-export const updateCloudflareRealIp = async ({
-	ips,
-	type
-}: Data): Promise<void> => {
+const updateCloudflareRealIp = async ({ ips, type }: Data): Promise<void> => {
 	const configExists = await pathExists(settings.cloudflareConfPath);
 
 	if (!configExists || type == Type.Updated) {
@@ -75,4 +75,9 @@ export const updateCloudflareRealIp = async ({
 		await outputFile(settings.cloudflareConfPath, realIpList);
 		logger.cloudflareDone({ length: ips.length });
 	}
+};
+
+export const cloudflare = async (): Promise<void> => {
+	const ipList = await requestCloudflareIps();
+	if (ipList) await updateCloudflareRealIp(ipList);
 };
