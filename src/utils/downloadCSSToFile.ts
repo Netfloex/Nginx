@@ -1,5 +1,6 @@
 import { outputFile, pathExists } from "fs-extra";
 import { join } from "path";
+import { inspect } from "util";
 
 import { logger } from "@lib/logger";
 import createHash from "@utils/createHash";
@@ -22,12 +23,12 @@ const downloadCSSToFile = async (custom_css: string[]): Promise<void> => {
 			}
 			logger.downloadCSS({ url: cssUrl });
 			await downloadCSS(cssUrl).then(async (output) => {
-				if (output.errors) {
+				if ("errors" in output) {
 					logger.CSSError({
 						url: cssUrl,
 						error: Array.isArray(output.errors)
 							? output.errors.join("\n")
-							: output.errors
+							: inspect(output.errors)
 					});
 
 					return;

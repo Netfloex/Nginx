@@ -3,6 +3,8 @@ import { YAMLException } from "js-yaml";
 import { ZodIssue } from "zod";
 
 import { Log, Tag } from "@lib/logger";
+import { formatAxiosError } from "@utils/formatAxiosError";
+import { formatError } from "@utils/formatError";
 import { gradientNumber } from "@utils/gradientNumber";
 import { msToDays } from "@utils/msToDays";
 import { plural } from "@utils/plural";
@@ -25,14 +27,6 @@ export const defineLogList = <
 >(
 	list: T
 ): T => list;
-
-const formatError = (error: unknown): string =>
-	error instanceof Error
-		? chalk`{dim ${error.message}}\n{dim ${error.stack
-				?.split("\n")
-				.slice(0, 3)
-				.join("\n")}}`
-		: chalk.dim(error);
 
 export const logMessages = defineLogList({
 	// Global
@@ -88,7 +82,7 @@ export const logMessages = defineLogList({
 	noCertbotEmail: () => [
 		Log.error,
 		Tag.certbot,
-		chalk`{red You must set the {reset {dim CERBOT_EMAIL}} environment variable, certbot can not run without it.}`
+		chalk`{red You must set the {reset {dim CERTBOT_EMAIL}} environment variable, certbot can not run without it.}`
 	],
 	noCertbotBinary: () => [
 		Log.error,
@@ -390,6 +384,11 @@ export const logMessages = defineLogList({
 		Tag.js,
 		chalk`{blue Downloaded JS file} {dim ${url}}`
 	],
+	jsError: ({ error }: { error: unknown }) => [
+		Log.error,
+		Tag.js,
+		formatAxiosError(error)
+	],
 
 	// Cloudflare
 
@@ -434,6 +433,11 @@ export const logMessages = defineLogList({
 		Log.done,
 		Tag.cloudflare,
 		chalk`Cloudflare ip list has been generated. Added {dim ${length}} ip addresses.`
+	],
+	cloudflareAxiosError: ({ error }: { error: unknown }) => [
+		Log.error,
+		Tag.cloudflare,
+		formatAxiosError(error)
 	],
 
 	// Environment

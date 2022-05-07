@@ -1,10 +1,9 @@
-import axios from "axios";
-import { createWriteStream, ensureFile, pathExists } from "fs-extra";
+import { pathExists } from "fs-extra";
 import { join } from "path";
-import { Stream } from "stream";
 
 import { logger } from "@lib/logger";
 import createHash from "@utils/createHash";
+import { downloadFile } from "@utils/downloadFile";
 import settings from "@utils/settings";
 
 const downloadJSToFile = async (custom_js: string[]): Promise<void> => {
@@ -23,20 +22,9 @@ const downloadJSToFile = async (custom_js: string[]): Promise<void> => {
 			}
 
 			logger.downloadJS({ url: jsUrl });
-			return new Promise((resolve, reject) => {
-				axios
-					.get<Stream>(jsUrl, { responseType: "stream" })
-					.then(async (res) => {
-						await ensureFile(fileName);
-						const stream = createWriteStream(fileName);
-						stream.on("close", () => {
-							logger.downloadedJS({ url: jsUrl });
-							resolve();
-						});
-						res.data.pipe(stream);
-					})
-					.catch(reject);
-			});
+			await downloadFile(fileName, jsUrl).catch((err) =>
+				logger.jsError({ error: err })
+			);
 		})
 	);
 };
