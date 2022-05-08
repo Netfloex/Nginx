@@ -1,11 +1,11 @@
 import ConfigParser, { NginxLocation } from "@webantic/nginx-config-parser";
 import { join } from "path";
 
-import baseConf from "@utils/baseConf";
-import createAuthFile from "@utils/createAuthFile";
-import createHash from "@utils/createHash";
-import downloadCSSToFile from "@utils/downloadCSSToFile";
-import downloadJSToFile from "@utils/downloadJSToFile";
+import { baseConf } from "@utils/baseConf";
+import { createAuthFile } from "@utils/createAuthFile";
+import { createHash } from "@utils/createHash";
+import { downloadCSSToFile } from "@utils/downloadCSSToFile";
+import { downloadJSToFile } from "@utils/downloadJSToFile";
 import { isObjectEmpty } from "@utils/isObjectEmpty";
 import settings from "@utils/settings";
 import { sslFilesFor } from "@utils/sslFilesFor";
@@ -116,14 +116,14 @@ const createLocation = async (
 	if (location.auth) {
 		promises.push(
 			(async (): Promise<void> => {
-				const { filename, hash } = await createAuthFile(
+				const { filepath, hash } = await createAuthFile(
 					location.auth!.map((auth) => ({
 						...auth,
 						username: auth.username ?? defaultUsername
 					}))
 				);
 				block.auth_basic = hash;
-				block.auth_basic_user_file = filename;
+				block.auth_basic_user_file = filepath;
 			})()
 		);
 	}

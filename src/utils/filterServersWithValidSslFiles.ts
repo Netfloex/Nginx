@@ -7,6 +7,16 @@ import { sslFileFor, sslFilesFor } from "@utils/sslFilesFor";
 
 import { SimpleServer } from "@models/ParsedConfig";
 
+/**
+ * Returns a list of servers which has valid certificates
+ *
+ * If `settings.enableConfigMissingCerts` is true and `last` is true
+ * it will always return all servers
+ * @param servers An array of {@link SimpleServer}s
+ * @param last If this is the last try
+ * @returns An array of servers with valid certificates
+ */
+
 export const filterServersWithValidSslFiles = async (
 	servers: SimpleServer[],
 	last = false
@@ -31,7 +41,6 @@ export const filterServersWithValidSslFiles = async (
 					/* 
 						This setting allows for a config without certificate files
 						If it is the second try, return all configs
-
 					*/
 					if (settings.enableConfigMissingCerts) {
 						out.push(server);

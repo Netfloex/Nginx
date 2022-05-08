@@ -4,8 +4,8 @@ import { performance } from "perf_hooks";
 
 import { logger } from "@lib/logger";
 import { createDHParams } from "@utils/createDHParams";
-import createHash from "@utils/createHash";
-import dnsLookup from "@utils/dnsLookup";
+import { createHash } from "@utils/createHash";
+import { dnsLookup } from "@utils/dnsLookup";
 import { fixedLength } from "@utils/fixedLength";
 import { msToDays } from "@utils/msToDays";
 import { parseCertificateExpiry } from "@utils/parseCertificateExpiry";

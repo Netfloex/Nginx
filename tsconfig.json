@@ -2,23 +2,24 @@
 	"compilerOptions": {
 		"baseUrl": ".",
 		"downlevelIteration": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"incremental": true,
+		"lib": ["ES2019.Array"],
+		"module": "ESNext",
 		"moduleResolution": "node",
+		"outDir": "dist",
 		"paths": {
 			"@models/*": ["src/models/*"],
 			"@utils/*": ["src/utils/*"],
 			"@lib/*": ["src/lib/*"],
 			"@configs/*": ["src/tests/configs/*"]
 		},
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"incremental": true,
-		"lib": ["ES2019.Array"],
-		"module": "ESNext",
-		"outDir": "dist",
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"strict": true,
-		"target": "es5"
+		"target": "es5",
+		"useUnknownInCatchVariables": true
 	},
 	"include": ["src"],
 	"ts-node": {

@@ -1,5 +1,5 @@
 import { requestCloudflareIps } from "@utils/cloudflare";
-import store from "@utils/useStore";
+import { store } from "@utils/store";
 
 describe("Cloudflare", () => {
 	test("Fetch ip list", async () => {

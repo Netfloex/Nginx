@@ -4,7 +4,11 @@ import { join } from "path";
 
 import settings from "@utils/settings";
 
-const baseConf = async (): Promise<NginxConfig> => {
+/**
+ * @returns a JavaScript object with the baseConfig specified in `settings.nginxIncludePath`
+ */
+
+export const baseConf = async (): Promise<NginxConfig> => {
 	const parser = new ConfigParser();
 
 	const NginxConfig = await readFile(
@@ -14,5 +18,3 @@ const baseConf = async (): Promise<NginxConfig> => {
 
 	return parser.toJSON<NginxConfig>(NginxConfig);
 };
-
-export default baseConf;

@@ -3,11 +3,20 @@ import { join } from "path";
 import { inspect } from "util";
 
 import { logger } from "@lib/logger";
-import createHash from "@utils/createHash";
-import downloadCSS from "@utils/downloadCSS";
+import { createHash } from "@utils/createHash";
+import { downloadCSS } from "@utils/downloadCSS";
 import settings from "@utils/settings";
 
-const downloadCSSToFile = async (custom_css: string[]): Promise<void> => {
+/**
+ * Uses {@link downloadCSS} to download and minify the CSS
+ *
+ * Stores it in a file inside `settings.customFilesPath/css`
+ * @param custom_css An array of urls
+ */
+
+export const downloadCSSToFile = async (
+	custom_css: string[]
+): Promise<void> => {
 	await Promise.all(
 		custom_css.map(async (cssUrl) => {
 			const urlHash = createHash(cssUrl);
@@ -45,5 +54,3 @@ const downloadCSSToFile = async (custom_css: string[]): Promise<void> => {
 		})
 	);
 };
-
-export default downloadCSSToFile;

@@ -4,7 +4,7 @@ import { performance } from "perf_hooks";
 
 import { logger } from "@lib/logger";
 import settings from "@utils/settings";
-import store from "@utils/useStore";
+import { store } from "@utils/store";
 
 import { IpsResponse } from "@models/cloudflare-ips";
 
@@ -18,6 +18,13 @@ type CloudflareData = {
 	type: Type;
 	ips: string[];
 };
+
+/**
+ * Returns a list of cloudflare ips
+ *
+ * Or a cached version if it is cached less than `settings.cloudflareExpiry`
+ * @returns {object} {@link CloudflareData} on success and `false` on a request error
+ */
 
 export const requestCloudflareIps = async (): Promise<
 	CloudflareData | false
@@ -66,6 +73,13 @@ export const requestCloudflareIps = async (): Promise<
 	}
 };
 
+/**
+ * Creates a cloudflare.conf with the ips provided
+ * Only updates the file if the ips have changed
+ * Or creates it if it does not exist yet
+ * @param {object} cloudflareData
+ */
+
 const updateCloudflareRealIp = async ({
 	ips,
 	type
@@ -81,6 +95,13 @@ const updateCloudflareRealIp = async ({
 		logger.cloudflareDone({ length: ips.length });
 	}
 };
+
+/**
+ * Make sure there is a cloudflare.conf with a recent ip list
+ *
+ * Runs:
+ * {@link requestCloudflareIps} and {@link updateCloudflareRealIp}
+ */
 
 export const cloudflare = async (): Promise<void> => {
 	const ipList = await requestCloudflareIps();

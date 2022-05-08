@@ -12,9 +12,9 @@ import { createConfigFiles } from "@utils/createConfigFiles";
 import { createDHPemIfNotExists } from "@utils/createDHPemIfNotExists";
 import { editNginxConfig } from "@utils/editNginxConfig";
 import { filterServersWithValidSslFiles } from "@utils/filterServersWithValidSslFiles";
-import parseUserConfig from "@utils/parseUserConfig";
+import { parseUserConfig } from "@utils/parseUserConfig";
 import settings from "@utils/settings";
-import store from "@utils/useStore";
+import { store } from "@utils/store";
 
 import { ParsedConfig } from "@models/ParsedConfig";
 

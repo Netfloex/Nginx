@@ -1,5 +1,5 @@
 import Parser from "@webantic/nginx-config-parser";
-import { pathExists, readFile, writeFile } from "fs-extra";
+import { outputFile, pathExists, readFile } from "fs-extra";
 import { join } from "path";
 
 import { logger } from "@lib/logger";
@@ -8,6 +8,12 @@ import settings from "@utils/settings";
 import { NginxConf } from "@models/nginx.conf";
 
 type EditConfigFunction = (nginxConfig: NginxConf) => NginxConf;
+
+/**
+ * Parses an existing `nginx.conf` and runs a callback to edit the configuration
+ * What the callback returns will be outputted to the `nginx.conf`
+ * @param editConfig A function that receives an object with the existing config or {} if it does not exist
+ */
 
 export const editNginxConfig = async (
 	editConfig: EditConfigFunction
@@ -32,5 +38,5 @@ export const editNginxConfig = async (
 
 	const config = parser.toConf<NginxConf>(edited);
 
-	await writeFile(nginxPath, config);
+	await outputFile(nginxPath, config);
 };

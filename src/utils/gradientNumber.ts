@@ -16,6 +16,18 @@ const colors: chalk.Chalk[] = [
 
 	if reverse is true, this list is reversed
 */
+/**
+ * Colorizes a number based on its value
+ *
+ * Red > Yellow > Green
+ *
+ * @param number The number to be colorized
+ * @param low The lowest number possible
+ * @param high The highest number possible
+ * @param reverse If the colors should be in reversed order
+ * @returns The colorized number
+ */
+
 export const gradientNumber = (
 	number: number,
 	low: number,

@@ -5,7 +5,7 @@ import { URL } from "url";
 import { z } from "zod";
 
 import { logger } from "@lib/logger";
-import dnsLookup from "@utils/dnsLookup";
+import { dnsLookup } from "@utils/dnsLookup";
 import settings from "@utils/settings";
 
 import { InputConfig, OutputConfig } from "@models/config";

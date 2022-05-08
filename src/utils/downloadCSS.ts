@@ -1,6 +1,6 @@
 import CleanCSS from "clean-css";
 
-import createHash from "@utils/createHash";
+import { createHash } from "@utils/createHash";
 
 type Output =
 	| {
@@ -11,7 +11,15 @@ type Output =
 			hash: string;
 	  };
 
-const downloadCSS = async (url: string): Promise<Output> => {
+/**
+ * Requests a remote CSS file and minifies it
+ *
+ * It will also include `@import` directives
+ * @param url The url of the CSS file
+ * @returns {string} Compressed CSS string
+ */
+
+export const downloadCSS = async (url: string): Promise<Output> => {
 	const css = `@import url(${url});`;
 	return await new CleanCSS({
 		inline: ["remote"],
@@ -32,5 +40,3 @@ const downloadCSS = async (url: string): Promise<Output> => {
 			};
 		});
 };
-
-export default downloadCSS;

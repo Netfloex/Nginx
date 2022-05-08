@@ -5,7 +5,13 @@ import { extname } from "path";
 
 import { logger } from "@lib/logger";
 
-const parseUserConfig = async (
+/**
+ * Parses a file in Javascript, Json or Yaml format
+ * @param configFilePath The path to the config
+ * @returns The data inside the config
+ */
+
+export const parseUserConfig = async (
 	configFilePath: string
 ): Promise<Record<string, unknown> | false> => {
 	const ext = extname(configFilePath);
@@ -82,5 +88,3 @@ const parseUserConfig = async (
 
 	throw new Error(`Unsupported Extension: ${ext}`);
 };
-
-export default parseUserConfig;

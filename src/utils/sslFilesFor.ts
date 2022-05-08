@@ -9,6 +9,12 @@ type ServerWithNecessaryProperties = Pick<
 	"certbot_name" | "server_name"
 >;
 
+/**
+ * Creates an object with paths for certificate file
+ * @param server The server
+ * @returns An object with the paths to its certificate files
+ */
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const sslFilesFor = (server: ServerWithNecessaryProperties) => {
 	const sslFile = (filename: string): string => sslFileFor(server, filename);
@@ -19,6 +25,13 @@ export const sslFilesFor = (server: ServerWithNecessaryProperties) => {
 		ssl_dhparam: settings.dhParamPath
 	};
 };
+
+/**
+ * Returns the path for a certificate of a server
+ * @param server The server
+ * @param filename The name of the certificate
+ * @returns A string of the path
+ */
 
 export const sslFileFor = (
 	server: ServerWithNecessaryProperties,

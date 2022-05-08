@@ -13,6 +13,11 @@ const nginxConfigPath = r(env.NGINX_CONFIG_PATH, join(nginxPath, "conf.d"));
 
 const letsencryptPath = r(env.LETSENCRYPT_PATH, "/etc/letsencrypt");
 
+/**
+ * An object containing all settings
+ * The settings are parsed environment variables with defaults
+ */
+
 const settings = {
 	configPath: r(env.CONFIG_PATH, "config"),
 	configFile: env.CONFIG_FILE ? resolve(env.CONFIG_FILE) : undefined,

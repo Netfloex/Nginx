@@ -3,7 +3,7 @@ import { join } from "path";
 
 import { logger } from "@lib/logger";
 import validateConfig from "@lib/validateConfig";
-import parseUserConfig from "@utils/parseUserConfig";
+import { parseUserConfig } from "@utils/parseUserConfig";
 import settings from "@utils/settings";
 
 describe("The examples should be valid", () => {

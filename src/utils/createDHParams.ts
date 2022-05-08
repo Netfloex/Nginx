@@ -5,6 +5,12 @@ import { performance } from "perf_hooks";
 import { logger } from "@lib/logger";
 import settings from "@utils/settings";
 
+/**
+ * Creates Diffie-Hellman parameters
+ * This function is synchronous but can take a long time
+ * @returns {string} Diffie-Hellman Parameters
+ */
+
 export const createDHParams = (): string => {
 	logger.creatingDHParams();
 	const started = performance.now();

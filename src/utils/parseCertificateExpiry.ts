@@ -4,6 +4,12 @@ import { DateTime } from "luxon";
 
 import { logger } from "@lib/logger";
 
+/**
+ * Checks the expiry of a certificate file
+ * @param certificateFile The path to the certificate
+ * @returns A {@link DateTime} when the certificate expires
+ */
+
 export const parseCertificateExpiry = async (
 	certificateFile: string
 ): Promise<DateTime | false> => {
