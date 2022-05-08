@@ -14,7 +14,8 @@ COPY src ./src
 COPY --from=deps /app/node_modules ./node_modules
 
 RUN yarn build
-RUN yarn install --production --ignore-scripts --prefer-offline
+# Disabled production dependecies, see below
+# RUN yarn install --production --ignore-scripts --prefer-offline
 
 FROM nginx:stable-alpine AS runner
 
@@ -53,7 +54,8 @@ COPY --from=builder /app/dist/index.js ./index.js
 COPY entrypoint.sh .
 
 # Copy production node_modules
-COPY --from=builder /app/node_modules ./node_modules
+# Not needed anymore since there are no production modules
+# COPY --from=builder /app/node_modules ./node_modules
 
 HEALTHCHECK --interval=5s --timeout=5s --retries=3 \
 	CMD wget -nv -t1 --spider 'http://localhost/healthcheck' || exit 1

@@ -18,7 +18,7 @@ export default defineConfig({
 		typescript({
 			exclude: ["src/tests"]
 		}),
-		commonjs({ ignore: ["glob"] }),
+		commonjs(),
 		nodeResolve()
 	]
 });
