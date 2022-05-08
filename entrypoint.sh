@@ -3,7 +3,7 @@ PREFIX="[NCM] (entrypoint.sh)"
 
 start() {
     echo "$PREFIX Generating configs"
-    node index.js
+    node index.js run
 }
 
 reload() {

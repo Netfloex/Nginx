@@ -13,7 +13,7 @@ import { Auth } from "@models/ParsedConfig";
  * @returns
  */
 
-const htpasswd = ({ username, password }: Auth): string =>
+export const htpasswd = ({ username, password }: Auth): string =>
 	`${username}:${md5(password)}`;
 
 /**

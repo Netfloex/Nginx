@@ -1,13 +1,18 @@
+import chalk from "chalk";
 import type { FSWatcher } from "chokidar";
 import chokidar from "chokidar";
 import { pathExists, readdir, remove } from "fs-extra";
+import { version } from "package.json";
 import { join } from "path";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
 import { certbot } from "@lib/certbot";
 import { logger, resetStarted, started } from "@lib/logger";
 import parseServers from "@lib/parseServers";
 import validateConfig from "@lib/validateConfig";
 import { cloudflare } from "@utils/cloudflare";
+import { htpasswd } from "@utils/createAuthFile";
 import { createConfigFiles } from "@utils/createConfigFiles";
 import { createDHPemIfNotExists } from "@utils/createDHPemIfNotExists";
 import { editNginxConfig } from "@utils/editNginxConfig";
@@ -30,7 +35,11 @@ const createWatcherOnce = async (path: string): Promise<FSWatcher> => {
 	return watcher;
 };
 
-const main = async (): Promise<ExitCode> => {
+const main = async ({
+	justLogConfig
+}: {
+	justLogConfig?: boolean;
+} = {}): Promise<ExitCode> => {
 	let stopping = false;
 
 	let configFilePath = settings.configFile;
@@ -90,6 +99,13 @@ const main = async (): Promise<ExitCode> => {
 
 	const validatedConfig = await validateConfig(results);
 
+	if (justLogConfig) {
+		console.log(
+			chalk.bold("\nParsed Config"),
+			chalk.dim("\n" + JSON.stringify(results, null, "\t"))
+		);
+	}
+
 	if (validatedConfig == null) {
 		return ExitCode.failure;
 	}
@@ -100,6 +116,14 @@ const main = async (): Promise<ExitCode> => {
 		...validatedConfig,
 		servers: await parseServers(validatedConfig.servers)
 	};
+
+	if (justLogConfig) {
+		console.log(
+			chalk.bold("\nValidated Config"),
+			chalk.dim("\n" + JSON.stringify(validatedConfig, null, "\t"))
+		);
+		return ExitCode.success;
+	}
 
 	if (!(await pathExists(settings.nginxConfigPath))) {
 		logger.noOldConfigs();
@@ -177,10 +201,10 @@ const main = async (): Promise<ExitCode> => {
 	return ExitCode.success;
 };
 
-export const startMain = (): void => {
+export const startMain = (...params: Parameters<typeof main>): void => {
 	resetStarted();
 	logger.start();
-	main()
+	main(...params)
 		.then((exitCode) => {
 			if (exitCode == ExitCode.success) {
 				logger.done({ started });
@@ -197,4 +221,41 @@ export const startMain = (): void => {
 		});
 };
 
-startMain();
+yargs(hideBin(process.argv))
+	.scriptName("ncm")
+	.version(version)
+	// .help()
+	.alias("h", "help")
+	.alias("v", "version")
+	.command("run", "Runs ncm", {}, () => startMain())
+	.command(
+		"htpasswd",
+		"Creates an apache md5 hashed password",
+		(yargs) =>
+			yargs.options({
+				username: {
+					type: "string",
+					alias: "u",
+					default: "username"
+				},
+				password: {
+					type: "string",
+					alias: "p",
+					requiresArg: true,
+					required: true
+				}
+			}),
+		({ username, password }) => {
+			console.log("Created a htpasswd string");
+			console.log(chalk.dim(htpasswd({ username, password })));
+		}
+	)
+	.command("debug-config", "Outputs the parsed config", {}, () => {
+		startMain({ justLogConfig: true });
+	})
+	.command("settings", "Shows a lists of the current settings", {}, () => {
+		console.log(settings);
+	})
+	.strict()
+	.demandCommand()
+	.parse();
