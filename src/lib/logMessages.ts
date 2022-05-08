@@ -419,15 +419,19 @@ export const logMessages = defineLogList({
 			settings.cloudflareExpiry
 		)}} days`
 	],
-	cloudflareUpdated: ({ took }: { took: number }) => [
+	cloudflareUpdated: ({ started }: { started: number }) => [
 		Log.done,
 		Tag.cloudflare,
-		chalk`Updated Cloudflare ip list {dim Request took {yellow ${took}ms}}`
+		chalk`Updated Cloudflare ip list {dim Request took {yellow ${startedToSeconds(
+			started
+		)}s}}`
 	],
-	cloudflareUnchanged: ({ took }: { took: number }) => [
+	cloudflareUnchanged: ({ started }: { started: number }) => [
 		Log.info,
 		Tag.cloudflare,
-		chalk`Cloudflare ip list refreshed, no changes with cache {dim Request took {yellow ${took}ms}}`
+		chalk`Cloudflare ip list refreshed, no changes with cache {dim Request took {yellow ${startedToSeconds(
+			started
+		)}s}}`
 	],
 	cloudflareDone: ({ length }: { length: number }) => [
 		Log.done,

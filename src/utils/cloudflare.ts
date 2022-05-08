@@ -1,5 +1,6 @@
 import axios from "axios";
 import { outputFile, pathExists } from "fs-extra";
+import { performance } from "perf_hooks";
 
 import { logger } from "@lib/logger";
 import settings from "@utils/settings";
@@ -13,12 +14,14 @@ enum Type {
 	Unchanged = 2
 }
 
-type Data = {
+type CloudflareData = {
 	type: Type;
 	ips: string[];
 };
 
-const requestCloudflareIps = async (): Promise<Data | false> => {
+export const requestCloudflareIps = async (): Promise<
+	CloudflareData | false
+> => {
 	await store.read();
 
 	logger.updatingCloudflare();
@@ -34,14 +37,13 @@ const requestCloudflareIps = async (): Promise<Data | false> => {
 		logger.cloudflareExpired();
 	}
 
-	const started = Date.now();
+	const started = performance.now();
 	const res = await axios
 		.get<{ result: IpsResponse }>(
 			"https://api.cloudflare.com/client/v4/ips"
 		)
 		.catch((error) => logger.cloudflareAxiosError({ error }));
 	if (!res) return false;
-	const took = Date.now() - started;
 
 	const result = res.data.result;
 
@@ -56,15 +58,18 @@ const requestCloudflareIps = async (): Promise<Data | false> => {
 	await store.write();
 
 	if (store.data.cloudflare.ips && !changed) {
-		logger.cloudflareUnchanged({ took });
+		logger.cloudflareUnchanged({ started });
 		return { type: Type.Unchanged, ips };
 	} else {
-		logger.cloudflareUpdated({ took });
+		logger.cloudflareUpdated({ started });
 		return { type: Type.Updated, ips };
 	}
 };
 
-const updateCloudflareRealIp = async ({ ips, type }: Data): Promise<void> => {
+const updateCloudflareRealIp = async ({
+	ips,
+	type
+}: CloudflareData): Promise<void> => {
 	const configExists = await pathExists(settings.cloudflareConfPath);
 
 	if (!configExists || type == Type.Updated) {
