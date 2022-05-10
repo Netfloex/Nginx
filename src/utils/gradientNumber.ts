@@ -1,6 +1,6 @@
-import chalk from "chalk";
+import chalk, { Chalk } from "chalk";
 
-const colors: readonly chalk.Chalk[] = [
+const colors: readonly Chalk[] = [
 	chalk.redBright,
 	chalk.red,
 	chalk.yellow,

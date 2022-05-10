@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import chalk, { Chalk } from "chalk";
 import { YAMLException } from "js-yaml";
 import { ZodIssue } from "zod";
 
@@ -226,13 +226,42 @@ export const logMessages = defineLogList({
 
 	// Nginx Config
 
-	configDone: ({ server = {} as SimpleServer }: { server: SimpleServer }) => [
-		Log.done,
-		Tag.nginx,
-		server.proxy_pass
-			? chalk`{dim ${server.server_name}} {yellow {bold >}} {dim ${server.proxy_pass}}`
-			: chalk`${server.server_name}`
-	],
+	configDone: ({ server = {} as SimpleServer }: { server: SimpleServer }) => {
+		let arrowColor: Chalk | (() => "") = (): "" => "";
+		let addition = "";
+
+		if (server.proxy_pass) {
+			arrowColor = chalk.yellow.bold;
+			addition = server.proxy_pass;
+			if (server.websocket) {
+				addition += chalk.reset.yellow(" (WS)");
+			}
+		} else if (server.static) {
+			arrowColor = chalk.blue.bold;
+			addition = server.static;
+		} else if (server.html) {
+			arrowColor = chalk.green.bold;
+			addition =
+				server.html.length >= 10
+					? `${server.html.slice(0, 10)}...`
+					: server.html;
+		} else if (server.redirect) {
+			arrowColor = chalk.cyan.bold;
+			addition = server.redirect;
+		}
+
+		return [
+			Log.done,
+			Tag.nginx,
+			[
+				chalk.dim(server.server_name),
+				arrowColor(">"),
+				chalk.dim(addition)
+			]
+				.filter(Boolean)
+				.join(" ")
+		];
+	},
 
 	// User Config
 
