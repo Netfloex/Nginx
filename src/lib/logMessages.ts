@@ -180,10 +180,11 @@ export const logMessages = defineLogList({
 			Tag.certbot,
 			chalk`{yellow The certificate for {dim ${serverName}}, ${
 				hasExpired
-					? chalk`expired {red {bold ${Math.round(days)}}} days ago`
+					? // Negative for expired
+					  chalk`expired {red {bold ${-Math.round(days)}}} days ago`
 					: chalk`expires in {bold ${gradientNumber(
 							Math.round(days),
-							0,
+							30,
 							90
 					  )}} days`
 			}}`

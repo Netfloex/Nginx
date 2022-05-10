@@ -1,13 +1,13 @@
 import chalk from "chalk";
 
-const colors: chalk.Chalk[] = [
+const colors: readonly chalk.Chalk[] = [
 	chalk.redBright,
 	chalk.red,
 	chalk.yellow,
 	chalk.yellow,
 	chalk.green,
 	chalk.greenBright
-];
+] as const;
 /* 
 	Returns a colorized number depending on its value
 	Lower numbers are red,
@@ -39,8 +39,14 @@ export const gradientNumber = (
 
 	// Clamp between the length of array
 
-	const ci = Math.max(0, Math.min(colorIndex, colors.length - 1));
-	const orderedColors = reverse ? colors.reverse() : colors;
+	const clampedIndex = Math.max(0, Math.min(colorIndex, colors.length - 1));
 
-	return orderedColors[ci](number);
+	// If `reverse` is true, invert the index by using it from the other side
+	// minus 1 is needed to get the last *index* of the array
+
+	const ifReversedIndex = reverse
+		? colors.length - 1 - clampedIndex
+		: clampedIndex;
+
+	return colors[ifReversedIndex](number);
 };
