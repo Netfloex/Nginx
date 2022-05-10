@@ -384,15 +384,15 @@ export const logMessages = defineLogList({
 		chalk`{red There was an error downloading/compressing the url:} {dim ${url}}\n{dim ${error}}`
 	],
 	CSSWriteError: ({
-		fileName,
+		filepath,
 		error
 	}: {
-		fileName: string;
+		filepath: string;
 		error: unknown;
 	}) => [
 		Log.error,
 		Tag.css,
-		chalk`{red Could not save the CSS file} {dim ${fileName}}\n${formatError(
+		chalk`{red Could not save the CSS file} {dim ${filepath}}\n${formatError(
 			error
 		)}`
 	],

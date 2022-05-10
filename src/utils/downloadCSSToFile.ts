@@ -1,11 +1,9 @@
-import { outputFile, pathExists } from "fs-extra";
-import { join } from "path";
+import { outputFile } from "fs-extra";
 import { inspect } from "util";
 
 import { logger } from "@lib/logger";
-import { createHash } from "@utils/createHash";
+import { customFilesHelper } from "@utils/customFilesHelper";
 import { downloadCSS } from "@utils/downloadCSS";
-import settings from "@utils/settings";
 
 /**
  * Uses {@link downloadCSS} to download and minify the CSS
@@ -18,23 +16,19 @@ export const downloadCSSToFile = async (
 	custom_css: string[]
 ): Promise<void> => {
 	await Promise.all(
-		custom_css.map(async (cssUrl) => {
-			const urlHash = createHash(cssUrl);
-			const fileName = join(
-				settings.customFilesPath,
-				"css",
-				urlHash + ".css"
-			);
+		custom_css.map(async (url) => {
+			const { exists, filepath } = await customFilesHelper(url, "css");
 
-			if (await pathExists(fileName)) {
-				logger.cachedCSS({ url: cssUrl });
+			if (exists) {
+				logger.cachedCSS({ url });
 				return;
 			}
-			logger.downloadCSS({ url: cssUrl });
-			await downloadCSS(cssUrl).then(async (output) => {
+
+			logger.downloadCSS({ url });
+			await downloadCSS(url).then(async (output) => {
 				if ("errors" in output) {
 					logger.CSSError({
-						url: cssUrl,
+						url: url,
 						error: Array.isArray(output.errors)
 							? output.errors.join("\n")
 							: inspect(output.errors)
@@ -43,12 +37,10 @@ export const downloadCSSToFile = async (
 					return;
 				}
 
-				logger.downloadedCSS({ url: cssUrl });
+				logger.downloadedCSS({ url });
 
-				await outputFile(fileName, output.styles).catch((e) => {
-					logger.CSSWriteError({ fileName, error: e });
-
-					throw e;
+				await outputFile(filepath, output.styles).catch((error) => {
+					logger.CSSWriteError({ filepath, error });
 				});
 			});
 		})
