@@ -8,9 +8,11 @@ import { sslFileFor, sslFilesFor } from "@utils/sslFilesFor";
 
 import { SimpleServer } from "@models/ParsedConfig";
 
+export type InvalidSslReason = "expired" | "staging" | "missing";
+
 export interface InvalidSslServer {
 	server: SimpleServer;
-	reason: "expired" | "staging" | "missing";
+	reason: InvalidSslReason;
 }
 
 export interface FilteredServers {
@@ -46,8 +48,9 @@ export const filterServersWithValidSslFiles = async (
 				if (!last)
 					logger.missingSSLFiles({ serverName: server.server_name });
 				else {
-					logger.missingSSLFilesFinal({
-						serverName: server.server_name
+					logger.certificateFailed({
+						serverName: server.server_name,
+						reason: "missing"
 					});
 
 					/* 
@@ -75,14 +78,31 @@ export const filterServersWithValidSslFiles = async (
 
 		if (days < 30) {
 			// Certificate expires in less than 30 days
-			logger.certificateExpiry({
-				serverName: server.server_name,
-				days
-			});
+			if (last)
+				logger.certificateFailed({
+					serverName: server.server_name,
+					reason: "expired"
+				});
+			else
+				logger.certificateExpiry({
+					serverName: server.server_name,
+					days
+				});
 
 			invalidSslServers.push({ server, reason: "expired" });
 		} else if (certificate.staging && settings.staging == false) {
-			console.log("Is Staging");
+			// It is a staging certificate *and* we are not using the staging environment
+
+			if (last)
+				logger.certificateFailed({
+					serverName: server.server_name,
+					reason: "staging"
+				});
+			else
+				logger.certificateStaging({
+					serverName: server.server_name
+				});
+
 			invalidSslServers.push({ server, reason: "staging" });
 		} else {
 			logger.certificateValid({

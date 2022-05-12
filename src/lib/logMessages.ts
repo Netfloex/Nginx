@@ -3,6 +3,7 @@ import { YAMLException } from "js-yaml";
 import { ZodIssue } from "zod";
 
 import { Log, Tag } from "@lib/logger";
+import { InvalidSslReason } from "@utils/filterServersWithValidSslFiles";
 import { formatAxiosError } from "@utils/formatAxiosError";
 import { formatError } from "@utils/formatError";
 import { gradientNumber } from "@utils/gradientNumber";
@@ -142,10 +143,24 @@ export const logMessages = defineLogList({
 		Tag.certbot,
 		chalk`{yellow The server {dim ${serverName}} has missing certificate files, requesting...}`
 	],
-	missingSSLFilesFinal: ({ serverName }: { serverName: string }) => [
+	certificateFailed: ({
+		serverName,
+		reason
+	}: {
+		serverName: string;
+		reason: InvalidSslReason;
+	}) => [
 		Log.error,
 		Tag.certbot,
-		chalk`{red The certificate files for {dim ${serverName}} could not be created, please see the error above.} ${
+		chalk`{red The certificate files for {dim ${serverName}} could not be ${
+			reason == "missing" ? "created" : "renewed"
+		}${
+			settings.disableCertbot
+				? " because certbot is disabled."
+				: !settings.certbotMail
+				? chalk` because {white {dim CERTBOT_MAIL}} is not set.`
+				: ". This might be because of an error stated above."
+		}} ${
 			settings.enableConfigMissingCerts
 				? chalk`This domain will still be {bold enabled}`
 				: "This domain is now disabled."
