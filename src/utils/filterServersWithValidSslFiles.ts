@@ -1,11 +1,22 @@
 import { pathExists } from "fs-extra";
 
 import { logger } from "@lib/logger";
-import { parseCertificateExpiry } from "@utils/parseCertificateExpiry";
+import { msToDays } from "@utils/msToDays";
+import { parseCertificateFile } from "@utils/parseCertificateFile";
 import settings from "@utils/settings";
 import { sslFileFor, sslFilesFor } from "@utils/sslFilesFor";
 
 import { SimpleServer } from "@models/ParsedConfig";
+
+export interface InvalidSslServer {
+	server: SimpleServer;
+	reason: "expired" | "staging" | "missing";
+}
+
+export interface FilteredServers {
+	validServers: SimpleServer[];
+	invalidSslServers: InvalidSslServer[];
+}
 
 /**
  * Returns a list of servers which has valid certificates
@@ -20,8 +31,9 @@ import { SimpleServer } from "@models/ParsedConfig";
 export const filterServersWithValidSslFiles = async (
 	servers: SimpleServer[],
 	last = false
-): Promise<SimpleServer[]> => {
-	const out: SimpleServer[] = [];
+): Promise<FilteredServers> => {
+	const validServers: SimpleServer[] = [];
+	const invalidSslServers: InvalidSslServer[] = [];
 
 	server: for (const server of servers) {
 		const sslFiles = sslFilesFor(server);
@@ -42,35 +54,46 @@ export const filterServersWithValidSslFiles = async (
 						This setting allows for a config without certificate files
 						If it is the second try, return all configs
 					*/
+
 					if (settings.enableConfigMissingCerts) {
-						out.push(server);
+						validServers.push(server);
+						continue server;
 					}
 				}
+				invalidSslServers.push({ server, reason: "missing" });
 
 				continue server;
 			}
 		}
 
-		const expiry = await parseCertificateExpiry(
+		const certificate = await parseCertificateFile(
 			sslFileFor(server, "cert.pem")
 		);
 
-		if (!expiry) continue server;
-		const days = expiry.diffNow().as("days");
+		if (certificate == false) continue server;
+		const days = msToDays(certificate.expiry.valueOf() - Date.now());
 
 		if (days < 30) {
 			// Certificate expires in less than 30 days
 			logger.certificateExpiry({
 				serverName: server.server_name,
-				days: days
+				days
 			});
-			continue server;
+
+			invalidSslServers.push({ server, reason: "expired" });
+		} else if (certificate.staging && settings.staging == false) {
+			console.log("Is Staging");
+			invalidSslServers.push({ server, reason: "staging" });
+		} else {
+			logger.certificateValid({
+				serverName: server.server_name,
+				days,
+				staging: certificate.staging
+			});
+
+			validServers.push(server);
 		}
-
-		logger.certificateValid({ serverName: server.server_name, days: days });
-
-		out.push(server);
 	}
 
-	return out;
+	return { invalidSslServers, validServers };
 };

@@ -1,9 +1,8 @@
 import execSh from "exec-sh";
 
 import { logger } from "@lib/logger";
+import { InvalidSslServer } from "@utils/filterServersWithValidSslFiles";
 import settings from "@utils/settings";
-
-import { SimpleServer } from "@models/ParsedConfig";
 
 const exec = execSh.promise;
 
@@ -33,23 +32,23 @@ const certbotDisabled = (): boolean => {
 	return false;
 };
 
-export const certbot = async (servers: SimpleServer[]): Promise<void> => {
-	if (!servers.length) {
+export const certbot = async (
+	invalidSslServers: InvalidSslServer[]
+): Promise<void> => {
+	if (!invalidSslServers.length) {
 		return logger.allValid();
 	}
 	if (certbotDisabled() || !hasMail() || !(await hasCertbot())) {
 		return logger.skippingCertbot();
 	}
 
-	logger.requestingCertificates({ count: servers.length });
+	logger.requestingCertificates({ count: invalidSslServers.length });
 
-	const certNames = [
-		...new Set(
-			servers.map((server) => server.certbot_name ?? server.server_name)
-		)
-	];
+	for (const invalidSsl of invalidSslServers) {
+		const certName =
+			invalidSsl.server.certbot_name ?? invalidSsl.server.server_name;
+		const force = invalidSsl.reason == "staging";
 
-	for (const certName of certNames) {
 		const command = createShellCommand("certbot certonly", {
 			"agree-tos": "",
 			keep: "",
@@ -61,7 +60,8 @@ export const certbot = async (servers: SimpleServer[]): Promise<void> => {
 			"preferred-challenges": "http-01",
 			email: settings.certbotMail,
 			"non-interactive": "",
-			...(settings.staging && { "test-cert": "" })
+			...(settings.staging && { "test-cert": "" }),
+			...(force && { "force-renewal": "" })
 		});
 
 		await exec(command, true)
@@ -71,8 +71,8 @@ export const certbot = async (servers: SimpleServer[]): Promise<void> => {
 			.then((output) => {
 				if (output && output.stdout) {
 					logger.certbotLog({
-						index: certNames.indexOf(certName),
-						size: certNames.length,
+						index: invalidSslServers.indexOf(invalidSsl),
+						size: invalidSslServers.length,
 						certificate: certName,
 						log: output.stdout.split("\n")[0]
 					});

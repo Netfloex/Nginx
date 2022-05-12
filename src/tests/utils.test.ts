@@ -8,7 +8,7 @@ import { createHash } from "@utils/createHash";
 import { dnsLookup } from "@utils/dnsLookup";
 import { fixedLength } from "@utils/fixedLength";
 import { msToDays } from "@utils/msToDays";
-import { parseCertificateExpiry } from "@utils/parseCertificateExpiry";
+import { parseCertificateFile } from "@utils/parseCertificateFile";
 import { parseIntDefault } from "@utils/parseIntDefault";
 import { plural } from "@utils/plural";
 import { sslFilesFor } from "@utils/sslFilesFor";
@@ -68,16 +68,18 @@ describe("Utilities", () => {
 
 	test("Parse Certificate Expiry", async () => {
 		const [exists, notExisting] = await Promise.all([
-			parseCertificateExpiry(
+			parseCertificateFile(
 				join(process.cwd(), "src", "tests", "certs", "example.pem")
 			),
-			parseCertificateExpiry("notExisting.pem")
+			parseCertificateFile("notExisting.pem")
 		]);
 
 		expect(exists).not.toBe(false);
 		expect(notExisting).toBe(false);
 		if (exists !== false)
-			expect(exists.toUTC().toISO()).toEqual("2013-10-04T12:47:15.000Z");
+			expect(exists.expiry.toISOString()).toEqual(
+				"2013-10-04T12:47:15.000Z"
+			);
 	});
 
 	test("Parse Integer with Default", () => {

@@ -167,24 +167,22 @@ const main = async ({
 	);
 
 	const sslServers = config.servers.filter((server) => !server.disable_cert);
-	const serversWithKeys = await filterServersWithValidSslFiles(sslServers);
-	const serversWithoutKeys = sslServers.filter(
-		(server) => !serversWithKeys.includes(server)
-	);
+	const { validServers, invalidSslServers } =
+		await filterServersWithValidSslFiles(sslServers);
 
 	promises.push(
 		...createConfigFiles(
 			[
-				...serversWithKeys, // SSL enabled servers, with all files for it
+				...validServers, // SSL enabled servers, with all files for it
 				...config.servers.filter((server) => server.disable_cert) // SSL Disabled Servers
 			],
 			config.username
 		)
 	);
 
-	promises.push(certbot(serversWithoutKeys));
+	promises.push(certbot(invalidSslServers));
 
-	if (serversWithoutKeys.length) promises.push(createDHPemIfNotExists());
+	if (invalidSslServers.length) promises.push(createDHPemIfNotExists());
 
 	//  Make sure all certificate files are created
 	await Promise.all(promises);
@@ -193,7 +191,12 @@ const main = async ({
 	// Try again
 	await Promise.all(
 		createConfigFiles(
-			await filterServersWithValidSslFiles(serversWithoutKeys, true),
+			await (
+				await filterServersWithValidSslFiles(
+					invalidSslServers.map(({ server }) => server),
+					true
+				)
+			).validServers,
 			config.username
 		)
 	);

@@ -23,6 +23,7 @@ exports[`Logger All log Messages 1`] = `
   "[NCM] [ERROR] [CERTBOT]    The certificate files for undefined could not be created, please see the error above. This domain is now disabled.",
   "[NCM] [INFO]  [CERTBOT]    The certificate for undefined is valid for -1 days",
   "[NCM] [INFO]  [CERTBOT]    The certificate for undefined, expired 1 days ago",
+  "[NCM] [INFO]  [CERTBOT]    The certificate for undefined is using the Staging environment, renewing for production.",
   "[NCM] [ERROR] [CERTBOT]    Parsing of the certificate undefined failed: undefined",
   "[NCM] [INFO]  [DHPARAMS]   Creating a 2048 bit Diffie-Hellman parameter... This could take a while.",
   "[NCM] [DONE]  [DHPARAMS]   Diffie-Hellman parameters are created successfully, took NaN seconds. /etc/letsencrypt/dhparams/dhparam.pem",

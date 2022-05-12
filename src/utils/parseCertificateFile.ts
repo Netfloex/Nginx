@@ -1,18 +1,24 @@
 import { parse } from "cert2json";
 import { pathExists, readFile } from "fs-extra";
-import { DateTime } from "luxon";
 
 import { logger } from "@lib/logger";
 
 /**
- * Checks the expiry of a certificate file
+ * Parses a certificate file
+ * Returns useful information
+ * or false if the file does not exist
  * @param certificateFile The path to the certificate
- * @returns A {@link DateTime} when the certificate expires
+ * @returns An object containing expiry and whether the certificate is staging
  */
 
-export const parseCertificateExpiry = async (
+export interface ParsedCertificate {
+	expiry: Date;
+	staging: boolean;
+}
+
+export const parseCertificateFile = async (
 	certificateFile: string
-): Promise<DateTime | false> => {
+): Promise<ParsedCertificate | false> => {
 	if (!(await pathExists(certificateFile))) {
 		logger.certificateParseFailed({
 			file: certificateFile,
@@ -25,7 +31,10 @@ export const parseCertificateExpiry = async (
 
 	try {
 		const cert = parse(certificate);
-		return DateTime.fromJSDate(cert.tbs.validity.notAfter);
+		return {
+			expiry: cert.tbs.validity.notAfter,
+			staging: cert.tbs.issuer.full.includes("STAGING")
+		};
 	} catch (error) {
 		if (error instanceof Error)
 			logger.certificateParseFailed({

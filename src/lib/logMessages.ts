@@ -153,18 +153,18 @@ export const logMessages = defineLogList({
 	],
 	certificateValid: ({
 		serverName,
-		days = -1
+		days = -1,
+		staging
 	}: {
 		serverName: string;
 		days: number;
+		staging: boolean;
 	}) => [
 		Log.info,
 		Tag.certbot,
-		chalk`The certificate for {dim ${serverName}} is valid for {bold ${gradientNumber(
-			Math.round(days),
-			0,
-			90
-		)}} days`
+		chalk`The certificate for {dim ${serverName}}${
+			staging ? chalk` ({yellow staging})` : ""
+		} is valid for {bold ${gradientNumber(Math.round(days), 0, 90)}} days`
 	],
 	certificateExpiry: ({
 		serverName,
@@ -190,6 +190,11 @@ export const logMessages = defineLogList({
 			}}`
 		];
 	},
+	certificateStaging: ({ serverName }: { serverName: string }) => [
+		Log.info,
+		Tag.certbot,
+		chalk`{yellow The certificate for {dim ${serverName}} is using the {yellow Staging} environment, renewing for production.}`
+	],
 	certificateParseFailed: ({
 		file,
 		error

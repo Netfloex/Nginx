@@ -5,6 +5,10 @@ declare module "cert2json" {
 				notBefore: Date;
 				notAfter: Date;
 			};
+
+			issuer: {
+				full: string;
+			};
 		};
 	}
 	export const parse: (certificate: string) => Certificate;
