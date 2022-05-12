@@ -122,7 +122,18 @@ const pathNameSchema = (error: string) =>
 		.string()
 		.transform((str) => resolve(str))
 		.refine(
-			async (path) => await pathExists(path),
+			async (path) => {
+				const exists = await pathExists(path);
+				if (exists) return true;
+
+				if (settings.standalone) {
+					logger.warnPathNotFound({ path });
+
+					return true;
+				}
+
+				return false;
+			},
 			(path) => ({
 				message: chalk`${error}: {dim ${path}}`
 			})

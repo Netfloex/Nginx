@@ -41,6 +41,8 @@ const settings = {
 	authPath: r(env.AUTH_PATH, join(dataPath, "auth")),
 	storePath: r(env.STORE_PATH, join(dataPath, "store.json")),
 
+	standalone: env.STANDALONE == "true",
+
 	cloudflareExpiry: parseIntDefault(
 		env.CLOUDFLARE_CACHE_DURATION,
 		1000 * 60 * 60 * 24 * 7 // 7 Days

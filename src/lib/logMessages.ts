@@ -381,6 +381,17 @@ export const logMessages = defineLogList({
 		chalk`Config is a promise, waiting until it resolves.`
 	],
 
+	warnNoHost: ({ host }: { host: string }) => [
+		Log.warn,
+		Tag.config,
+		chalk`Could not resolve {yellow ${host}}, normally this would exit.`
+	],
+	warnPathNotFound: ({ path }: { path: string }) => [
+		Log.warn,
+		Tag.config,
+		chalk`The path {dim ${path}} could not be found, but since you are using the standalone version you might not need it in this container.`
+	],
+
 	// CSS
 
 	downloadCSS: ({ url }: { url: string }) => [
@@ -500,13 +511,5 @@ export const logMessages = defineLogList({
 		Log.warn,
 		Tag.env,
 		chalk`Could not parse {dim ${string}} to a number, defaulting to ${or}`
-	],
-
-	// DNS
-
-	warnNoHost: ({ host }: { host: string }) => [
-		Log.warn,
-		Tag.dns,
-		chalk`Could not resolve {yellow ${host}}, normally this would exit.`
 	]
 } as const);
