@@ -173,7 +173,7 @@ PASSWORD=Doe
 -   [HTML](#html)
 -   [Redirect](#redirect)
 -   [Rewrite](#rewrite)
--   [Static Files](#static)
+-   [Static Files](#static-files)
 
 -   [Basic Auth](#basic-auth)
 -   [Location Blocks](#location-blocks)
