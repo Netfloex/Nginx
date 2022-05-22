@@ -117,10 +117,8 @@ const createLocation = async (
 		promises.push(
 			(async (): Promise<void> => {
 				const { filepath, hash } = await createAuthFile(
-					location.auth!.map((auth) => ({
-						...auth,
-						username: auth.username ?? defaultUsername
-					}))
+					location.auth!,
+					defaultUsername
 				);
 				block.auth_basic = hash;
 				block.auth_basic_user_file = filepath;

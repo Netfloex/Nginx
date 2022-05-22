@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import {
+	authSchema,
 	configSchema,
 	domainSchema,
 	locationsSchema
@@ -11,3 +12,4 @@ export type Locations = z.output<typeof locationsSchema>;
 export type Server = z.output<typeof domainSchema>;
 export type InputConfig = z.input<typeof configSchema>;
 export type OutputConfig = z.output<typeof configSchema>;
+export type Auth = z.output<typeof authSchema>;
