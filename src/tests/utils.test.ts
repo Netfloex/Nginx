@@ -1,26 +1,51 @@
 import chalk from "chalk";
+import fse from "fs-extra";
 import { join } from "path";
 import { performance } from "perf_hooks";
 
 import { logger } from "@lib/logger";
+import { createAuthFile } from "@utils/createAuthFile";
 import { createDHParams } from "@utils/createDHParams";
 import { createHash } from "@utils/createHash";
 import { dnsLookup } from "@utils/dnsLookup";
 import { fixedLength } from "@utils/fixedLength";
+import { htpasswd } from "@utils/htpasswd";
 import { msToDays } from "@utils/msToDays";
 import { parseCertificateFile } from "@utils/parseCertificateFile";
 import { parseIntDefault } from "@utils/parseIntDefault";
 import { plural } from "@utils/plural";
+import settings from "@utils/settings";
 import { sslFilesFor } from "@utils/sslFilesFor";
 import { startedToSeconds } from "@utils/startedToSeconds";
 
+const authAdminRegex = /^admin:\$apr1\$/;
+
 describe("Utilities", () => {
 	logger.overWriteLogFunction = jest.fn().mockName("logger");
+
+	test("Create auth file", async () => {
+		const mockedPathExists = jest
+			.spyOn(fse, "pathExists")
+			.mockImplementation(() => false);
+		const mockedOutputFile = jest
+			.spyOn(fse, "outputFile")
+			.mockImplementation(() => undefined);
+
+		const data = await createAuthFile([{ password: "hi" }], "admin");
+
+		expect(mockedOutputFile.mock.calls[0][0]).toBe(data.filepath);
+		expect(mockedOutputFile.mock.calls[0][1]).toMatch(authAdminRegex);
+
+		mockedPathExists.mockRestore();
+		mockedOutputFile.mockRestore();
+	});
+
 	test("Diffie-Hellman parameters", () => {
+		settings.dhParamSize = 32;
 		const params = createDHParams();
 
 		expect(typeof params).toBe("string");
-		expect(params).toHaveLength(419);
+		expect(params).toHaveLength(74);
 	});
 
 	test("Hash", () => {
@@ -29,6 +54,12 @@ describe("Utilities", () => {
 		expect(typeof hash).toBe("string");
 		expect(hash).toHaveLength(32);
 		expect(hash).toBe("ee434023cf89d7dfb21f63d64f0f9d74");
+	});
+
+	test("htpasswd", () => {
+		const hashed = htpasswd({ username: "admin", password: "1234" });
+		expect(hashed).toHaveLength(43);
+		expect(hashed).toMatch(authAdminRegex);
 	});
 
 	test("DNS Lookup", async () => {

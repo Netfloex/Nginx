@@ -1,25 +1,11 @@
-import md5 from "apache-md5";
 import { outputFile, pathExists } from "fs-extra";
 import { join } from "path";
 
 import { createHash } from "@utils/createHash";
+import { htpasswd } from "@utils/htpasswd";
 import settings from "@utils/settings";
 
 import { Auth } from "@models/config";
-
-interface ParsedAuth {
-	username: string;
-	password: string;
-}
-
-/**
- * Creates a htpasswd string from a username and password
- * @param {ParsedAuth} Auth Object
- * @returns
- */
-
-export const htpasswd = ({ username, password }: ParsedAuth): string =>
-	`${username}:${md5(password)}`;
 
 /**
  * Creates an htpasswd file in `settings.authPath`
