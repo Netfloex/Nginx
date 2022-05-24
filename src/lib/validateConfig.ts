@@ -36,14 +36,7 @@ export const returnKeysFromOption = (
 const urlSchema = z
 	.string()
 	.url()
-	.refine(
-		(url) => ["http:", "https:"].includes(new URL(url).protocol),
-		(url) => ({
-			message: chalk`{dim ${
-				new URL(url).protocol
-			}} is not a valid protocol`
-		})
-	);
+	.transform((url) => (url.match(/^https?:\/\//) ? url : `http://${url}`));
 
 const usernameAuthSchema = z.string().refine((str) => !str.includes(":"), {
 	message: `Username can't contain ":"`
