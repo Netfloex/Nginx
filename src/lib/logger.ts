@@ -63,7 +63,6 @@ export const resetStarted = (): void => {
 	started = performance.now();
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const createLogFunction = <Key extends keyof typeof logMessages>(key: Key) => {
 	return (...args: Parameters<typeof logMessages[Key]>): void => {
 		const [logType, logTag, message] = logMessages[key](

@@ -68,6 +68,9 @@ const createLocation = async (
 	if (usesCustom(location)) {
 		// Custom Files
 		block.sub_filter = [];
+		block.proxy_set_header ??= [];
+		block.sub_filter_once = "on";
+		block.proxy_set_header.push('Accept-Encoding ""');
 
 		// Custom CSS
 		if (location.custom_css?.length) {

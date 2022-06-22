@@ -30,9 +30,11 @@ exports[`Create config Full Server 1`] = `
         rewrite                 ^ https://rewrite;
         proxy_set_header        Upgrade $http_upgrade;
         proxy_set_header        Connection $http_connection;
+        proxy_set_header        Accept-Encoding \\"\\";
         proxy_http_version      1.1;
         sub_filter              '</head>' '<link rel=\\"stylesheet\\" type=\\"text/css\\" href=\\"/custom_assets/css/a453d6427958b58add4ed834d9c6520d.css\\"><link rel=\\"stylesheet\\" type=\\"text/css\\" href=\\"/custom_assets/css/e504c8433e0e5044eda93a31b93abd11.css\\"></head>';
         sub_filter              '</body>' '<script src=\\"/custom_assets/js/78f5655ab86382e62279a4dcea0a6bab.js\\"></script><script src=\\"/custom_assets/js/e504c8433e0e5044eda93a31b93abd11.js\\"></script></body>';
+        sub_filter_once         on;
         add_header              Content-Type text/html;
         add_header              Second Value;
         custom                  option;
