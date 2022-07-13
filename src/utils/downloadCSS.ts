@@ -22,7 +22,8 @@ type Output =
 export const downloadCSS = async (url: string): Promise<Output> => {
 	const css = `@import url(${url});`;
 	return await new CleanCSS({
-		inline: ["remote"],
+		inline: ["all"],
+		rebase: true,
 		returnPromise: true
 	})
 		.minify(css)

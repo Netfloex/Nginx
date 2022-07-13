@@ -37,11 +37,25 @@ export const logMessages = defineLogList({
 		Tag.main,
 		chalk.green`Started`
 	],
-	done: ({ started = 0 }: { started: number }) => [
-		Log.done,
-		Tag.main,
-		chalk`{green Done} in {yellow ${startedToSeconds(started)}s}`
-	],
+	done: ({
+		started = 0,
+		configsCreated
+	}: {
+		started: number;
+		configsCreated?: number;
+	}) => {
+		return [
+			Log.done,
+			Tag.main,
+			chalk`{green Done} ${
+				configsCreated !== undefined
+					? chalk`created {bold ${(configsCreated == 0
+							? chalk.red
+							: chalk.green)(configsCreated)}} configs `
+					: ""
+			}in {yellow ${startedToSeconds(started)}s}`
+		];
+	},
 	exited: ({ started = 0 }: { started: number }) => [
 		Log.error,
 		Tag.main,

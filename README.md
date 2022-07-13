@@ -208,13 +208,25 @@ This adds a custom CSS file to an application.
 It should be a url to a CSS file.
 
 This file is downloaded and compressed, its then stored inside `/app/custom/css` [Configurable](#paths).
+
 The compressed CSS is then appended to the end of the `<head>` by using Nginx's `sub_filter`.
 
 ```js
 /* Server/Subdomain/Location: */ {
-	custom_css: "http://example.com/style.css";
+	custom_css: "http://example.com/style.css"; // The use of an array is possible too
 }
 ```
+
+It will add the following directives:
+
+```conf
+# Don't sent this header to the proxy
+proxy_set_header Accept-Encoding "";
+sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="/custom_assets/css/**.css"></head>';
+sub_filter_once on;
+```
+
+> Source [theme-park.dev](https://docs.theme-park.dev/setup/#nginx)
 
 [Code](src/utils/downloadCSS.ts)
 
@@ -224,13 +236,25 @@ This allows to use a custom JS file.
 It should be a url to a JS file.
 
 This file is downloaded, its then stored inside `/app/custom/js` [Configurable](#paths).
+
 This file is appended to the end of the `<body>` by using Nginx's `sub_filter`.
 
 ```js
 /* Server/Subdomain/Location: */ {
-	custom_js: "http://example.com/script.js";
+	custom_js: "http://example.com/script.js"; // The use of an array is possible too
 }
 ```
+
+It will add the following directives:
+
+```conf
+# Don't sent this header to the proxy
+proxy_set_header Accept-Encoding "";
+sub_filter '</body>' '<script src="/custom_assets/js/**.js"></script></body>';
+sub_filter_once on;
+```
+
+> Source [theme-park.dev](https://docs.theme-park.dev/setup/#nginx)
 
 [Code](src/utils/downloadJSToFile.ts)
 
@@ -259,6 +283,8 @@ Example:
 Allows adding headers to the response.
 
 Expects an object with key values of the headers.
+
+> These headers are sent to the client
 
 ```js
 /* Server/Subdomain/Location: */ {

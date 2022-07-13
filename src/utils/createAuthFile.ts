@@ -1,20 +1,11 @@
-import md5 from "apache-md5";
 import { outputFile, pathExists } from "fs-extra";
 import { join } from "path";
 
 import { createHash } from "@utils/createHash";
+import { htpasswd } from "@utils/htpasswd";
 import settings from "@utils/settings";
 
-import { Auth } from "@models/ParsedConfig";
-
-/**
- * Creates a htpasswd string from a username and password
- * @param {Auth} Auth Object
- * @returns
- */
-
-export const htpasswd = ({ username, password }: Auth): string =>
-	`${username}:${md5(password)}`;
+import { Auth } from "@models/config";
 
 /**
  * Creates an htpasswd file in `settings.authPath`
@@ -24,13 +15,25 @@ export const htpasswd = ({ username, password }: Auth): string =>
  */
 
 export const createAuthFile = async (
-	users: Auth[]
+	users: Auth[],
+	defaultUsername: string
 ): Promise<{ filepath: string; hash: string }> => {
-	const hash = createHash(JSON.stringify(users));
+	const authUsers = users.map((user) =>
+		"password" in user
+			? {
+					...user,
+					username: user.username || defaultUsername
+			  }
+			: user.raw
+	);
+
+	const hash = createHash(JSON.stringify(authUsers));
 	const filepath = join(settings.authPath, hash);
 
 	if (!(await pathExists(filepath))) {
-		const content = users.map(htpasswd).join("\n");
+		const content = authUsers
+			.map((user) => (typeof user == "string" ? user : htpasswd(user)))
+			.join("\n");
 
 		await outputFile(filepath, content);
 	}

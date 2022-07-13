@@ -12,11 +12,11 @@ import { logger, resetStarted, started } from "@lib/logger";
 import parseServers from "@lib/parseServers";
 import validateConfig from "@lib/validateConfig";
 import { cloudflare } from "@utils/cloudflare";
-import { htpasswd } from "@utils/createAuthFile";
 import { createConfigFiles } from "@utils/createConfigFiles";
 import { createDHPemIfNotExists } from "@utils/createDHPemIfNotExists";
 import { editNginxConfig } from "@utils/editNginxConfig";
 import { filterServersWithValidSslFiles } from "@utils/filterServersWithValidSslFiles";
+import { htpasswd } from "@utils/htpasswd";
 import { parseUserConfig } from "@utils/parseUserConfig";
 import settings from "@utils/settings";
 import { store } from "@utils/store";
@@ -39,7 +39,7 @@ const main = async ({
 	justLogConfig
 }: {
 	justLogConfig?: boolean;
-} = {}): Promise<ExitCode> => {
+} = {}): Promise<ExitCode | [exitCode: ExitCode, created: number]> => {
 	let stopping = false;
 
 	let configFilePath = settings.configFile;
@@ -170,15 +170,12 @@ const main = async ({
 	const { validServers, invalidSslServers } =
 		await filterServersWithValidSslFiles(sslServers);
 
-	promises.push(
-		...createConfigFiles(
-			[
-				...validServers, // SSL enabled servers, with all files for it
-				...config.servers.filter((server) => server.disable_cert) // SSL Disabled Servers
-			],
-			config.username
-		)
-	);
+	const configsCreatedFirst = [
+		...validServers, // SSL enabled servers, with all files for it
+		...config.servers.filter((server) => server.disable_cert) // SSL Disabled Servers
+	];
+
+	promises.push(...createConfigFiles(configsCreatedFirst, config.username));
 
 	promises.push(certbot(invalidSslServers));
 
@@ -189,28 +186,32 @@ const main = async ({
 
 	// If there still are missing certificate files
 	// Try again
-	await Promise.all(
-		createConfigFiles(
-			await (
-				await filterServersWithValidSslFiles(
-					invalidSslServers.map(({ server }) => server),
-					true
-				)
-			).validServers,
-			config.username
+	const configsCreatedSecond = (
+		await filterServersWithValidSslFiles(
+			invalidSslServers.map(({ server }) => server),
+			true
 		)
-	);
+	).validServers;
 
-	return ExitCode.success;
+	await Promise.all(createConfigFiles(configsCreatedSecond, config.username));
+
+	return [
+		ExitCode.success,
+		configsCreatedFirst.length + configsCreatedSecond.length
+	];
 };
 
 export const startMain = (...params: Parameters<typeof main>): void => {
 	resetStarted();
 	logger.start();
 	main(...params)
-		.then((exitCode) => {
+		.then((data) => {
+			const exitCode = Array.isArray(data) ? data[0] : data;
 			if (exitCode == ExitCode.success) {
-				logger.done({ started });
+				logger.done({
+					started,
+					configsCreated: Array.isArray(data) ? data[1] : undefined
+				});
 			} else {
 				logger.exited({ started });
 				process.exitCode = ExitCode.failure;

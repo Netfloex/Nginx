@@ -36,30 +36,37 @@ export const returnKeysFromOption = (
 const urlSchema = z
 	.string()
 	.url()
-	.refine(
-		(url) => ["http:", "https:"].includes(new URL(url).protocol),
-		(url) => ({
-			message: chalk`{dim ${
-				new URL(url).protocol
-			}} is not a valid protocol`
-		})
-	);
+	.transform((url) => (url.match(/^https?:\/\//) ? url : `http://${url}`));
 
 const usernameAuthSchema = z.string().refine((str) => !str.includes(":"), {
 	message: `Username can't contain ":"`
 });
 
-const authSchema = z
+export const authSchema = z
 	.string()
 	.min(1)
 	.transform((password) => ({ username: undefined, password }))
 	.or(
 		z
 			.object({
-				username: z.null().or(usernameAuthSchema),
+				username: z.undefined().or(usernameAuthSchema),
 				password: z.string().min(1)
 			})
 			.strict()
+	)
+	.or(
+		z.object({
+			raw: z.string().refine(
+				(str) => {
+					return str
+						.split("\n")
+						.every((string) => string.match(/:/g)?.length == 1);
+				},
+				{
+					message: chalk`Using multiple or none "{bold :}" in raw auth`
+				}
+			)
+		})
 	);
 
 const proxyPassSchema = urlSchema

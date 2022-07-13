@@ -68,6 +68,9 @@ const createLocation = async (
 	if (usesCustom(location)) {
 		// Custom Files
 		block.sub_filter = [];
+		block.proxy_set_header ??= [];
+		block.sub_filter_once = "on";
+		block.proxy_set_header.push('Accept-Encoding ""');
 
 		// Custom CSS
 		if (location.custom_css?.length) {
@@ -117,10 +120,8 @@ const createLocation = async (
 		promises.push(
 			(async (): Promise<void> => {
 				const { filepath, hash } = await createAuthFile(
-					location.auth!.map((auth) => ({
-						...auth,
-						username: auth.username ?? defaultUsername
-					}))
+					location.auth!,
+					defaultUsername
 				);
 				block.auth_basic = hash;
 				block.auth_basic_user_file = filepath;

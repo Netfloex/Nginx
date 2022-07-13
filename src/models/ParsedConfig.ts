@@ -5,11 +5,6 @@ export type SimpleServer = Server & {
 	filename: string;
 };
 
-export type Auth = {
-	username: string;
-	password: string;
-};
-
 export type ParsedConfig = Omit<OutputConfig, "servers"> & {
 	servers: SimpleServer[];
 };
