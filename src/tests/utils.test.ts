@@ -127,9 +127,6 @@ describe("Utilities", () => {
 	});
 
 	test("Started to seconds", () => {
-		expect(
-			startedToSeconds(performance.now() - 1100).startsWith("1.1")
-			// Will output "1.100", but this is timing related
-		).toBeTruthy();
+		expect(startedToSeconds(performance.now() - 1100)).toBe("1.100");
 	});
 });

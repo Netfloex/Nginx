@@ -213,10 +213,27 @@ export const locationsSchema = z
 		}))
 	);
 
+const subdomainToHttpTransform = <T extends z.output<typeof subdomainSchema>>(
+	subdomain: T
+): T => {
+	if (subdomain.http === true) {
+		return {
+			...subdomain,
+			ssl: false,
+			disable_cert: true,
+			port: 80
+		};
+	}
+	return subdomain;
+};
+
 const subdomainSchema = locationSchema
 	.extend({
 		certbot_name: z.string(),
 		disable_cert: z.boolean(),
+		port: z.number().int().positive().default(443),
+		ssl: z.boolean().default(true),
+		http: z.boolean(),
 		locations: locationsSchema
 	})
 	.partial();
@@ -241,13 +258,15 @@ export const domainSchema = subdomainSchema
 			z.union([
 				subdomainSchema
 					.superRefine(oneReturnRefinement())
+					.transform(subdomainToHttpTransform)
 					.transform(headersTransform),
 				proxyPassSchema
 			])
 		)
 		// .superRefine(recordRegex(subdomainRegex, "subdomain"))
 	})
-	.partial();
+	.partial()
+	.transform(subdomainToHttpTransform);
 
 const nginxSchema = z
 	.object({

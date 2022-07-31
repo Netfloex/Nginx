@@ -10,7 +10,9 @@ describe("Create config", () => {
 		expect(
 			replaceCurrentDir(
 				await createConfig({
-					server_name: "example.com"
+					server_name: "example.com",
+					port: 443,
+					ssl: true
 				})
 			)
 		).toMatchSnapshot();

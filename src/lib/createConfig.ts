@@ -159,6 +159,11 @@ const createConfig = async (
 	// Server Name
 	jsonServer.server_name = server.server_name;
 
+	jsonServer.listen = [
+		`${server.port} ${server.ssl ? `ssl ` : ""}http2`,
+		`[::]:${server.port}`
+	];
+
 	// SSL Certificate files
 	if (!server.disable_cert) {
 		const files = sslFilesFor(server);

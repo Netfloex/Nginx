@@ -25,5 +25,7 @@
 	"websocket": true,
 	"raw": {
 		"custom": ["option"]
-	}
+	},
+	"port": 443,
+	"ssl": true
 }

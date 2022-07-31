@@ -35,11 +35,13 @@ exports[`Validate Config It accepts a valid config 1`] = `
           "proxy_pass": "http://example.com",
         },
       ],
+      "port": 443,
       "raw": {
         "custom": [
           "option",
         ],
       },
+      "ssl": true,
       "subdomains": {
         "defaultUsername": {
           "auth": [
@@ -48,11 +50,15 @@ exports[`Validate Config It accepts a valid config 1`] = `
             },
           ],
           "html": "Username uses default",
+          "port": 443,
+          "ssl": true,
         },
         "includes": {
           "include": [
             "/current/src/nginx/builtin/base/proxy_pass.conf",
           ],
+          "port": 443,
+          "ssl": true,
         },
         "no_return_allowed": {
           "locations": [
@@ -67,15 +73,23 @@ exports[`Validate Config It accepts a valid config 1`] = `
               "location": "/withCors",
             },
           ],
+          "port": 443,
+          "ssl": true,
         },
         "redirects": {
+          "port": 443,
           "redirect": "/",
+          "ssl": true,
         },
         "returns": {
+          "port": 443,
           "return": "200 ok",
+          "ssl": true,
         },
         "rewrites": {
+          "port": 443,
           "rewrite": "^ https://example.com",
+          "ssl": true,
         },
         "www": {
           "proxy_pass": "http://example.com",

@@ -5,7 +5,9 @@ import { logger } from "@lib/logger";
 
 describe("Logger", () => {
 	logger.overWriteLogFunction = jest.fn().mockName("logger");
-	performance.now = jest.fn(() => 0).mockName("performance.now");
+	Object.defineProperty(performance, "now", {
+		value: jest.fn(() => 0).mockName("performance.now")
+	});
 	const mockedLog = jest.mocked(logger.overWriteLogFunction);
 	test("All log Messages", () => {
 		Object.values(logger).forEach((log) => log({} as never));
