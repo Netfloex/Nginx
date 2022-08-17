@@ -304,7 +304,6 @@ const validateConfig = async (
 	const result = await configSchema.spa(config);
 
 	if (result.success) {
-		console.log(result.data);
 		return result.data;
 	}
 

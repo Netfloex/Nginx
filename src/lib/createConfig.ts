@@ -160,7 +160,7 @@ const createConfig = async (
 	jsonServer.server_name = server.server_name;
 
 	jsonServer.listen = [
-		`${server.port} ${server.ssl ? `ssl ` : ""}http2`,
+		`${server.port} ${server.ssl ? `ssl http2` : ""}`,
 		`[::]:${server.port}`
 	];
 
