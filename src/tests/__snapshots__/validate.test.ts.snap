@@ -32,7 +32,9 @@ exports[`Validate Config It accepts a valid config 1`] = `
         },
         {
           "location": "direct",
+          "port": 443,
           "proxy_pass": "http://example.com",
+          "ssl": true,
         },
       ],
       "port": 443,
@@ -92,7 +94,9 @@ exports[`Validate Config It accepts a valid config 1`] = `
           "ssl": true,
         },
         "www": {
+          "port": 443,
           "proxy_pass": "http://example.com",
+          "ssl": true,
         },
       },
       "websocket": true,

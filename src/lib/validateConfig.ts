@@ -88,7 +88,9 @@ const proxyPassSchema = urlSchema
 		})
 	)
 	.transform((proxy_pass) => ({
-		proxy_pass
+		proxy_pass,
+		port: 443,
+		ssl: true
 	}));
 
 const urlsOrUrlSchema = urlSchema
@@ -224,6 +226,7 @@ const subdomainToHttpTransform = <T extends z.output<typeof subdomainSchema>>(
 			port: 80
 		};
 	}
+
 	return subdomain;
 };
 
@@ -301,6 +304,7 @@ const validateConfig = async (
 	const result = await configSchema.spa(config);
 
 	if (result.success) {
+		console.log(result.data);
 		return result.data;
 	}
 
