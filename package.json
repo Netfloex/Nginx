@@ -1,6 +1,6 @@
 {
 	"name": "nginx",
-	"version": "2.0.0",
+	"version": "2.4.0",
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "rollup -c",
@@ -8,8 +8,8 @@
 		"typescript": "tsc --noEmit",
 		"test": "jest",
 		"lint": "eslint .",
-		"ts": "ts-node -T src",
-		"dev": "tsnd --respawn -T --rs --cls -r tsconfig-paths/register --experimental-modules -- src run",
+		"ts": "ts-node -r dotenv/config -T src",
+		"dev": "tsnd --respawn -T --rs --cls -r tsconfig-paths/register -r dotenv/config --experimental-modules -- src run",
 		"prepare": "husky install"
 	},
 	"dependencies": {},
@@ -34,6 +34,7 @@
 		"chalk": "^4",
 		"chokidar": "^3.5.3",
 		"clean-css": "^5.3.0",
+		"dotenv": "^16.0.2",
 		"eslint": "^8.15.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-import": "^2.26.0",

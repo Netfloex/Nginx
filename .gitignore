@@ -8,3 +8,4 @@ config/*
 dist
 data
 tmp.md
+.env
