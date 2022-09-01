@@ -12,6 +12,7 @@ export type InvalidSslReason = "expired" | "staging" | "missing";
 
 export interface InvalidSslServer {
 	server: SimpleServer;
+	staging?: boolean;
 	reason: InvalidSslReason;
 }
 
@@ -93,7 +94,11 @@ export const filterServersWithValidSslFiles = async (
 					days
 				});
 
-			invalidSslServers.push({ server, reason: "expired" });
+			invalidSslServers.push({
+				server,
+				reason: "expired",
+				staging: certificate.staging
+			});
 		} else if (certificate.staging && settings.staging == false) {
 			// It is a staging certificate *and* we are not using the staging environment
 

@@ -152,6 +152,11 @@ export const logMessages = defineLogList({
 		Tag.certbot,
 		chalk`{red Certbot ran into an error:}\n {dim ${messages.join("\n")}}`
 	],
+	stagingRenew: ({ serverName }: { serverName: string }) => [
+		Log.error,
+		Tag.certbot,
+		chalk`Tried renewing a production certificate ({dim ${serverName}}) while in staging mode, this is not a good idea.`
+	],
 	missingSSLFiles: ({ serverName }: { serverName: string }) => [
 		Log.info,
 		Tag.certbot,

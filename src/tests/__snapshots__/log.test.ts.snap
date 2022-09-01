@@ -19,6 +19,7 @@ exports[`Logger All log Messages 1`] = `
   "[NCM]         [CERTBOT]    [0/-1] undefined: undefined",
   "[NCM] [ERROR] [CERTBOT]    Certbot ran into an error:
  ",
+  "[NCM] [ERROR] [CERTBOT]    Tried renewing a production certificate (undefined) while in staging mode, this is not a good idea.",
   "[NCM] [INFO]  [CERTBOT]    The server undefined has missing certificate files, requesting...",
   "[NCM] [ERROR] [CERTBOT]    The certificate files for undefined could not be renewed because CERTBOT_EMAIL is not set. This domain is now disabled.",
   "[NCM] [INFO]  [CERTBOT]    The certificate for undefined is valid for -1 days",

@@ -49,6 +49,16 @@ export const certbot = async (
 			invalidSsl.server.certbot_name ?? invalidSsl.server.server_name;
 		const force = invalidSsl.reason == "staging";
 
+		if (
+			invalidSsl.reason == "expired" &&
+			invalidSsl.staging === false &&
+			settings.staging === true
+		) {
+			// The certificate needs to be renewed but:
+			// It is NOT a staging certificate so it can not be renewed by a staging certificate
+			logger.stagingRenew({ serverName: certName });
+		}
+
 		const command = createShellCommand("certbot certonly", {
 			"agree-tos": "",
 			keep: "",
