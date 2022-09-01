@@ -172,7 +172,7 @@ export const logMessages = defineLogList({
 			settings.disableCertbot
 				? " because certbot is disabled."
 				: !settings.certbotMail
-				? chalk` because {white {dim CERTBOT_MAIL}} is not set.`
+				? chalk` because {white {dim CERTBOT_EMAIL}} is not set.`
 				: ". This might be because of an error stated above."
 		}} ${
 			settings.enableConfigMissingCerts

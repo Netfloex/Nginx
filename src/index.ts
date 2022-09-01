@@ -36,11 +36,14 @@ const createWatcherOnce = async (path: string): Promise<FSWatcher> => {
 };
 
 const main = async ({
-	justLogConfig
+	justLogConfig,
+	certificatesOnly
 }: {
 	justLogConfig?: boolean;
+	certificatesOnly?: boolean;
 } = {}): Promise<ExitCode | [exitCode: ExitCode, created: number]> => {
 	let stopping = false;
+	const promises: Promise<void>[] = [];
 
 	let configFilePath = settings.configFile;
 
@@ -125,46 +128,46 @@ const main = async ({
 		return ExitCode.success;
 	}
 
-	if (!(await pathExists(settings.nginxConfigPath))) {
-		logger.noOldConfigs();
-		logger.configsLocationHint();
-		return ExitCode.failure;
-	}
+	if (!certificatesOnly) {
+		if (!(await pathExists(settings.nginxConfigPath))) {
+			logger.noOldConfigs();
+			logger.configsLocationHint();
+			return ExitCode.failure;
+		}
 
-	logger.removeOldConfigs();
-	await readdir(settings.nginxConfigPath).then(async (files) => {
-		const oldConfigFiles = files.filter((g) => g.match(/^\d/));
-		// Delete em
-		await Promise.all(
-			oldConfigFiles.map((file) =>
-				remove(join(settings.nginxConfigPath, file))
-			)
+		logger.removeOldConfigs();
+		await readdir(settings.nginxConfigPath).then(async (files) => {
+			const oldConfigFiles = files.filter((g) => g.match(/^\d/));
+			// Delete em
+			await Promise.all(
+				oldConfigFiles.map((file) =>
+					remove(join(settings.nginxConfigPath, file))
+				)
+			);
+		});
+
+		if (config.cloudflare) {
+			await store.init();
+			promises.push(cloudflare());
+		} else {
+			promises.push(remove(settings.cloudflareConfPath));
+		}
+
+		promises.push(
+			editNginxConfig((nginxConf) => {
+				nginxConf.http ??= {};
+
+				if (config.nginx?.log)
+					nginxConf.http.log_format = `main ${config.nginx.log}`;
+
+				nginxConf.http.server_tokens = config.nginx?.server_tokens
+					? "on"
+					: "off";
+
+				return nginxConf;
+			})
 		);
-	});
-
-	const promises: Promise<void>[] = [];
-
-	if (config.cloudflare) {
-		await store.init();
-		promises.push(cloudflare());
-	} else {
-		promises.push(remove(settings.cloudflareConfPath));
 	}
-
-	promises.push(
-		editNginxConfig((nginxConf) => {
-			nginxConf.http ??= {};
-
-			if (config.nginx?.log)
-				nginxConf.http.log_format = `main ${config.nginx.log}`;
-
-			nginxConf.http.server_tokens = config.nginx?.server_tokens
-				? "on"
-				: "off";
-
-			return nginxConf;
-		})
-	);
 
 	const sslServers = config.servers.filter((server) => !server.disable_cert);
 	const { validServers, invalidSslServers } =
@@ -175,7 +178,11 @@ const main = async ({
 		...config.servers.filter((server) => server.disable_cert) // SSL Disabled Servers
 	];
 
-	promises.push(...createConfigFiles(configsCreatedFirst, config.username));
+	if (!certificatesOnly) {
+		promises.push(
+			...createConfigFiles(configsCreatedFirst, config.username)
+		);
+	}
 
 	promises.push(certbot(invalidSslServers));
 
@@ -193,7 +200,11 @@ const main = async ({
 		)
 	).validServers;
 
-	await Promise.all(createConfigFiles(configsCreatedSecond, config.username));
+	if (!certificatesOnly) {
+		await Promise.all(
+			createConfigFiles(configsCreatedSecond, config.username)
+		);
+	}
 
 	return [
 		ExitCode.success,
@@ -257,8 +268,11 @@ yargs(hideBin(process.argv))
 	.command("debug-config", "Outputs the parsed config", {}, () => {
 		startMain({ justLogConfig: true });
 	})
-	.command("settings", "Shows a lists of the current settings", {}, () => {
+	.command("settings", "Shows a list of the current settings", {}, () => {
 		console.log(settings);
+	})
+	.command("certificates", "only renews/creates certificates", {}, () => {
+		startMain({ certificatesOnly: true });
 	})
 	.strict()
 	.demandCommand()
