@@ -22,6 +22,10 @@ export interface FilteredServers {
 
 /**
  * Returns a list of servers which has valid certificates
+ * Valid means:
+ * - All files exists
+ * - The certificate does not expire within 30 days
+ * - Is not using the staging environment (allowed when STAGING=1)
  *
  * If `settings.enableConfigMissingCerts` is true and `last` is true
  * it will always return all servers

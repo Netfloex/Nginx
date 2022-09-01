@@ -21,7 +21,7 @@ import { parseUserConfig } from "@utils/parseUserConfig";
 import settings from "@utils/settings";
 import { store } from "@utils/store";
 
-import { ParsedConfig } from "@models/ParsedConfig";
+import { ParsedConfig, SimpleServer } from "@models/ParsedConfig";
 
 enum ExitCode {
 	success = 0,
@@ -169,47 +169,51 @@ const main = async ({
 		);
 	}
 
-	const sslServers = config.servers.filter((server) => !server.disable_cert);
-	const { validServers, invalidSslServers } =
-		await filterServersWithValidSslFiles(sslServers);
+	// Servers that don't need a certificate are already ready
+	const serversReadyToCreateConfig: SimpleServer[] = config.servers.filter(
+		(server) => server.disable_cert
+	);
 
-	const configsCreatedFirst = [
-		...validServers, // SSL enabled servers, with all files for it
-		...config.servers.filter((server) => server.disable_cert) // SSL Disabled Servers
-	];
+	let serversNeedingCertificate = config.servers.filter(
+		(server) => !server.disable_cert
+	);
 
-	if (!certificatesOnly) {
-		promises.push(
-			...createConfigFiles(configsCreatedFirst, config.username)
+	// Run twice
+	for (let i = 0; i < 2; i++) {
+		// Split the array in two parts:
+		// validServers: All certificates are valid
+		// invalidSslServers: Need to renew or recreate (some) certificates
+		const { validServers, invalidSslServers } =
+			await filterServersWithValidSslFiles(
+				serversNeedingCertificate,
+				i === 1 // last is true
+			);
+
+		serversReadyToCreateConfig.push(...validServers);
+
+		// Request certificates
+		promises.push(certbot(invalidSslServers));
+
+		// If there are servers missing certificates, the dhparam.pem could be missing, lets check
+		if (invalidSslServers.length) promises.push(createDHPemIfNotExists());
+
+		// For the next iteration
+		// Recheck all the servers certbot just tried to create certificates for
+		serversNeedingCertificate = invalidSslServers.map(
+			({ server }) => server
 		);
+
+		// Wait for certbot to finish requesting certificates
+		await Promise.all(promises);
 	}
-
-	promises.push(certbot(invalidSslServers));
-
-	if (invalidSslServers.length) promises.push(createDHPemIfNotExists());
-
-	//  Make sure all certificate files are created
-	await Promise.all(promises);
-
-	// If there still are missing certificate files
-	// Try again
-	const configsCreatedSecond = (
-		await filterServersWithValidSslFiles(
-			invalidSslServers.map(({ server }) => server),
-			true
-		)
-	).validServers;
 
 	if (!certificatesOnly) {
 		await Promise.all(
-			createConfigFiles(configsCreatedSecond, config.username)
+			createConfigFiles(serversReadyToCreateConfig, config.username)
 		);
 	}
 
-	return [
-		ExitCode.success,
-		configsCreatedFirst.length + configsCreatedSecond.length
-	];
+	return [ExitCode.success, serversReadyToCreateConfig.length];
 };
 
 export const startMain = (...params: Parameters<typeof main>): void => {
