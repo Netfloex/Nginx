@@ -107,6 +107,12 @@ const createLocation = async (
 		}
 	}
 
+	if (location.noindex) {
+		location.headers ??= {};
+		location.headers["X-Robots-Tag"] =
+			"'noindex, nofollow, nosnippet, noarchive'";
+	}
+
 	// Headers
 	const headerEntries = Object.entries(location.headers ?? {});
 

@@ -25,6 +25,7 @@
 					}
 				}
 			},
+			"noindex": "false",
 			"redirect": [],
 			"return": [],
 			"rewrite": [],

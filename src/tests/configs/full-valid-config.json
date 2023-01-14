@@ -23,6 +23,7 @@
 					"proxy_pass": "http://example.com"
 				}
 			},
+			"noindex": true,
 			"raw": {
 				"custom": "option"
 			},

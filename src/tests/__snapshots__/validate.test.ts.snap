@@ -37,6 +37,7 @@ exports[`Validate Config It accepts a valid config 1`] = `
           "ssl": true,
         },
       ],
+      "noindex": true,
       "port": 443,
       "raw": {
         "custom": [
@@ -125,6 +126,8 @@ Error: Expected string, received array",
 Error: Expected string, received array",
   "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.html
 Error: Expected string, received array",
+  "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.noindex
+Error: Expected boolean, received string",
   "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.certbot_name
 Error: Expected string, received array",
   "[NCM] [ERROR] [CONFIG]     Path: servers.example.com.custom_css

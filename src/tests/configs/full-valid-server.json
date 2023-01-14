@@ -18,6 +18,7 @@
 		"Second": "Value"
 	},
 	"html": "html",
+	"noindex": true,
 	"proxy_pass": "http://example",
 	"redirect": "/redirect",
 	"return": "200 return directive",

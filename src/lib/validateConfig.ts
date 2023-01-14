@@ -175,7 +175,8 @@ export const locationSchema = z
 		raw: z.record(literalOptArraySchema),
 		include: includePathNameSchema
 			.transform((string) => [string])
-			.or(includePathNameSchema.array())
+			.or(includePathNameSchema.array()),
+		noindex: z.boolean()
 	})
 	.partial()
 	.strict();

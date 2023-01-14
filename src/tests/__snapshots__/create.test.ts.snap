@@ -37,6 +37,7 @@ exports[`Create config Full Server 1`] = `
         sub_filter_once         on;
         add_header              Content-Type text/html;
         add_header              Second Value;
+        add_header              X-Robots-Tag 'noindex, nofollow, nosnippet, noarchive';
         custom                  option;
         auth_basic              2d77215cd91113df4d3442ee904fd740;
         auth_basic_user_file    /current/data/auth/2d77215cd91113df4d3442ee904fd740;

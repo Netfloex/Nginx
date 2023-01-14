@@ -41,11 +41,11 @@ describe("Utilities", () => {
 	});
 
 	test("Diffie-Hellman parameters", () => {
-		settings.dhParamSize = 32;
+		settings.dhParamSize = 512;
 		const params = createDHParams();
 
 		expect(typeof params).toBe("string");
-		expect(params).toHaveLength(74);
+		expect(params).toHaveLength(155);
 	});
 
 	test("Hash", () => {
