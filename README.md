@@ -303,7 +303,7 @@ Adds a `Access-Control-Allow-Origin` header with the supplied value.
 
 Expects an url, or `true`/`*` to allow any origin.
 
-[Code](src/lib/parseConfig.ts)
+[Code](src/lib/validateConfig.ts)
 
 ### Return
 
