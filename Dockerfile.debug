@@ -9,21 +9,16 @@ WORKDIR /app
 
 # Dependencies
 
-#	  Bash
-RUN apk add --no-cache bash && \
-	# Node
-	apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/v3.16/main/ nodejs=16.17.1-r0 && \
-	# Certbot
-	apk add --no-cache certbot && \
+RUN apk add --no-cache bash nodejs certbot && \
 	# Directory for certificates
 	mkdir -p /var/www/letsencrypt && \
 	# Yarn for development
 	apk add --no-cache yarn
 
-ENV FORCE_COLOR 1
-ENV DATA_PATH /app/data
-ENV NGINX_PATH /etc/nginx
-ENV NGINX_CONFIG_PATH ${NGINX_PATH}/conf.d
+ENV FORCE_COLOR=1
+ENV DATA_PATH=/app/data
+ENV NGINX_PATH=/etc/nginx
+ENV NGINX_CONFIG_PATH=${NGINX_PATH}/conf.d
 
 
 CMD [ "yarn", "dev" ]

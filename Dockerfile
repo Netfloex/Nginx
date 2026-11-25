@@ -1,4 +1,4 @@
-ARG NODE_IMAGE=node:16-alpine
+ARG NODE_IMAGE=node:24-alpine
 
 FROM $NODE_IMAGE AS deps
 WORKDIR /app
@@ -23,22 +23,18 @@ FROM nginx:stable-alpine AS runner
 
 WORKDIR /app
 
-ENV NODE_ENV production
-ENV FORCE_COLOR 1
-ENV DATA_PATH /app/data
-ENV NGINX_PATH /etc/nginx
-ENV NGINX_CONFIG_PATH ${NGINX_PATH}/conf.d
-ENV NGINX_BASE_CONFIGS_PATH ${NGINX_CONFIG_PATH}/base
+ENV NODE_ENV=production
+ENV FORCE_COLOR=1
+ENV DATA_PATH=/app/data
+ENV NGINX_PATH=/etc/nginx
+ENV NGINX_CONFIG_PATH=${NGINX_PATH}/conf.d
+ENV NGINX_BASE_CONFIGS_PATH=${NGINX_CONFIG_PATH}/base
 
 
 # Dependencies
 
 #	  Bash
-RUN apk add --no-cache bash && \
-	# Node
-	apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/v3.16/main/ nodejs=16.17.1-r0 && \
-	# Certbot
-	apk add --no-cache certbot && \
+RUN apk add --no-cache bash nodejs certbot&& \
 	# Directory for certificates
 	mkdir -p /var/www/letsencrypt
 
