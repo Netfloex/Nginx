@@ -1,7 +1,7 @@
 name: docker-build
 
 on:
-    workflow_dispatch: 
+    workflow_dispatch:
     push:
         branches:
             - master
@@ -43,6 +43,7 @@ jobs:
                   username: netfloex
                   token: ${{ secrets.DOCKERHUB_TOKEN }}
                   tags: netfloex/nginx:latest
+                  platforms: linux/amd64,linux/arm64
 
     standalone:
         runs-on: ubuntu-latest
@@ -55,3 +56,4 @@ jobs:
                   token: ${{ secrets.DOCKERHUB_TOKEN }}
                   file: ./Dockerfile.standalone
                   tags: netfloex/nginx:standalone
+                  platforms: linux/amd64,linux/arm64
