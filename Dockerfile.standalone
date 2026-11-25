@@ -34,12 +34,7 @@ ENV STANDALONE true
 
 # Dependencies
 
-#	  Bash
-RUN apk add --no-cache bash && \
-	# Node
-	apk add --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/v3.16/main/ nodejs=16.17.1-r0 && \
-	# Certbot
-	apk add --no-cache certbot && \
+RUN apk add --no-cache bash nodejs certbot&& \
 	# Directory for certificates
 	mkdir -p /var/www/letsencrypt
 
